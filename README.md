@@ -33,4 +33,4 @@ Question
 - Average QAs per document: 1.66
 
 ## Knowledge graph
-<iframe src="figure/interactive_knowledge_graph.html" width="100%" height="800px" frameborder="0"></iframe>
+[View Knowledge Graph](figure/interactive_knowledge_graph.html)
