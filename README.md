@@ -14,7 +14,9 @@ Sub-categories
 Topic
 Question
 
-## Dataset
+## 2. AutoEvalution Workflow
+
+## 3. Dataset
 
 ### Statistics
 |   | Total Number  | Avg Token  |
@@ -32,5 +34,15 @@ Question
 - Average steps per method: 5.18
 - Average QAs per document: 1.66
 
-## Knowledge graph
-[View Knowledge Graph](figure/interactive_knowledge_graph.html)
+### Task distribution over massive topics
+![alt text](figure/tasks_per_topic.png)
+
+### Knowledge Graph Screenshot & Statistics
+- Total nodes (categories): 727
+- Root nodes: 1
+- Leaf nodes: 415
+
+[View Interactive Knowledge Graph via a Browser](figure/interactive_knowledge_graph.html)
+
+![Knowledge Graph Screenshot](figure/knowledge_graph_screenshot.png)
+

@@ -27,6 +27,7 @@ def load_wikihow_csv():
     print(df.isnull().sum())  # Check missing values
     print("\nCheck for duplicates:")
     print(df.duplicated().sum())  # Check for duplicates
+    return df
 
 # 3. Analyze distribution of tutorials per category
 def plot_tasks_per_topic(df):
@@ -61,9 +62,11 @@ def plot_tasks_per_topic(df):
     cate_nums = [f"[{i+1}]" for i, name in enumerate(category_counts.index)]
     ax.set_xticklabels([]*num_categories)
 
+    num_label = []
     # Adjust label position closer to the circle using ax.text() for fine control
     for i, label in enumerate(category_counts.index):
-        print(f"[{i+1}] {label}")
+        # print(f"[{i+1}] {label}")
+        num_label.append((f"[{i+1}]", label, category_counts[label]))
         angle = angles[i]
         # Position the text closer to the circle by changing the radius (0.85 * max count in this case)
         ax.text(angle, 1.05 * category_counts.max(), f"[{i+1}]", ha='center', va='center', fontsize=6)
@@ -77,6 +80,9 @@ def plot_tasks_per_topic(df):
     # Show the plot
     plt.tight_layout()
     plt.savefig(f'figure/tasks_per_topic.png')
+    df_num_topic = pd.DataFrame(num_label, columns=['Number', 'Topic', 'Count'])
+    # Write to CSV
+    df_num_topic.to_csv('figure/tasks_per_topic.csv', index=False)
     # plt.show()
 
 def plot_title_length(df):
@@ -394,7 +400,7 @@ def calculate_data_statistics_of_markdown_docs():
     
     return stats
 
-def build_up_knowledge_graph():
+def build_up_knowledge_graph_interactive():
     try:
         # Create the output directory if it doesn't exist
         os.makedirs('figure', exist_ok=True)
@@ -497,6 +503,72 @@ def build_up_knowledge_graph():
         print(f"Error in build_up_knowledge_graph: {e}")
         return None
 
+
+def build_up_knowledge_graph():
+    graph = build_up_knowledge_graph_interactive()
+
+    # Create a static visualization using networkx
+    G = nx.DiGraph()
+    
+    # Add edges to the graph
+    for node, connections in graph.items():
+        for child in connections['children']:
+            G.add_edge(node, child)
+    
+    # Calculate node sizes based on degree
+    node_sizes = [3000 * (1 + G.degree(node)) / len(G.nodes()) for node in G.nodes()]
+    
+    # Set up the plot with a large figure size
+    plt.figure(figsize=(30, 30))
+    
+    # Use a hierarchical layout
+    pos = nx.spring_layout(G, k=2, iterations=50)
+    
+    # Draw the graph
+    nx.draw(G, pos,
+            node_color='lightblue',
+            node_size=node_sizes,
+            arrowsize=20,
+            with_labels=True,
+            font_size=10,
+            font_weight='bold',
+            edge_color='gray',
+            arrows=True)
+    
+    # Save with high DPI
+    plt.savefig('figure/knowledge_graph.png', 
+                dpi=300, 
+                bbox_inches='tight',
+                format='png')
+    plt.close()
+
+    # Also save a simplified version showing only major categories
+    # (nodes with more than average connections)
+    avg_degree = sum(dict(G.degree()).values()) / len(G.nodes())
+    major_nodes = [node for node, degree in dict(G.degree()).items() if degree > avg_degree]
+    
+    H = G.subgraph(major_nodes)
+    plt.figure(figsize=(20, 20))
+    pos_simplified = nx.spring_layout(H, k=2, iterations=50)
+    
+    nx.draw(H, pos_simplified,
+            node_color='lightgreen',
+            node_size=3000,
+            arrowsize=20,
+            with_labels=True,
+            font_size=12,
+            font_weight='bold',
+            edge_color='gray',
+            arrows=True)
+    
+    plt.savefig('figure/knowledge_graph_simplified.png', 
+                dpi=300, 
+                bbox_inches='tight',
+                format='png')
+    plt.close()
+
+    return graph
+
 def load_knowledge_graph():
     """Load the saved knowledge graph"""
     try:
@@ -516,11 +588,12 @@ def load_knowledge_graph():
         return None
 
 def main():
-    # plot_tasks_per_topic(df)
+    df =  load_wikihow_csv()
+    plot_tasks_per_topic(df)
     # plot_title_length(df)
     # plot_title_length_by_topic(df)
     # convert_html_to_md()
     # calculate_data_statistics_of_markdown_docs()
-    build_up_knowledge_graph()
+    # build_up_knowledge_graph()
 if __name__ == "__main__":
     main()
