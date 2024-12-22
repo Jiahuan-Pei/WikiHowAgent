@@ -1,3 +1,9 @@
 requests 
 beautifulsoup4 
 pandas
+matplotlib
+pyhtml2md
+networkx
+scipy
+pyvis
+colorsys

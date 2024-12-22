@@ -3,7 +3,12 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import pandas as pd
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from util.setup_logger import setup_logger
 
 # Base URL for WikiHow categories
 BASE_URL = 'https://www.wikihow.com'
@@ -51,6 +56,8 @@ def remove_javascript_img_only(soup):
     # Reassign 'src' with 'data-src' for all <img> elements
     for img in soup.find_all('img'):
         if img.get('data-src'):  # Check if 'data-src' exists
+            if BASE_URL not in img['data-src']:
+                img['data-src'] = BASE_URL + img['data-src']
             img['src'] = img['data-src']
     return soup
     
@@ -68,11 +75,14 @@ def download_one_tutorial(title, url, category_name, output_root_dir):
     try:
         # Save tutorials by category
         output_dir = os.path.join(output_root_dir, category_name, title)
+
         img_dir = os.path.join(output_dir, 'images')
         video_dir = os.path.join(output_dir, 'video')
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
+        if not os.path.exists(img_dir):
             os.makedirs(img_dir)
+        if not os.path.exists(video_dir):
             os.makedirs(video_dir)
 
         # Fetch the tutorial page
@@ -98,33 +108,33 @@ def download_one_tutorial(title, url, category_name, output_root_dir):
             # Save images
             images = section.find_all('img', {'data-src': True})
             for img in images:
-                img_url = img['data-src'] # os.path.join(IMAGE_URL, img['data-src']) if BASE_URL not in img['data-src'] else img['data-src']
+                if BASE_URL not in img['data-src']:
+                    img_url = BASE_URL + img['data-src']
+                else:
+                    img_url = img['data-src']
                 download_image(img_url, img_dir)
             # Save videos if no images
             videos = section.find_all('video', {'data-src': True})
             for video in videos:
                 video_url = VIDEO_URL + video['data-src'] # if BASE_URL not in video['data-src'] else video['data-src']
-                print('*'*10,video_url)
+                # print('*'*10,video_url)
                 download_image(video_url, video_dir)
         
         # Check if the image and video folders are empty
-        if not os.listdir(video_dir): 
-            os.rmdir(video_dir)
+        if not os.listdir(video_dir) and os.listdir(img_dir): 
             # Image only, then remove js to show images
             soup = remove_javascript_img_only(soup)
-
-        if not os.listdir(img_dir):
-            os.rmdir(img_dir)
 
         # Save the modified HTML into a new file that can show the images
         html_filename = os.path.join(output_dir, f"{url.split('/')[-1]}.html")
         with open(html_filename, 'w', encoding='utf-8') as file:
             file.write(soup.prettify()) 
-        print(f"Saved HTML: {category_name}/{html_filename}")          
+                  
         # Respectful crawling: Pause between requests
-        time.sleep(1)
+        time.sleep(3)
     except Exception as e:
-        print(f"Failed to save {url}: {e}")
+        # print(f"Failed to save {url}: {e}")
+        logger.error(f"Failed to save {url}: {e}")
 
 
 def download_image(img_url, output_dir):
@@ -147,10 +157,10 @@ def download_image(img_url, output_dir):
         with open(img_path, 'wb') as img_file:
             for chunk in response.iter_content(1024):
                 img_file.write(chunk)
-
-        print(f"Downloaded image: {img_path}")
+        # print(f"Downloaded media: {img_path}")
     except Exception as e:
-        print(f"Failed to download image {img_url}: {e}")
+        # print(f"Failed to download media {img_url}: {e}")
+        logger.error(f"Failed to download media {img_url}: {e}")
 
 def get_tutorials_from_category(category_url):
     """Get tutorials for a specific category."""
@@ -169,11 +179,34 @@ def get_tutorials_from_category(category_url):
             tutorials.append((tutorial_title, tutorial_link))        
     return tutorials
 
-def crawl_wikihow(output_root_dir='./data/wikihow'):
+def delete_empty_folders(directory):
+    """
+    Recursively delete all empty folders in the given directory.
+    
+    Args:
+        directory (str): The root directory to start the cleanup.
+    """
+    for dirpath, dirnames, filenames in os.walk(directory, topdown=False):
+        # Check each subdirectory
+        for dirname in dirnames:
+            dir_to_check = os.path.join(dirpath, dirname)
+            # If the directory is empty, delete it
+            if not os.listdir(dir_to_check):
+                os.rmdir(dir_to_check)
+                print(f"Deleted empty folder: {dir_to_check}")
+    
+    # Check if the root directory itself is empty
+    if not os.listdir(directory):
+        os.rmdir(directory)
+        print(f"Deleted root empty folder: {directory}")
+
+def crawl_wikihow(output_root_dir='./data/wikihow', max_num_tutorial=-1):
     """Main crawler function."""   
     category_links = get_category_links()
     print(f'#Category: {len(category_links)}')
     all_tutorials = []
+    num_tutorial = 0
+
 
     print(f"Found {len(category_links)} categories. Crawling tutorials...")
 
@@ -184,19 +217,41 @@ def crawl_wikihow(output_root_dir='./data/wikihow'):
         # For each tutorial, append category, title, and link
         for tutorial in tutorials:
             title, url = tutorial[0], tutorial[1]
-            all_tutorials.append({
+            entry = {
                 'Category': category_name,
                 'Title': title,
                 'Link': url
-            })
-            # Save each tutortial to html         
-            download_one_tutorial(title, url, category_name, output_root_dir) 
+            }
+            if entry not in all_tutorials: # avoid dupliated entries
+                num_tutorial += 1
+                all_tutorials.append(entry)
+
+                output_dir = os.path.join(output_root_dir, category_name, title)
+                if os.path.exists(output_dir) and os.path.exists(f"{output_dir}/images") and os.path.exists(f"{output_dir}/video"):
+                    logger.info(f">>>>>Saved {num_tutorial} HTML: {category_name}/{title}")
+                else:
+                    pass            
+                    # Download each tutortial to html         
+                    download_one_tutorial(title, url, category_name, output_root_dir)
+                    logger.info(f">Saved {num_tutorial} HTML: {category_name}/{title}")
+
+            if max_num_tutorial> 0 and num_tutorial >= max_num_tutorial:
+                break
+        if max_num_tutorial> 0 and num_tutorial >= max_num_tutorial:
+            break
+
+    # Clean up the empty folders
+    delete_empty_folders(output_root_dir)
 
     # Save tutorials to CSV
     df = pd.DataFrame(all_tutorials)
+    # Remove duplicate rows based on all columns
+    df.drop_duplicates(inplace=True)
     df.to_csv('./data/wikihow_tutorials.csv', index=False)
     print(f"Saved {len(all_tutorials)} tutorials to wikihow_tutorials.csv.")
 
 if __name__ == '__main__':
+    # Initialize the logger
+    logger = setup_logger(log_file=f"crawler_wikihow.log")
     crawl_wikihow()
 
