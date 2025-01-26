@@ -1,0 +1,14 @@
+llm:
+  model_type: ollama
+  model: llama3  # Specify the model name
+  temperature: 0.0  # Set the temperature for the model
+
+embeddings:
+  type: ollama
+  model: llama3  # Specify the embedding model name
+
+params:
+  root_doc_dir: data/wikihow
+  index_file: data/faiss_vector_store
+  k: 1 # Top k docs
+  verbose: True

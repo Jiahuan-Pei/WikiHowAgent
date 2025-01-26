@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.3">
+  <diagram name="Page-1" id="HDzUqJu67cnYxbzb6F1M">
+    <mxGraphModel dx="1493" dy="739" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="wI1al42sWb2ASx6kvqqQ-1" target="wI1al42sWb2ASx6kvqqQ-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-1" value="Topic" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="195" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-2" value="How-to questions" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="160" y="50" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-4" value="Real-world question" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry y="50" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-8" value="Q1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="40" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-9" value="Q2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="60" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-10" value="Qn" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="100" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-11" value="..." style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="80" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-12" value="User simulator" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="20" y="130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="64.68" as="sourcePoint" />
+            <mxPoint x="165" y="64.68" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-14" value="AutoEvaluator" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="110" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wI1al42sWb2ASx6kvqqQ-15" value="Response generator" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="195" y="130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="OldNdzUZNxWnVm6O11tr-1" value="Documents" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="OldNdzUZNxWnVm6O11tr-3" value="QAs" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="210" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="OldNdzUZNxWnVm6O11tr-4" value="AutoRAG" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="270" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="OldNdzUZNxWnVm6O11tr-5" value="AutoGPT Manager" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="270" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

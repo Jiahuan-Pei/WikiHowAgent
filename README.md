@@ -27,8 +27,7 @@ Question
 | Q & A | 6,093  | 52.32 |
 | Tips | 6,495  | 29.59 |
 | Warnings | 2,899  | 30.35 |
-| Reference | 3,680 | 7.38 |
-|||
+| Reference | 27,169 | 7.38 |
 
 - Average methods per document: 4.00
 - Average steps per method: 5.18

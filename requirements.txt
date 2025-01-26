@@ -8,3 +8,7 @@ scipy
 pyvis
 colorsys
 langchain
+langchain_community
+langchain-openai
+langchain-ollama
+pywikihow

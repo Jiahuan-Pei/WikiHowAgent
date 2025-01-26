@@ -387,8 +387,8 @@ def calculate_data_statistics_of_markdown_docs():
     print(f"Average tokens per warning: {np.mean(stats['warning_tokens']) if stats['warning_tokens'] else 0:.2f}")
     
     print("\nReference Statistics:")
-    print(f"Total references: {len(stats['num_reference'])}")
-    print(f"Average tokens per reference: {np.mean(stats['num_reference']) if stats['num_reference'] else 0:.2f}")
+    print(f"Total references: {np.sum(stats['num_reference'])}")
+    print(f"Average references per document: {np.mean(stats['num_reference']) if stats['num_reference'] else 0:.2f}")
 
     print("\nMethod and Step Analysis:")
     print(f"Total number of methods across all docs: {sum(stats['methods_per_doc'])}")
@@ -397,7 +397,7 @@ def calculate_data_statistics_of_markdown_docs():
     print(f"Average QAs per document: {np.mean(stats['qas_per_doc']):.2f}")
     print(f"Total number of steps across all docs: {sum(stats['steps_per_method'])}")
     print(f"Average steps per method: {np.mean(stats['steps_per_method']):.2f}")
-    
+
     return stats
 
 def build_up_knowledge_graph_interactive():
@@ -588,12 +588,12 @@ def load_knowledge_graph():
         return None
 
 def main():
-    df =  load_wikihow_csv()
-    plot_tasks_per_topic(df)
+    # df =  load_wikihow_csv()
+    # plot_tasks_per_topic(df)
     # plot_title_length(df)
     # plot_title_length_by_topic(df)
     # convert_html_to_md()
-    # calculate_data_statistics_of_markdown_docs()
+    calculate_data_statistics_of_markdown_docs()
     # build_up_knowledge_graph()
 if __name__ == "__main__":
     main()

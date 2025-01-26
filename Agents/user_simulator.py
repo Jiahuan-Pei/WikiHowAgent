@@ -1,82 +1,77 @@
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from query_generator import generate_learning_queries
-from web_scraper import retrieve_knowledge_from_wikihow
+from utils import setup_llm_and_embeddings 
 
-# Memory object
-memory = ConversationBufferMemory()
-
-def recall_memory():
-    """Recall stored conversations or information."""
-    return memory.load_memory_variables()
-
-def ask_follow_up_questions(steps):
-    """Simulate follow-up questions for unclear steps."""
-    for i, step in enumerate(steps, 1):
-        print(f"Step {i}: {step}")
-        clarification_prompt = f"What additional details can you provide about this step: {step}?"
-        detailed_explanation = llm(clarification_prompt)
-        print(f"Clarification for Step {i}: {detailed_explanation}\n")
-
-def simulate_application_scenario(steps):
-    """Simulate applying the learned steps in a scenario."""
-    for i, step in enumerate(steps, 1):
-        scenario_prompt = f"""
-        Imagine you are performing the following step in real life: {step}.
-        Describe what might happen next, and how to proceed.
+class UserLLMAgent:
+    """
+    A class representing a user simulator that acts as an active learner.
+    The agent engages with a system to ask clarifying and exploratory questions
+    based on instructions.
+    """
+    
+    def __init__(self, config_file='conf/ollma-llama3.yaml'):
         """
-        result = llm(scenario_prompt)
-        print(f"Step {i} scenario result: {result}\n")
+        Initialize the UserLLMAgent with a language model, memory, and behavior prompt.
+        
+        :param model_name: The name of the language model to use (default: "gpt-4").
+        :param temperature: The temperature setting for the LLM's creativity (default: 0.7).
+        """
+        self.prompt_template = PromptTemplate(
+            input_variables=["instruction", "context"],
+            template=(
+                "You are an active learner engaging with a system to understand instructions deeply. "
+                "You are curious, critical, and focused on learning. Given the following learning step: "
+                "'{instruction}', and the current context: '{context}', ask a thoughtful question. "
+                "Your questions should aim to clarify, explore, or confirm understanding. "
+                "Be specific and ensure your questions are relevant to the instruction."
+            ),
+        )
+        self.memory = ConversationBufferMemory(memory_key="context", input_key="instruction")
+        self.llm, _, self.params = setup_llm_and_embeddings(config_file)
+        self.chain = LLMChain(
+            llm=self.llm,
+            prompt=self.prompt_template,
+            memory=self.memory,
+            verbose=True
+        )
 
-def user_simulator(topic):
-    """Simulate a user learning and applying knowledge on a topic."""
-    print(f"Topic: {topic}")
+    def simulate_step(self, instruction: str) -> str:
+        """
+        Simulate the agent engaging with a single learning step.
+        
+        :param instruction: The instruction or step provided by the system.
+        :return: The agent's generated questions as a response.
+        """
+        return self.chain.run(instruction=instruction)
 
-    # Step 1: Generate Questions
-    print("\nGenerating questions...\n")
-    questions = generate_learning_queries(topic)
-    for question in questions:
-        print(f"Question: {question}")
+    def reset_memory(self):
+        """Clear the agent's memory to start fresh."""
+        self.memory.clear()
 
-    # Step 2: Retrieve Knowledge
-    print("\nRetrieving knowledge from Wikihow...\n")
-    content, error = retrieve_knowledge_from_wikihow(topic)
-    if error:
-        print(error)
-        return
+    def add_context(self, context: str):
+        """
+        Add context to the agent's memory.
+        
+        :param context: Additional information to add to the current memory.
+        """
+        self.memory.save_context({"instruction": ""}, {"context": context})
 
-    steps = content.get("steps", [])
-    tips = content.get("tips", [])
-    warnings = content.get("warnings", [])
-    thingsyoullneed = content.get("thingsyoullneed", [])
-    qs = content.get("qa", [])
-
-    print("Steps:")
-    for i, step in enumerate(steps, 1):
-        print(f"Step {i}: {step}")
-
-    print("\nTips:")
-    for tip in tips:
-        print(f"- {tip}")
-
-    print("\nWarnings:")
-    for warning in warnings:
-        print(f"- {warning}")
-
-    # Step 3: Ask Follow-Up Questions
-    print("\nAsking clarifying questions...\n")
-    ask_follow_up_questions(steps)
-
-    # Step 4: Simulate Application Scenarios
-    print("\nSimulating application scenarios...\n")
-    simulate_application_scenario(steps)
-
-    # Step 5: Collect things you need
-    # section thingsyoullneed sticky
-
-    # Optional: Store in memory
-    memory.save_context({"user_query": topic}, {"retrieved_content": content})
-    print("\nStored conversation in memory.")
-
+# Example usage
 if __name__ == "__main__":
-    topic = "how to change a tire"
-    user_simulator(topic)
+    # Initialize the agent
+    user_agent = UserLLMAgent()
+    
+    # Simulate a learning step
+    instruction = "To complete this step, connect the red wire to the terminal marked 'A'."
+    response = user_agent.simulate_step(instruction)
+    print("User Agent's Response:\n", response)
+    
+    # Add additional context and simulate another step
+    user_agent.add_context("Ensure the power supply is off before working with the wires.")
+    instruction2 = "Now, attach the green wire to the terminal marked 'B'."
+    response2 = user_agent.simulate_step(instruction2)
+    print("User Agent's Response:\n", response2)
+    
+    # Reset memory
+    user_agent.reset_memory()
