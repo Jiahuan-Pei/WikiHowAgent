@@ -1,82 +1,208 @@
-from rag import RAG
-from langchain_ollama import ChatOllama
-sample_docs = [
-    "Albert Einstein proposed the theory of relativity, which transformed our understanding of time, space, and gravity.",
-    "Marie Curie was a physicist and chemist who conducted pioneering research on radioactivity and won two Nobel Prizes.",
-    "Isaac Newton formulated the laws of motion and universal gravitation, laying the foundation for classical mechanics.",
-    "Charles Darwin introduced the theory of evolution by natural selection in his book 'On the Origin of Species'.",
-    "Ada Lovelace is regarded as the first computer programmer for her work on Charles Babbage's early mechanical computer, the Analytical Engine."
-]
+import re
+import json
+from utils import setup_llm_and_embeddings
+from pprint import pprint
+from collections import OrderedDict
+from typing import List, Dict
+from sentence_transformers import SentenceTransformer, util
+import evaluate
+from nltk.util import ngrams
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from util.setup_logger import *
 
-sample_queries = [
-    "Who introduced the theory of relativity?",
-    "Who was the first computer programmer?",
-    "What did Isaac Newton contribute to science?",
-    "Who won two Nobel Prizes for research on radioactivity?",
-    "What is the theory of evolution by natural selection?"
-]
 
-expected_responses = [
-    "Albert Einstein proposed the theory of relativity, which transformed our understanding of time, space, and gravity.",
-    "Ada Lovelace is regarded as the first computer programmer for her work on Charles Babbage's early mechanical computer, the Analytical Engine.",
-    "Isaac Newton formulated the laws of motion and universal gravitation, laying the foundation for classical mechanics.",
-    "Marie Curie was a physicist and chemist who conducted pioneering research on radioactivity and won two Nobel Prizes.",
-    "Charles Darwin introduced the theory of evolution by natural selection in his book 'On the Origin of Species'."
-]
+class ConversationEvaluator:
+    def __init__(self, config_file='conf/ollma-llama3.yaml', logger=None):
+        self.logger = logger
+        self.llm, self.embeddings, self.config = setup_llm_and_embeddings(config_file)
+        with open(self.config['params']['rubric_file'], 'r') as fr:
+            self.rubrics = json.load(fr)
+        # Load BERT-based model for semantic similarity
+        self.bert_model = SentenceTransformer("all-MiniLM-L6-v2")
+        # Load evaluation metrics from Hugging Face's evaluate library
+        self.bleu = evaluate.load("bleu")
+        self.meteor = evaluate.load("meteor")
+        self.rouge = evaluate.load("rouge")
+    
+    # Question Ratio
+    def calculate_question_ratio(self, conversation):
+        """Calculates the ratio of learner messages that contain questions.
 
-rag = RAG()
-# Load documents
-rag.load_documents(sample_docs)
+        Args:
+            conversation: List of conversation lines
+            
+        Returns:
+            float: Ratio of learner messages containing questions (0.0 to 1.0)
+        """
+        learner_messages = [line for line in conversation if line.startswith("Learner:")]
+        if not learner_messages:  # Avoid division by zero
+            return 0.0
+        question_count = sum(1 for msg in learner_messages if "?" in msg)
+        return round(question_count / len(learner_messages), 4)
 
-dataset = []
+    # Task Completion
+    def check_completion(self, conversation):
+        """Checks if the conversation ends with the tutorial completion message.
+        Returns 1 if true, 0 otherwise."""
+        return 1 if any("FINISHED" in line or "The tutorial is now complete" in line for line in conversation) else 0
+    
+    # Learner Response Diversity
+    def check_diversity(self, conversation):
+        """Measures linguistic diversity based on unique sentence structures."""
+        learner_responses = [line for line in conversation]
+        unique_responses = set(learner_responses)
+        return round(len(unique_responses) / max(1, len(learner_responses)), 4)  # Avoid division by zero
+    
+    def compute_ngram_diversity(self, responses, n=2):
+        """Computes n-gram diversity score (bigram, trigram, etc.)
+        Score	Interpretation
+        0.0 - 0.3	Highly repetitive phrases
+        0.3 - 0.6	Some phrase variation, but noticeable repetition
+        0.6 - 0.9	Good diversity, minimal repeated phrases
+        0.9 - 1.0	Very rich vocabulary, almost no repetition
+        """
+        ngram_list = []
+        for response in responses:
+            words = response.split()
+            ngram_list.extend(list(ngrams(words, n)))  # Extract n-grams
+        
+        total_ngrams = len(ngram_list)
+        unique_ngrams = len(set(ngram_list))
+        
+        return round(unique_ngrams / max(1, total_ngrams), 4)  # Avoid division by zero
+    
+    # BLEU Score (n-gram precision-based metric)
+    def compute_bleu(self, reference, generated):
+        """Computes BLEU score using Hugging Face evaluate."""
+        return round(self.bleu.compute(predictions=[generated], references=[reference])['bleu'], 4)
 
-for query,reference in zip(sample_queries,expected_responses):
+    # Instructional accuracy: ROUGE (useful for summarization-based tasks)
+    def compute_rouge(self, reference, generated):
+        """Computes ROUGE score using Hugging Face evaluate."""
+        rouge_scores = self.rouge.compute(predictions=[generated], references=[reference])
+        return {'ROUGE': round(rouge_scores['rouge1'], 4)}
 
-    relevant_docs = rag.get_most_relevant_docs(query)
-    response = rag.generate_answer(query, relevant_docs)
-    dataset.append(
-        {
-            "user_input":query,
-            "retrieved_contexts":relevant_docs,
-            "response":response,
-            "reference":reference
+    # METEOR Score (Recall-based metric, considers synonyms & stemming)
+    def compute_meteor(self, reference, generated):
+        """Computes METEOR score using Hugging Face evaluate."""
+        return round(self.meteor.compute(predictions=[generated], references=[reference])['meteor'], 4)
+        
+    # Semantic similarity: BERTScore (context-aware similarity, recall-based matching)
+    def compute_bert_score(self, reference, generated):
+        """Computes semantic similarity using BERT embeddings."""
+        ref_embedding = self.bert_model.encode(reference, convert_to_tensor=True)
+        gen_embedding = self.bert_model.encode(generated, convert_to_tensor=True)
+        similarity = util.pytorch_cos_sim(ref_embedding, gen_embedding).item()
+        return round(similarity, 4)
+
+    # Instruction-tutorial consistency
+    def check_factual_consistency(self, reference, generated):
+        """Uses LLM to check the generated response against the tutorial reference."""
+        rubric_prompt = "\n".join([f"- {key} ({value['question']})" for key, value in self.rubrics.items() if self.rubrics[key]['reference'] == 'tutorial'])
+        format_prompt = ", ".join([f"{key}: X" for key in self.rubrics.keys() if self.rubrics[key]['reference'] == 'tutorial'])
+        prompt = f"""
+        Evaluate the following generated response based on the reference:
+        Reference: {reference}
+        Generated: {generated}
+        
+        Score from 1 to 5:
+        {rubric_prompt}
+        Provide scores in this format: {format_prompt}
+        """
+        response = self.llm.invoke(prompt).content
+        self.logger.info(response)
+        matches = re.findall(r'(\w+):\s*(\d+)\s*', response, re.IGNORECASE)
+        scores = {}
+        for key, value in matches:
+            if key in self.rubrics.keys():
+                scores[key.capitalize()] = int(value)
+        return scores, response
+
+    def evaluate_with_reference(self, conversation, tutorial):
+        reference = '\n'.join(tutorial)
+        generated = '\n'.join([line for line in conversation if line.startswith("Teacher:")])
+        rouge_scores = self.compute_rouge(reference, generated)
+        ref_llm_scores, response = self.check_factual_consistency(reference, generated)
+        scores = {
+            **ref_llm_scores,
+            'BLEU': self.compute_bleu(reference, generated),
+            'METEOR': self.compute_meteor(reference, generated),
+            'BERTScore': self.compute_bert_score(reference, generated),
+            **rouge_scores
         }
-    )
+        return scores, response
 
-from ragas import EvaluationDataset
-evaluation_dataset = EvaluationDataset.from_list(dataset)
-print("Evaluation Dataset:", evaluation_dataset)
+    def evaluate_with_llm(self, conversation):
+        """Uses an LLM to rate the conversation on multiple rubrics."""
+        # Build the prompt using the rubrics dictionary
+        rubric_prompt = "\n".join([f"- {key} ({value['question']})" for key, value in self.rubrics.items() if self.rubrics[key]['reference'] == 'no'])
+        format_prompt = ", ".join([f"{key}: X" for key in self.rubrics.keys() if self.rubrics[key]['reference'] == 'no'])
+        prompt = f"""
+        Evaluate the following teacher-learner conversation:
+        {conversation}
+        
+        Score from 1 to 5:
+        {rubric_prompt}
+        Provide scores in this format: {format_prompt}
+        """
 
-from ragas import evaluate
-from ragas.llms import LangchainLLMWrapper
+        response = self.llm.invoke(prompt).content
+        self.logger.info(response)
+        matches = re.findall(r'(\w+):\s*(\d+)\s*', response, re.IGNORECASE)
+        scores = {}
+        for key, value in matches:
+            if key in self.rubrics.keys():
+                scores[key.capitalize()] = int(value)
+        return scores, response
+    
+    def evaluate(self, conversation:  List[str], tutorial: List[str]=None):
+        num_questions = self.calculate_question_ratio(conversation)
+        completed = self.check_completion(conversation)
+        diversity_score = self.check_diversity(conversation)
+        ngram_diversity_score = self.compute_ngram_diversity(conversation)
+        llm_scores, llm_scores_response = self.evaluate_with_llm(conversation)
+        if tutorial:
+            ref_scores, ref_scores_response = self.evaluate_with_reference(conversation, tutorial)
+            return OrderedDict({
+                "Question Ratio": num_questions,
+                "Completion Achieved": completed,
+                "Diversity Score": round(ngram_diversity_score, 2),
+                **llm_scores,  # Unpack the LLM scores
+                **ref_scores,
+                "llm_scores_response": llm_scores_response,
+                "ref_scores_response": ref_scores_response
+            })
+        else:
+            return OrderedDict({
+                "Question Ratio": num_questions,
+                "Completion Achieved": completed,
+                "Diversity Score": round(diversity_score, 2),
+                **llm_scores,  # Unpack the LLM scores
+                "llm_scores_response": llm_scores_response,
+            })
 
-# llm = ChatOllama(model="llama3",verbose=False,timeout=600,num_ctx=8192,disable_streaming=False)
-llm = ChatOllama(model="llama3",timeout=1600, temperature=0)
-evaluator_llm = LangchainLLMWrapper(llm)
-
-from ragas.metrics import LLMContextRecall, Faithfulness, FactualCorrectness
-from ragas.metrics import AspectCritic
-
-# Before evaluation
-print("Evaluating with dataset:", evaluation_dataset)
-
-metric = AspectCritic(name="summary_accuracy",llm=evaluator_llm, definition="Verify if the summary is accurate.")
-
-
-from ragas.metrics import FactualCorrectness
-scorer = FactualCorrectness(llm=evaluator_llm)
-
-# Perform evaluation
-result = evaluate(
-    dataset=evaluation_dataset,
-    metrics=[LLMContextRecall(), Faithfulness(), FactualCorrectness(), metric],
-    llm=evaluator_llm
-)
-
-# Check the result
-print("Evaluation Result:", result)
-
-
-# import os
-# os.environ["RAGAS_APP_TOKEN"] = "your_app_token"
-# result.upload()
+if __name__ == "__main__":
+    logger = setup_logger(log_file=f"eval_example.log", log_level=logging.INFO)
+    # Example Usage:
+    tutorial = [
+        "Fill a container with salt.",
+        "Squeeze a little tempera paint into the salt.",
+        "Mix with a spoon until evenly distributed.",
+        "Let it dry overnight.",
+        "Test before using in crafts."
+    ]
+    conversation = [
+        "Teacher: Step 1: Fill a container with salt.",
+        "Learner: Should I use fine or coarse salt?",
+        "Teacher: Use fine salt for better mixing.",
+        "Learner: Got it. Please proceed to the next step.",
+        "Teacher: Step 2: Squeeze a little tempera paint into the salt.",
+        "Learner: I understand. Please proceed to the next step.",
+        "Teacher: Step FINAL: The tutorial is now complete. FINISHED.",
+        "Learner: Thank you!"
+    ]
+    evaluator = ConversationEvaluator()
+    results = evaluator.evaluate(conversation, tutorial)
+    # pprint(results, indent=4)
+    logger.info(results)

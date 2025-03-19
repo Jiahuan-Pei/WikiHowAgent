@@ -8,6 +8,7 @@
 .DS_Store
 .vscode/
 data/*
+result/*
 models/*
 
 # User-specific files

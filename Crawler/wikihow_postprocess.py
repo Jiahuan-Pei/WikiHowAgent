@@ -119,13 +119,13 @@ def convert_html_to_md(mdir='./data/wikihow'):
             continue
         for task in os.listdir(topic_path):
             fpath = f'{mdir}/{topic}/{task}/{task}.md'
-            print(fpath)
             task_path = os.path.join(topic_path, task)
             if not os.path.isdir(task_path):
                 continue
             for file in os.listdir(task_path):             
                 if file.endswith('.html'):
                     with open(os.path.join(mdir, topic, task, file), 'r') as f:
+                        print(fpath)
                         soup = BeautifulSoup(f, 'html.parser')
                         # Find all elements with class containing "section"
                         breadcrumb = soup.find(id='breadcrumb')
@@ -157,15 +157,16 @@ def convert_html_to_md(mdir='./data/wikihow'):
                             if step_section:
                                 # Try different possible step structures
                                 try:
-                                    for step_num_elem, step_elem in zip(step_section.select('div[class="step_num"]'), step_section.select('div[class="step"]')):
-                                        if step_num_elem and step_elem:
-                                            step_num = step_num_elem.get_text(strip=True)
-                                            step_text = step_elem.get_text(strip=True).replace('XResearch resource', '')
-                                            steps.append(f"{step_num}. {step_text}")
+                                    for i, step_elem in enumerate(step_section.select('div[class="step"]')):
+                                        if step_elem:
+                                            step_text = step_elem.get_text(strip=True).replace('XResearch source', ' ')
+                                            steps.append(f"{i+1}. {step_text}")
                                 except:
                                     print(f"Error in {topic}/{task}/{file}")
                                     exit()
-                            methods.append([method_title] + steps)
+                            # if steps is not None
+                            if steps is not None:
+                                methods.append([method_title] + steps)
                         qa_items = []
                         qa_section = soup.select_one('div[class*="section_text"][id="qa"]')
                         if qa_section:
@@ -240,6 +241,97 @@ def convert_html_to_md(mdir='./data/wikihow'):
                         
                         markdown_docs.append(markdown)
     return markdown_docs
+
+
+def convert_html_to_json(mdir='./data/wikihow'):
+    json_docs = []
+    for topic in os.listdir(mdir):
+        topic_path = os.path.join(mdir, topic)
+        if not os.path.isdir(topic_path):
+            continue
+        for task in os.listdir(topic_path):
+            task_path = os.path.join(topic_path, task)
+            if not os.path.isdir(task_path):
+                continue
+            print(f'{mdir}/{topic}/{task}/{task}.json')
+            for file in os.listdir(task_path):
+                if file.endswith('.html'):
+                    with open(os.path.join(mdir, topic, task, file), 'r') as f:
+                        soup = BeautifulSoup(f, 'html.parser')
+                        
+                        # Extract metadata
+                        breadcrumb = soup.find(id='breadcrumb')
+                        categories = [c.get_text(strip=True) for c in breadcrumb.find_all('a')] if breadcrumb else []
+                        
+                        title_element = soup.select_one('h1[class*="title"] a') or soup.select_one('h1[class*="title"]')
+                        title = title_element.get_text(strip=True) if title_element else "Unknown Title"
+                        
+                        # Skip if no title found
+                        if title == "Unknown Title":
+                            print(f"Warning: No title found in {topic}/{task}")
+                            continue
+                        
+                        # Extract content sections
+                        intro = soup.find('div', id='mf-section-0').get_text(strip=True) if soup.find('div', id='mf-section-0') else ""
+                        
+                        methods = []
+                        for method in soup.select('div[class*="section steps"]'):
+                            method_title = method.select_one('div[class*="headline_info"]').get_text(strip=True) if method.select_one('div[class*="headline_info"]') else ""
+                            steps = []
+                            step_section = method.select_one('div[class="section_text"]')
+                            if step_section:
+                                for i, step_elem in enumerate(step_section.select('div[class="step"]')):
+                                    if step_elem:
+                                        step_text = step_elem.get_text(strip=True).replace('XResearch source', ' ')
+                                        steps.append(f"{step_text}")
+                            # It contains only 1 method
+                            methods.append({"title": method_title, "steps": steps})
+                        
+                        # Extract Q&A
+                        qa_items = []
+                        qa_section = soup.select_one('div[class*="section_text"][id="qa"]')
+                        if qa_section:
+                            for item in qa_section.find_all('li'):
+                                question = item.select_one('div[class*="qa_q_txt"]').get_text(strip=True) if item.select_one('div[class*="qa_q_txt"]') else ""
+                                answer = item.select_one('div[class*="qa_answer answe"]').get_text(strip=True) if item.select_one('div[class*="qa_answer answe"]') else ""
+                                qa_items.append({"question": question, "answer": answer})
+                        
+                        # Extract Tips, Warnings, and References
+                        tips = [t.get_text(strip=True).replace('XResearch source', '') for t in soup.select('div[class*="section_text"][id="tips"] li')] if soup.select_one('div[class*="section_text"][id="tips"]') else []
+                        warnings = [w.get_text(strip=True).replace('XResearch source', '') for w in soup.select('div[class*="section_text"][id="warnings"] li')] if soup.select_one('div[class*="section_text"][id="warnings"]') else []
+                        references = [r.get_text(strip=True).replace('↑', '') for r in soup.select('div[class*="section_text"][id="references"] li')] if soup.select_one('div[class*="section_text"][id="references"]') else []
+                        
+                        # Extract Things You'll Need
+                        things_needed = []
+                        thingsyoullneed_section = soup.select_one('div[class*="section_text"][id="thingsyoullneed"]')
+                        if thingsyoullneed_section:
+                            for headline in thingsyoullneed_section.select('div.headline_info h3'):
+                                method_name = headline.get_text(strip=True)
+                                next_ul = headline.find_next('ul')
+                                if next_ul:
+                                    items = [item.get_text(strip=True) for item in next_ul.find_all('li')]
+                                    things_needed.append({"method": method_name, "items": items})
+                        
+                        # Create JSON structure
+                        json_data = {
+                            "title": title,
+                            "categories": categories,
+                            "introduction": intro,
+                            "methods": methods,
+                            "qa": qa_items,
+                            "tips": tips,
+                            "warnings": warnings,
+                            "things_youll_need": things_needed,
+                            "references": references
+                        }
+                        
+                        # Save JSON to file
+                        json_file = os.path.join(mdir, topic, task, f"{task}.json")
+                        with open(json_file, 'w') as f:
+                            json.dump(json_data, f, indent=4)
+                        
+                        json_docs.append(json_data)
+    return json_docs
 
 def read_markdown_docs(mdir='./data/wikihow'):
     # Read all markdown docs from directory
@@ -592,8 +684,9 @@ def main():
     # plot_tasks_per_topic(df)
     # plot_title_length(df)
     # plot_title_length_by_topic(df)
-    # convert_html_to_md()
-    calculate_data_statistics_of_markdown_docs()
+    convert_html_to_md()
+    convert_html_to_json()
+    # calculate_data_statistics_of_markdown_docs()
     # build_up_knowledge_graph()
 if __name__ == "__main__":
     main()

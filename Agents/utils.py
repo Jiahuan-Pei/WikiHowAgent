@@ -1,5 +1,6 @@
 import os
 import yaml
+import json
 from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
@@ -14,11 +15,15 @@ def setup_llm_and_embeddings(config_file='conf/ollma-llama3.yaml'):
 
     # Initialize LLM and embeddings based on the configuration
     if llm_config['model_type'] == "openai":
-        llm = ChatOpenAI(model=llm_config['model'], temperature=llm_config['temperature'])
+        llm = ChatOpenAI(
+            model=llm_config['model'], 
+            temperature=llm_config['temperature']
+        )
         embeddings = OpenAIEmbeddings()
     elif llm_config['model_type'] == "ollama":
         llm = ChatOllama(
             model=llm_config['model'],
+            temperature=llm_config['temperature'],
             verbose=True,  # You can also make this configurable
             timeout=600,
             num_ctx=8192,
@@ -28,10 +33,11 @@ def setup_llm_and_embeddings(config_file='conf/ollma-llama3.yaml'):
     else:
         raise ValueError(f"Unsupported model type: {llm_config['model_type']}")
 
-    return llm, embeddings, param_config 
+    return llm, embeddings, config 
 
-def read_all_file_suffix_X(mdir='./data/wikihow', suffix='.md'):    
+def read_all_file_suffix_X(mdir='./data/wikihow', suffix='.json', max_doc=None):    
     docs = []
+    count = 0
     for topic in os.listdir(mdir):
         topic_path = os.path.join(mdir, topic)
         if not os.path.isdir(topic_path):
@@ -43,8 +49,15 @@ def read_all_file_suffix_X(mdir='./data/wikihow', suffix='.md'):
             for file in os.listdir(task_path):             
                 if file.endswith(suffix):  # Filter files by the specified suffix
                     file_path = os.path.join(task_path, file)
-                    print(file_path)  # Print the file path
+                    # print(file_path)  # Print the file path
                     # Add logic to read the file and append to docs
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        docs.append(f.read())
+                    count+=1
+                    if max_doc is not None and count >= max_doc:
+                        return docs
+                    with open(file_path, 'r') as f:
+                        if suffix == '.json':                   
+                                json_data = json.load(f)
+                                docs.append(json_data)
+                        else:
+                                docs.append(f.read())
     return docs

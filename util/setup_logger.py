@@ -44,8 +44,8 @@ def setup_logger(log_file="app.log", log_level=logging.INFO):
     return logger
 
 # if __name__ == "__main__":
-#     # Initialize the logger
-#     logger = setup_logger(log_file="output.log", log_level=logging.INFO)
+    # Initialize the logger
+    # logger = setup_logger(log_file="output.log", log_level=logging.INFO)
 
 #     # Log some messages
 #     logger.debug("This is a DEBUG message.")

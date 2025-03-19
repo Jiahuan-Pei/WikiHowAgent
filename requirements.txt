@@ -12,3 +12,6 @@ langchain_community
 langchain-openai
 langchain-ollama
 pywikihow
+sentence_transformers
+evaluate
+nltk

@@ -1,280 +1,282 @@
 import getpass
 import os
-from typing import List
+import yaml
+import glob
+import re
 from langchain.prompts import PromptTemplate
-from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain
 from langchain_core.messages import HumanMessage, AIMessage
-from langchain_community.adapters.openai import convert_message_to_dict
 from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
 from typing import Annotated
 from typing_extensions import TypedDict
-# Set up LangGraph to orchestrate the simulated workflow
-from langgraph.graph import END, StateGraph, START
-from langgraph.graph.message import add_messages
-from typing_extensions import TypedDict
+from utils import setup_llm_and_embeddings, read_all_file_suffix_X  # Assuming this is defined in utils.py
+from auto_evaluator import ConversationEvaluator
+import uuid
+from tqdm import tqdm
+import json
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from util.setup_logger import *
+import numpy as np
 
-class State(TypedDict):
-    messages: Annotated[list, add_messages]
-
-# Set API Key if not defined
+# Ensure API Key is set
 def _set_if_undefined(var: str):
     if not os.environ.get(var):
         os.environ[var] = getpass.getpass(f"Please provide your {var}")
 
 _set_if_undefined("OPENAI_API_KEY")
 
-# Utility function to set up LLM and embeddings
-from utils import setup_llm_and_embeddings  # Assuming this is defined in utils.py
+# Define State
+class State(TypedDict):
+    messages: Annotated[list, add_messages]
 
-
-# UserLLMAgent (User Simulation Agent)
-class UserLLMAgent:
-    def __init__(self, config_file='conf/ollma-llama3.yaml'):
-        self.prompt_template = PromptTemplate(
-            input_variables=["instruction", "context"],
-            template=(
-                "You are an active learner engaging with a system to deeply understand instructions. "
-                "Given the learning step instruction and the current context, please respond to the system input. "
-                "If the instruction is unclear or ambiguous, ask clarifying questions, otherwise say 'next step'. "
-                "Be specific and ensure your questions are relevant to the instruction. "
-                "Your responses should be brief, clear, concise, straight-out and coherent. Do not repeat."
-                "When you are finished with the conversation, respond with a single word 'FINISHED'"
-                "Context: {context}\n"
-                "Teacher: {instruction}\n"
-                "Learner:"
-            ),
-        )
-        self.memory = ConversationBufferMemory(memory_key="context", return_messages=False)
-        self.llm, _, self.params = setup_llm_and_embeddings(config_file)
-        self.chain = LLMChain(
-            llm=self.llm,
-            prompt=self.prompt_template,
-            memory=self.memory,
-            verbose=True
-        )
-
-    def run(self, instruction: str) -> str:
-        return self.chain.run(instruction=instruction)
-
-    def reset_memory(self):
-        self.memory.clear()
-
-    def add_context(self, context: str):
-        self.memory.save_context({"instruction": ""}, {"context": context})
-
-
-# TeacherLLMAgent (System Teaching Agent)
+# Teacher Agent
 class TeacherLLMAgent:
-    def __init__(self, config_file='conf/ollma-llama3.yaml', tutorial_document=None):
+    def __init__(self, config_file, tutorial_document=None):
         self.tutorial_document = tutorial_document
-        self.current_step = 0  # Starts at the first step
-        self.total_steps = len(tutorial_document)  # Total number of steps
+        self.current_step = 1
+        self.total_steps = len(tutorial_document) - 1 # The 0th restores the summary
+        self.llm, _, self.config = setup_llm_and_embeddings(config_file)
+
         self.prompt_template = PromptTemplate(
-            input_variables=["current_step", "current_step_instruction", "context", "user_utterance"],
+            input_variables=["current_step", "instruction", "user_utterance"],
             template=(
-                "You are a teacher interacting with a learner. "
-                "Your task is to provide instructions or answer questions based on the current step "
-                "from the tutorial document. If the learner asks a question, clarify it. If they indicate readiness, "
-                "move to the next step. If this is the final step, indicate that the tutorial is complete."
-                "Step {current_step} instruction: {current_step_instruction}\n"
-                "Context: {context}\n"
+                "You are a teacher guiding a learner through a tutorial. "
+                "Your job is to give instructions for the current step and answer any questions."
+                "Summary: {summary}\n"
+                "Step instruction: {instruction}\n"
                 "Learner: {user_utterance}\n"
                 "Teacher:"
             ),
         )
-        self.memory = ConversationBufferMemory(memory_key="context", input_key="current_step_instruction", return_messages=False)
-        self.llm, _, self.params = setup_llm_and_embeddings(config_file)
-        self.chain = LLMChain(
-            llm=self.llm,
-            prompt=self.prompt_template,
-            memory=self.memory,
-            verbose=True
-        )
 
-    def run(self, user_utterance) -> str:
-        # Prevent overshooting the last step
+        self.chain = LLMChain(llm=self.llm, prompt=self.prompt_template, verbose=True)
+
+    def run(self, user_utterance: str) -> str:
+        """Process the learner's response and generate the teacher's reply."""
         if self.current_step >= self.total_steps:
-            return "FINISHED"  # End the tutorial
+            return "FINISHED"
 
-        # Prepare current step tutorial content
-        current_step_instruction = self.tutorial_document[self.current_step]
+        summary = self.tutorial_document[0] # Assuming the first element is the summary of the tutorial
+        instruction = self.tutorial_document[self.current_step]
 
-        # Only the first teacher utterance summerize what to learn today.
-        if self.current_step == 0:
-            system_response=self.llm.invoke(
-            "You are a helpful teacher assistant. Summerize what you will teach today."
-            f"Introduction: {'\n'.join(tutorial_document)}"
-            ).content
-            # self.current_step += 1
-
-        # Run the LLM chaåin
-        system_response = self.chain.run(
-            current_step=str(self.current_step + 1),
-            current_step_instruction=current_step_instruction,
+        # Generate teacher response
+        teacher_response = self.chain.run(
+            summary=summary,
+            current_step=self.current_step + 1,
+            instruction=instruction,
             user_utterance=user_utterance
         )
 
-        # Check if user wants to proceed to the next step
-        next_step = self.llm.invoke(
-            "Based on the user's response, does the user understand the current step "
-            "and want to proceed to the next step? Respond with 'yes' or 'no' only. "
-            f"User's response: {user_utterance}"
-        ).content
-        # if any(phrase in user_utterance.lower() for phrase in ["understand", "next step"]):
-        if next_step == 'yes' and self.current_step>0:
-            self.current_step += 1
+        # Check if learner wants to proceed
+        next_step_decision = self.llm.invoke(
+            f"Based on this response: '{user_utterance}', does the learner understand and want to proceed? "
+            f"Reply with 'yes' or 'no'."
+        ).content.lower()
 
-        # Check if we've reached the final step
+        if "yes" in next_step_decision:
+            self.current_step += 1  # Move to next step
+
         if self.current_step >= self.total_steps:
-            return "Step FINAL\t" + system_response + "\nThe tutorial is now complete. FINISHED."
+            return f"Step FINAL: {teacher_response}\nThe tutorial is now complete. FINISHED."
 
-        return f"**Step {self.current_step + 1}**" + system_response
+        return teacher_response
+
+# Learner Agent
+class LearnerLLMAgent:
+    def __init__(self, config_file):
+        self.llm, _, self.config = setup_llm_and_embeddings(config_file)
+
+        self.prompt_template = PromptTemplate(
+            input_variables=["instruction"],
+            template=(
+                "You are a student learning from a tutorial. "
+                "Read the teacher's instruction and respond naturally. "
+                "If the step is clear, acknowledge it shortly in a conversational way. "
+                "If unclear, ask a brief and specific question about what is confusing."
+                "If the teacher mentions 'FINISHED' or acknowledges the completion of the tutorial, respond by briefly thanking the teacher. Do not ask questions.\n\n"
+                "Teacher: {instruction}\n"
+                "Learner:"
+            ),
+        )
+
+        self.chain = LLMChain(llm=self.llm, prompt=self.prompt_template, verbose=True)
+
+    def run(self, instruction: str) -> str:
+        return self.chain.run(instruction=instruction)
+
+# Nodes for Conversation
+def teacher_node(state):
+    messages = state["messages"]
+    teacher_response = teacher_agent.run(messages[-1].content if messages else "")
+    return {"messages": [AIMessage(content=teacher_response)]}
+
+def learner_node(state):
+    messages = state["messages"]
+    learner_response = learner_agent.run(messages[-1].content)
+    return {"messages": [HumanMessage(content=learner_response)]}
+
+# Flow Control: Determines Conversation Path
+def should_continue(state, max_steps=15):
+    messages = state["messages"]
+
+    if len(messages) >= max_steps or any("FINISHED" in m.content for m in messages):
+        return "end"
+
+    last_message = messages[-1].content.lower()
+
+    if isinstance(messages[-1], HumanMessage) and "FINISHED" not in last_message:
+        return "teacher"
+    elif isinstance(messages[-1], AIMessage) and "FINISHED" not in last_message:
+        return "learner"
+
+    return "end"
 
 
-def my_chat_bot(messages):
+def generate_single_conversation(tutorial_document, logger):
+    """Generate a conversation between teacher and learner agents based on a tutorial document.
+    
+    Args:
+        tutorial_document: A list containing tutorial steps where:
+            - First element is the summary
+            - Subsequent elements are individual steps
+            
+    Example:
+        tutorial_document = [
+            "Summary: an introduction of the whole tutorial",
+            "Fill a container with salt.",
+            "Squeeze a little tempera paint into the salt.",
+            "Mix with a spoon until evenly distributed.",
+            "Let it dry overnight.",
+            "Test before using in crafts."
+        ]
+        conversation = generate_single_conversation(tutorial_document)
     """
-    Generate a response from the chat bot using the TeacherLLMAgent.
+    global teacher_agent, learner_agent
 
-    :param messages: A list of message dictionaries containing the conversation history.
-    :return: The response from the chat bot as a dictionary.
-    """
-    # Initialize the TeacherLLMAgent (assuming it requires a tutorial document)
-    teacher_agent = TeacherLLMAgent(tutorial_document=tutorial_document)
+    # Initialize Agents
+    teacher_agent = TeacherLLMAgent(config_file, tutorial_document=tutorial_document)
+    learner_agent = LearnerLLMAgent(config_file)
 
-    # Extract the latest user message from the conversation history
-    user_message = messages[-1] if messages else None
+    # Define Graph
+    graph_builder = StateGraph(State)
+    graph_builder.add_node("learner", learner_node)
+    graph_builder.add_node("teacher", teacher_node)
 
-    if user_message and user_message['role'] == 'user':
-        # Get the instruction from the user's message
-        user_utterance = user_message['content']
+    graph_builder.add_edge("teacher", "learner")
+    graph_builder.add_conditional_edges("learner", should_continue, {"end": END, "teacher": "teacher"})
+    graph_builder.add_edge(START, "teacher")
 
-        # Use the TeacherLLMAgent to get the instruction for the current step
-        response = teacher_agent.run(user_utterance)
+    # Compile Simulation
+    simulation = graph_builder.compile()
 
-        # Create a response message
-        chat_bot_response = {
-            "role": "assistant",
-            "content": response
-        }
+    # Run simulation and store the conversation
+    conversation = []
+    state = {"messages": []}
+
+    for chunk in simulation.stream(state):
+        if END not in chunk:
+            messages = chunk["teacher"] if 'teacher' in chunk else chunk["learner"]
+            for message in messages['messages']:
+                role = "Teacher" if isinstance(message, AIMessage) else "Learner"
+                conversation.append(f"{role}: {message.content.replace('\n', '')}")
+
+    # Print the full conversation
+    # logger.info("This is an INFO message.")
+    logger.info("\n--- Full Conversation ---\n" + "\n".join(conversation))
+    return conversation
+
+def process_method(method, method_id, summary, source_tutorial_path, methods=None, logger=None):
+    """Helper function to process a single method and generate its dialog."""
+    if methods is None:
+        methods = []  # Default to an empty list if methods is not provided
+
+    # Build tutorial_document
+    if method:
+        # For multiple methods: combine summary + title, and steps
+        tutorial_document = [f"{summary} {method['title']}"] + method['steps']
     else:
-        # Use the TeacherLLMAgent to get the instruction for the current step
-        user_utterance = '\n'.join(tutorial_document)
-        response = teacher_agent.run(user_utterance)
-        # Handle the case where there is no valid user message
-        chat_bot_response = {
-            "role": "assistant",
-            "content": f"I'm grad to assist you with learning! {response}"
-        }
+        # For single method: combine summary, and steps
+        tutorial_document = [summary] + [s['title'] + ". " + s['steps'][0] for s in methods]
 
-    return chat_bot_response
-
-
-def chat_bot_node(state):
-    messages = state["messages"]
-    messages = [convert_message_to_dict(m) for m in messages]
-    chat_bot_response = my_chat_bot(messages)
-    return {"messages": [AIMessage(content=chat_bot_response["content"])]}
-
-
-def _swap_roles(messages):
-    """
-    Swap roles between human and AI messages for the user simulation.
-    """
-    new_messages = []
-    for m in messages:
-        if isinstance(m, AIMessage):
-            new_messages.append(HumanMessage(content=m.content))
-        else:
-            new_messages.append(AIMessage(content=m.content))
-    return new_messages
-
-
-def simulated_user_node(state):
-    """
-    Simulate a user node in the workflow.
-    """
-    messages = state["messages"]
-    
-    # Swap roles to prepare for the UserLLMAgent
-    new_messages = _swap_roles(messages)
-    
-    # Initialize the UserLLMAgent
-    user_agent = UserLLMAgent()
-
-    # Use the UserLLMAgent to simulate a user response
-    response = user_agent.run(new_messages[-1].content)  # Access the 'content' attribute directly
-
-    # Create a new message for the simulated user's response
-    simulated_user_message = {
-        "role": "user",
-        "content": response
+    # Generate conversation and evaluate
+    conversation = generate_single_conversation(tutorial_document=tutorial_document, logger=logger)
+    evaluation_results = ConversationEvaluator(logger=logger).evaluate(conversation, tutorial_document)
+    return {
+        'id': str(uuid.uuid4()),
+        'source_tutorial_path': source_tutorial_path,
+        'method_id': method_id,
+        'tutorial': tutorial_document,
+        'conversation': conversation,
+        'evaluation': evaluation_results
     }
 
-    # Append the simulated user's response to the messages
-    messages.append(simulated_user_message)
+def main():
+    count_conversation = 0
+    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json') # , max_doc=2 # Doc = 3680
 
-    return {"messages": messages}
+    total_dialogs = []
+    total_scores = {metric: [] for metric in EVAL_METRICS}
+    for doc in tqdm(docs):
+        task = doc['title'].replace('How to ', '')
+        topic = doc['categories'][-1].replace(' ','-') if doc['categories'][-1]!='Categories' else task
+        source_tutorial_path = f'{mdir}/{topic}/{task}/{task}'
+        # Setup logger for
+        logger = setup_logger(log_file=f"{source_tutorial_path}.log", log_level=logging.INFO)
+        dialogs = []
+        if glob.glob(f"{source_tutorial_path}.txt"):
+            logger.info(f'Skip: {source_tutorial_path} as it is generated before.')
+            continue
+        else:
+            logger.info(f'##### {count_conversation}')
+            summary = doc['introduction']
+            methods = doc['methods']
+            # Multiple methods if title contains 'Method x of Y:'
+            if re.match(r'Method \d+ of \d+:.*', methods[0]['title']):
+                for i, method in enumerate(methods):
+                    count_conversation += 1
+                    dialog = process_method(method, i + 1, summary + method['title'], source_tutorial_path, None, logger=logger)
+                    dialogs.append(dialog)
+                    for metric in EVAL_METRICS:
+                        if metric in dialog['evaluation']:
+                            total_scores[metric].append(dialog['evaluation'][metric])                   
+                    
+            # One method only
+            else:
+                count_conversation += 1
+                dialog = process_method(method, 1, summary, source_tutorial_path, methods, logger=logger)
+                dialogs.append(dialog)
+                for metric in EVAL_METRICS:
+                    if metric in dialog['evaluation']:
+                        total_scores[metric].append(dialog['evaluation'][metric])               
+        total_dialogs.extend(dialogs)
+        # Save dialogs to a JSON file in the same folder for each doc
+        with open(f"{source_tutorial_path}.txt", 'w') as f:
+            json.dump(dialogs, f, indent=4)
+    
+    # Compute average scores
+    avg_scores = {metric: (np.mean(values), np.std(values)) for metric, values in total_scores.items() if values}
 
-def should_continue(state, max_step=25): 
-    """
-    Determine whether the simulation should continue or end based on message content and step count.
-    """
-    messages = state["messages"]
-    if len(messages) > max_step:
-        return "end"
-    elif any("FINISHED" in m.content for m in messages):
-        return "end"
-    else:
-        return "continue"
-
-
-
-# Initialize the tutorial document and agents
-howto_query = "Make Colored Salt"
-tutorial_document = [
-    "Fill a container with salt. A jug or pitcher, a deep bowl, a plastic food container, etc. will all suffice.",
-    "Squeeze a little tempera paint into the salt.",
-    "Mix with a spoon or other item. Stir until the paint is evenly distributed through the salt.",
-    "Let stand overnight to dry. Make as many more colors as you need for your project. That way, they'll all be ready at the same time.",
-    "Test before using. Check that the salt has dried before using in your craft, rangoli, teaching, etc. projects."
-]
-max_step = len(tutorial_document)
-teacher_agent = TeacherLLMAgent(tutorial_document=tutorial_document)
-user_agent = UserLLMAgent()
-
-# Building the LangGraph for the flow
-graph_builder = StateGraph(State)
-graph_builder.add_node("user", simulated_user_node)
-graph_builder.add_node("chat_bot", chat_bot_node)
-graph_builder.add_edge("chat_bot", "user")
-graph_builder.add_conditional_edges(
-    "user", 
-    should_continue, 
-    {"end": END, "continue": "chat_bot"}
-)
-graph_builder.add_edge(START, "chat_bot")
-simulation = graph_builder.compile()
-
-conversations = []
-# Running the simulation
-for chunk in simulation.stream({"messages": []}):
-    if END not in chunk:
-        # Assuming chunk contains messages, append them to all_messages
-        # print(chunk)  # Print the chunk for debugging or logging
-        print(chunk)
-        print("----")
-        if 'user' in chunk:
-            user_uttr = f">>>>>>>>>Learner: {chunk['user']['messages'][-1]['content'].strip()}"
-            conversations.append(user_uttr)
-        elif 'chat_bot' in chunk:
-            sys_uttr = f'>>>>>>>>>Teacher: {chunk['chat_bot']['messages'][-1].content}'
-            conversations.append(sys_uttr)
-print("="*50)
-for i, uttr in enumerate(conversations):
-    print(i, uttr)
-    print("----")
-        
+    # Save all dialogs together
+    dialouge_json = {
+        'config_file': config_file,
+        'total_evaluation': avg_scores,
+        'num_conversation': count_conversation,
+        'total_conversations': total_dialogs
+    }        
+    with open(config_file.replace('conf', 'result').replace('yaml', 'json'), 'w') as f:
+        json.dump(dialouge_json, f, indent=4)    
+                        
+    logger.info(f'Generate {count_conversation} conversations!!')
+    # logger.info(dialouge_json)
 
 
+if __name__ == "__main__":
+    global mdir, config_file
+    mdir='./data/wikihow'
+    config_file = 'conf/ollma-llama3.yaml' 
+    EVAL_METRICS = ["Question Ratio", "Completion Achieved", "Diversity Score", 
+                    "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
+                    "BLEU", "METEOR", "BERTScore", "ROUGE"]
+    main()
