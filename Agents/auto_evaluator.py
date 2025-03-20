@@ -10,12 +10,13 @@ from nltk.util import ngrams
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from util.setup_logger import *
+from utils import *
 
 
 class ConversationEvaluator:
-    def __init__(self, config_file='conf/ollma-llama3.yaml', logger=None):
+    def __init__(self, config, logger=None):
         self.logger = logger
-        self.llm, self.embeddings, self.config = setup_llm_and_embeddings(config_file)
+        self.llm, self.embeddings, self.config = setup_llm_and_embeddings(config)
         with open(self.config['params']['rubric_file'], 'r') as fr:
             self.rubrics = json.load(fr)
         # Load BERT-based model for semantic similarity
@@ -202,7 +203,9 @@ if __name__ == "__main__":
         "Teacher: Step FINAL: The tutorial is now complete. FINISHED.",
         "Learner: Thank you!"
     ]
-    evaluator = ConversationEvaluator()
+    config_file='conf/ollma-llama3.yaml'
+    config = load_yaml(config_file)
+    evaluator = ConversationEvaluator(config)
     results = evaluator.evaluate(conversation, tutorial)
     # pprint(results, indent=4)
     logger.info(results)

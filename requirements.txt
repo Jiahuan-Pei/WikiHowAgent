@@ -8,6 +8,7 @@ scipy
 pyvis
 colorsys
 langchain
+langgraph
 langchain_community
 langchain-openai
 langchain-ollama
@@ -15,3 +16,7 @@ pywikihow
 sentence_transformers
 evaluate
 nltk
+yaml
+torchvision
+rouge_score
+accelerate

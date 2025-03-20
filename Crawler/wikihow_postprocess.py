@@ -253,7 +253,8 @@ def convert_html_to_json(mdir='./data/wikihow'):
             task_path = os.path.join(topic_path, task)
             if not os.path.isdir(task_path):
                 continue
-            print(f'{mdir}/{topic}/{task}/{task}.json')
+            json_path = f'{mdir}/{topic}/{task}/{task}.json'
+            print(json_path)
             for file in os.listdir(task_path):
                 if file.endswith('.html'):
                     with open(os.path.join(mdir, topic, task, file), 'r') as f:
@@ -315,6 +316,7 @@ def convert_html_to_json(mdir='./data/wikihow'):
                         # Create JSON structure
                         json_data = {
                             "title": title,
+                            "path": json_path,
                             "categories": categories,
                             "introduction": intro,
                             "methods": methods,
@@ -684,7 +686,7 @@ def main():
     # plot_tasks_per_topic(df)
     # plot_title_length(df)
     # plot_title_length_by_topic(df)
-    convert_html_to_md()
+    # convert_html_to_md()
     convert_html_to_json()
     # calculate_data_statistics_of_markdown_docs()
     # build_up_knowledge_graph()
