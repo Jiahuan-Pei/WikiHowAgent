@@ -180,31 +180,75 @@ def process_method(method, method_id, summary, source_tutorial_path, methods=Non
         'evaluation': evaluation_results
     }
 
+
+def calculate_average_scores(dialogs):
+    """Calculate average scores for a list of dialog objects"""
+    if not dialogs:
+        return {}
+    
+    # Get all scores for each metric
+    scores = {metric: [] for metric in EVAL_METRICS}
+    for dialog in dialogs:
+        for metric in EVAL_METRICS:
+            if metric in dialog.get('evaluation', {}):
+                scores[metric].append(dialog['evaluation'][metric])
+    
+    # Calculate averages
+    return {metric: (np.mean(values), np.std(values)) if values else 0.0 for metric, values in scores.items()}
+
 # Main Execution
 def main():
     mdir = config_teacher['params']['root_doc_dir'] # './data/wikihow'
 
     count_conversation = 0
-    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json')
+    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json', max_doc=2) # Note: max_doc=2 for debug
 
     total_dialogs = []
+
     for doc in tqdm(docs):
         source_tutorial_path = doc['path']
         log_path = source_tutorial_path.replace('.json', '.log')
+        target_dialogue_path = source_tutorial_path.replace('.json', '.txt')
         logger = setup_logger(log_file=log_path, log_level=logging.INFO)
+        # Dialogs per doc
+        dialogs = []
+        if glob.glob(target_dialogue_path):
+            logger.info(f'Skip generation: Loading dialogs from the exisiting file {source_tutorial_path}.')
+            with open(target_dialogue_path, 'r') as f:
+                dialogs = json.load(f)
+            dialogs.extend(dialogs)
+            total_dialogs.extend(dialogs) 
+            # Update conversation count and metrics
+            count_conversation += len(dialogs)         
+        else:
+            summary = doc['introduction']
+            methods = doc['methods']
+            for i, method in enumerate(methods):
+                count_conversation += 1
+                logger.info(f"\n--- Generating the Conversation Number: {count_conversation} ---\n")
+                dialog = process_method(method, i + 1, summary, source_tutorial_path, None, logger=logger)
+                dialogs.append(dialog)
+                total_dialogs.append(dialog)
 
-        summary = doc['introduction']
-        methods = doc['methods']
+    # Compute average scores
+    avg_scores = calculate_average_scores(dialogs)
 
-        for i, method in enumerate(methods):
-            count_conversation += 1
-            logger.info(f"\n--- Conversation Number: {count_conversation} ---\n")
-            dialog = process_method(method, i + 1, summary, source_tutorial_path, None, logger=logger)
-            total_dialogs.append(dialog)
+    # Save all dialogs together in one file
+    dialouge_json = {
+        'config_file': config_file,
+        'total_evaluation': avg_scores,
+        'num_conversation': count_conversation,
+        'total_conversations': total_dialogs
+    }        
+    with open(config_file.replace('conf', 'result').replace('yaml', 'json'), 'w') as f:
+        json.dump(dialouge_json, f, indent=4) 
 
     logger.info(f'Generated {count_conversation} conversations!')
 
 if __name__ == "__main__":
+    EVAL_METRICS = ["Question Ratio", "Completion Achieved", "Diversity Score", 
+                "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
+                "BLEU", "METEOR", "BERTScore", "ROUGE"]
     n = len(sys.argv)
     try:
         if n == 1:  # default demo
@@ -226,4 +270,3 @@ if __name__ == "__main__":
         print("3. Separate configs: python script.py evaluator_config.yaml teacher_config.yaml learner_config.yaml")
         sys.exit(1)
     main()
-

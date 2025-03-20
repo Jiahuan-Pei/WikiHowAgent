@@ -4,8 +4,8 @@
 #SBATCH --error=log/%j.err
 #SBATCH --time=48:00:00          # Max runtime (48 hours)
 #SBATCH --nodes=1                # Use 1 node
-#SBATCH --ntasks=1               # 1 task per job
-#SBATCH --cpus-per-task=8        # 8 CPU cores for the task
+#SBATCH --ntasks=4               # 🔥 Run 4 parallel tasks
+#SBATCH --cpus-per-task=8        # Assign 8 CPUs per task
 #SBATCH --gres=gpu:1             # Request 1 GPU (A100)
 #SBATCH --mem=491520MB           # Request 480GB of memory
 #SBATCH --partition=gpu          # Use the GPU partition
