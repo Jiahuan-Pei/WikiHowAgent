@@ -1,11 +1,10 @@
-import os
-import sys
+import os, sys
 import json
 import uuid
 import re
 import glob
 import numpy as np
-import logging
+import argparse
 from tqdm import tqdm
 from typing import Annotated
 from typing_extensions import TypedDict
@@ -14,11 +13,18 @@ from langchain.chains import LLMChain
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
+# from langchain.schema.runnable import RunnableSequence
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print(sys.path)
 
 # Custom utility imports
-from utils import load_yaml, setup_llm_and_embeddings, read_all_file_suffix_X
-from auto_evaluator import ConversationEvaluator
-from util.setup_logger import setup_logger
+from setup_logger import setup_logger
+logger = setup_logger()
+from util import load_yaml, setup_llm_and_embeddings, read_all_file_suffix_X
+from evaluator_agent import ConversationEvaluator
+
+import multiprocessing as mp
 
 # Define State
 class State(TypedDict):
@@ -45,6 +51,8 @@ class TeacherLLMAgent:
         )
 
         self.chain = LLMChain(llm=self.llm, prompt=self.prompt_template, verbose=True)
+        # self.chain = self.prompt_template | self.llm
+        # self.chain =  RunnableSequence(self.prompt_template, self.llm)
 
     def run(self, user_utterance: str) -> str:
         """Process the learner's response and generate the teacher's reply."""
@@ -55,12 +63,16 @@ class TeacherLLMAgent:
         instruction = self.tutorial_document[self.current_step]
 
         # Generate teacher response
-        teacher_response = self.chain.run(
-            summary=summary,
-            current_step=self.current_step,
-            instruction=instruction,
-            user_utterance=user_utterance
-        )
+        # teacher_response = self.chain.invoke({
+        #     "summary": summary,
+        #     "current_step": self.current_step,
+        #     "instruction": instruction,
+        #     "user_utterance": user_utterance
+        # })
+        teacher_response = self.chain.run(summary=summary, 
+                                          current_step=self.current_step,
+                                          instruction=instruction,
+                                          user_utterance=user_utterance)       
 
         # Check if the learner asked a question
         is_question = "?" in user_utterance
@@ -80,6 +92,7 @@ class TeacherLLMAgent:
             return f"Step FINAL: {teacher_response}\nThe tutorial is now complete. FINISHED."
 
         return teacher_response
+    
 
 # Learner Agent
 class LearnerLLMAgent:
@@ -98,10 +111,12 @@ class LearnerLLMAgent:
                 "Learner:"
             ),
         )
-
         self.chain = LLMChain(llm=self.llm, prompt=self.prompt_template, verbose=True)
+        # self.chain = self.prompt_template | self.llm
+        # self.chain = RunnableSequence(self.prompt_template, self.llm)
 
     def run(self, instruction: str) -> str:
+        # return self.chain.invoke({"instruction": instruction})
         return self.chain.run(instruction=instruction)
 
 # Conversation Nodes
@@ -132,7 +147,7 @@ def should_continue(state, max_steps=15):
     return "end"
 
 # Generate Conversation
-def generate_single_conversation(tutorial_document, logger):
+def generate_single_conversation(tutorial_document, config_teacher, config_learner):
     global teacher_agent, learner_agent
 
     teacher_agent = TeacherLLMAgent(config_teacher, tutorial_document=tutorial_document)
@@ -155,12 +170,10 @@ def generate_single_conversation(tutorial_document, logger):
             for message in messages['messages']:
                 role = "Teacher" if isinstance(message, AIMessage) else "Learner"
                 conversation.append(f"{role}: {message.content.replace('\n', '')}")
-
-    logger.info("\n--- Full Conversation ---\n" + "\n".join(conversation))
     return conversation
 
 # Processing a tutorial document
-def process_method(method, method_id, summary, source_tutorial_path, methods=None, logger=None):
+def process_method(method, method_id, summary, source_tutorial_path, methods=None, config_teacher=None, config_learner=None, config_evaluator=None):
     if methods is None:
         methods = []
 
@@ -169,8 +182,16 @@ def process_method(method, method_id, summary, source_tutorial_path, methods=Non
     else:
         tutorial_document = [summary] + [s['title'] + ". " + s['steps'][0] for s in methods if s['steps']]
 
-    conversation = generate_single_conversation(tutorial_document=tutorial_document, logger=logger)
-    evaluation_results = ConversationEvaluator(config_evaluator, logger=logger).evaluate(conversation, tutorial_document)
+    # If tutorial has no steps after processing, skip it
+    if len(tutorial_document) <= 1:  
+        logger.warning(f"Skipping tutorial with no valid steps for method {method_id} : {source_tutorial_path}")
+        return None 
+
+    conversation = generate_single_conversation(tutorial_document=tutorial_document, config_teacher=config_teacher, config_learner=config_learner)
+    evaluation_results = ConversationEvaluator(config_evaluator).evaluate(conversation, tutorial_document)  
+
+    logger.info("\n--- Full Conversation ---\n" + "\n".join(conversation))
+    # logger.info(evaluation_results)
     return {
         'id': str(uuid.uuid4()),
         'source_tutorial_path': source_tutorial_path,
@@ -201,19 +222,18 @@ def main():
     mdir = config_teacher['params']['root_doc_dir'] # './data/wikihow'
 
     count_conversation = 0
-    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json', max_doc=2) # Note: max_doc=2 for debug
+    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json', max_doc=args.max_doc)
 
     total_dialogs = []
 
     for doc in tqdm(docs):
         source_tutorial_path = doc['path']
-        log_path = source_tutorial_path.replace('.json', '.log')
         target_dialogue_path = source_tutorial_path.replace('.json', '.txt')
-        logger = setup_logger(log_file=log_path, log_level=logging.INFO)
+
         # Dialogs per doc
         dialogs = []
-        if glob.glob(target_dialogue_path):
-            logger.info(f'Skip generation: Loading dialogs from the exisiting file {source_tutorial_path}.')
+        if glob.glob(target_dialogue_path) and args.skip_existing_gen:
+            logger.info(f'Skip generation: Loading dialogs from the exisiting file {target_dialogue_path}.')
             with open(target_dialogue_path, 'r') as f:
                 dialogs = json.load(f)
             dialogs.extend(dialogs)
@@ -223,24 +243,42 @@ def main():
         else:
             summary = doc['introduction']
             methods = doc['methods']
-            for i, method in enumerate(methods):
-                count_conversation += 1
-                logger.info(f"\n--- Generating the Conversation Number: {count_conversation} ---\n")
-                dialog = process_method(method, i + 1, summary, source_tutorial_path, None, logger=logger)
-                dialogs.append(dialog)
-                total_dialogs.append(dialog)
+            # Single processing
+            # for i, method in enumerate(methods):
+            #     count_conversation += 1
+            #     logger.info(f"\n--- Generating the Conversation Number: {count_conversation} ---\n")
+            #     # Generate each dialog
+            #     dialog = process_method(method, i + 1, summary, source_tutorial_path, None, logger=logger)
+            #     dialogs.append(dialog)
+            #     total_dialogs.append(dialog)
 
+            # Multiprocessing
+            # Create a list of arguments for each method
+            method_args = [(method, i + 1, summary, source_tutorial_path, None, config_teacher, config_learner, config_evaluator) for i, method in enumerate(methods)]
+            
+            # Use multiprocessing to generate conversations in parallel
+            with mp.Pool(processes=args.processes) as pool:
+                results = pool.starmap(process_method, method_args)
+            
+            # Update counts and collect results
+            count_conversation += len(results)
+            logger.info(f"****** Processed Conversation Number # {count_conversation} ******")
+            # Save generated dialogues per doc
+            with open(target_dialogue_path, 'w') as f:
+                json.dump(results, f, indent=4)               
+            dialogs.extend(results)
+            total_dialogs.extend(results)
     # Compute average scores
     avg_scores = calculate_average_scores(dialogs)
 
     # Save all dialogs together in one file
     dialouge_json = {
-        'config_file': config_file,
+        'config_files': (args.config_teacher, args.config_learner, args.config_evaluator),
         'total_evaluation': avg_scores,
         'num_conversation': count_conversation,
         'total_conversations': total_dialogs
     }        
-    with open(config_file.replace('conf', 'result').replace('yaml', 'json'), 'w') as f:
+    with open(f'result/{config_setting_str}.json', 'w') as f:
         json.dump(dialouge_json, f, indent=4) 
 
     logger.info(f'Generated {count_conversation} conversations!')
@@ -249,24 +287,27 @@ if __name__ == "__main__":
     EVAL_METRICS = ["Question Ratio", "Completion Achieved", "Diversity Score", 
                 "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
                 "BLEU", "METEOR", "BERTScore", "ROUGE"]
-    n = len(sys.argv)
-    try:
-        if n == 1:  # default demo
-            config_file = 'conf/ollma-llama3.yaml'
-            config_evaluator = config_teacher = config_learner = load_yaml(config_file)
-        elif n == 2:  # single config for all agents
-            config_evaluator = config_teacher = config_learner = load_yaml(config_file=sys.argv[1])
-        elif n == 4:  # separate configs for all agents
-            config_evaluator = load_yaml(config_file=sys.argv[1])
-            config_teacher = load_yaml(config_file=sys.argv[2])
-            config_learner = load_yaml(config_file=sys.argv[3])
-        else:
-            raise ValueError(f"Expected 1 or 3 arguments, got {n-1}")
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        print("Usage patterns:")
-        print("1. Default config: python script.py")
-        print("2. Single config for all agents: python script.py config.yaml")
-        print("3. Separate configs: python script.py evaluator_config.yaml teacher_config.yaml learner_config.yaml")
-        sys.exit(1)
+
+    # Get the total CPUs on the node (for information only)
+    logger.info(f"Nnumber of available CPUs per node={mp.cpu_count()}")
+    # Get the actual number of CPUs allocated by Slurm
+    logger.info(f"Number of CPUs allocated by Slurm={int(os.environ.get('SLURM_CPUS_PER_TASK', 1))}")
+    
+    # Argument parsing to various settings
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--max_doc", type=int, default=None, help="Debug by running on max_doc number of tutorials.")
+    parser.add_argument("--config_teacher", type=str, default="conf/ollma-llama3.yaml", help="Config file for teacher agent.")
+    parser.add_argument("--config_learner", type=str, default="conf/ollma-llama3.yaml", help="Config file for learner agent.")
+    parser.add_argument("--config_evaluator", type=str, default="conf/ollma-llama3.yaml", help="Config file for evaluator agent")
+    parser.add_argument("--processes", type=int, default=min(mp.cpu_count() or 8, 8), help="Number of mutliprocessing.")
+    parser.add_argument("--skip_existing_gen", action="store_true", help="Skip the generation of exisiting conversation nor not.")
+    args = parser.parse_args()
+
+    config_teacher = load_yaml(args.config_teacher)
+    config_learner = load_yaml(args.config_learner)
+    config_evaluator = load_yaml(args.config_evaluator)
+
+    # The config_file str 
+    config_setting_str = f'T-{config_teacher['llm']['model']}_L-{config_learner['llm']['model']}_E-{config_evaluator['llm']['model']}'
+
     main()

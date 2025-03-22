@@ -3,10 +3,16 @@ import getpass
 import yaml
 import json
 import torch
+import logging
+import os
+import yaml
+import torch
 from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-import logging
-logger = logging.getLogger(__name__)
+
+# Custom utility imports
+from setup_logger import setup_logger
+logger = setup_logger()
 
 # Ensure API Key is set
 def _set_if_undefined(var: str):
@@ -29,26 +35,17 @@ def count_gpu_availability():
         # Get GPU name
         print("GPU device name:", torch.cuda.get_device_name(0))
         
-        # # Test GPU computation
-        # x = torch.rand(5, 3)
-        # print("Input tensor:", x)
+        # Test GPU computation
+        x = torch.rand(5, 3)
+        print("Input tensor:", x)
         
-        # # Move tensor to GPU
-        # x = x.cuda()
-        # print("Tensor on GPU:", x)
-        # print("Tensor device:", x.device)
+        # Move tensor to GPU
+        x = x.cuda()
+        print("Tensor on GPU:", x)
+        print("Tensor device:", x.device)
         return torch.cuda.device_count()
     else:
         return 0    
-
-import os
-import yaml
-import torch
-import logging
-from langchain.chat_models import ChatOpenAI, ChatOllama
-from langchain.embeddings import OpenAIEmbeddings, OllamaEmbeddings
-
-logger = logging.getLogger(__name__)
 
 def count_gpu_availability():
     """Return the number of available GPUs."""
@@ -93,7 +90,7 @@ def setup_llm_and_embeddings(config):
             timeout=600,
             num_ctx=8192,
             disable_streaming=False, # ✅ Ensure streaming is enabled; With streaming: Tokens are processed in parallel, increasing efficiency.
-            num_gpu=num_gpu,  # ✅ Ensure GPU acceleration
+            # num_gpu=num_gpu,  # ✅ Ensure GPU acceleration
             num_thread=16  # ✅ More threads for efficiency
         )
         embeddings = OllamaEmbeddings(model=embedding_config['model'])
@@ -101,46 +98,6 @@ def setup_llm_and_embeddings(config):
         raise ValueError(f"Unsupported model type: {llm_config['model_type']}")
 
     return llm, embeddings, config
-
-# def setup_llm_and_embeddings(config_file='conf/ollma-llama3.yaml'):
-#     """Load LLM and embeddings from a YAML configuration file."""
-#     with open(config_file, 'r') as file:
-#         config = yaml.safe_load(file)
-
-#     llm_config = config['llm']
-#     embedding_config = config['embeddings']
-#     param_config  = config['params']
-
-#     # Initialize LLM and embeddings based on the configuration
-#     if llm_config['model_type'] == "openai":
-#         llm = ChatOpenAI(
-#             model=llm_config['model'], 
-#             temperature=llm_config['temperature']
-#         )
-#         embeddings = OpenAIEmbeddings()
-#     elif llm_config['model_type'] == "ollama":
-#         num_gpu=count_gpu_availability()
-#         logger.info(f"Detected {num_gpu} available GPUs")
-#         if num_gpu > 0:
-#             os.environ["OLLAMA_ACCELERATE"] = "1"  # Enable GPU for Ollama
-#             logger.info("Running model with GPU acceleration")
-#         else:
-#             os.environ["OLLAMA_ACCELERATE"] = "0"  # Fallback to CPU
-#             logger.warning("No GPUs detected, running on CPU")
-#         llm = ChatOllama(
-#             model=llm_config['model'],
-#             temperature=llm_config['temperature'],
-#             verbose=True,  # You can also make this configurable
-#             timeout=600,
-#             num_ctx=8192,
-#             disable_streaming=False,
-#             # num_gpu=num_gpu
-#         )
-#         embeddings = OllamaEmbeddings(model=embedding_config['model'])
-#     else:
-#         raise ValueError(f"Unsupported model type: {llm_config['model_type']}")
-
-#     return llm, embeddings, config 
 
 def read_all_file_suffix_X(mdir='./data/wikihow', suffix='.json', max_doc=None):    
     docs = []
@@ -168,3 +125,4 @@ def read_all_file_suffix_X(mdir='./data/wikihow', suffix='.json', max_doc=None):
                         else:
                                 docs.append(f.read())
     return docs
+

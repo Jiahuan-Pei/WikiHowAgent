@@ -3,14 +3,17 @@
 #SBATCH --output=log/%j.out
 #SBATCH --error=log/%j.err
 #SBATCH --time=48:00:00          # Max runtime (48 hours)
-#SBATCH --nodes=1                # Use 1 node
-#SBATCH --ntasks=4               # 🔥 Run 4 parallel tasks
-#SBATCH --cpus-per-task=8        # Assign 8 CPUs per task
-#SBATCH --gres=gpu:1             # Request 1 GPU (A100)
-#SBATCH --mem=491520MB           # Request 480GB of memory
+#SBATCH --nodes=1                # Use #number physical machines
+#SBATCH --ntasks=1               # 🔥 Run #number parallel python scripts when you have different settings
+#SBATCH --gres=gpu:1             # Request #number GPU, when you need more control over GPU type or specific features  (A100)
+#SBATCH --cpus-per-task=8        # 🔥 Assign #number CPUs per task; Match with args.processes=8; If inference is GPU-bound, having too many CPU processes won't help.
+
+#SBATCH --mem=16GB               # Request of memory
 #SBATCH --partition=gpu          # Use the GPU partition
 
 echo "Starting job on $(hostname) at $(date)"
+echo "Total CPUs allocated: $SLURM_JOB_CPUS_PER_NODE"
+echo "Number of CPUs allocated by Slurm=$SLURM_CPUS_PER_TASK"
 
 # --- 1. Load required modules ---
 module load 2024
@@ -78,8 +81,9 @@ time singularity exec --nv ollama_latest.sif ollama run llama3 "Explain quantum 
 # --- 5. Run the Python Script with Correct Python Path ---
 # echo "Running the Python workflow..."
 # singularity exec --nv ollama_latest.sif bash -c "source activate worldtaskeval && /gpfs/home3/jpei1/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py"
-~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py
-# singularity exec --nv ollama_latest.sif ~/anaconda3/envs/worldtaskeval/bin/python my_script.py
+# DEBUG: fast run of 6 doc and skip existing generation
+# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc=6 --skip_existing_gen
+~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --skip_existing_gen
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

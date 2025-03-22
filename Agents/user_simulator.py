@@ -1,7 +1,7 @@
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from utils import setup_llm_and_embeddings 
+from Agents.util import setup_llm_and_embeddings 
 
 class UserLLMAgent:
     """

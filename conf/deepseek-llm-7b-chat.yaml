@@ -1,0 +1,17 @@
+llm:
+  type: huggingface
+  model_name: "deepseek-ai/deepseek-llm-7b-chat"
+  tensor_parallel_size: 1
+  dtype: "bfloat16"
+  gpu_memory_utilization: 0.95
+
+embeddings:
+  type: huggingface
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+
+params:
+  root_doc_dir: data/wikihow
+  index_file: data/faiss_vector_store
+  rubric_file: data/evaluation_rubrics.json
+  k: 1 # Top k docs
+  verbose: True

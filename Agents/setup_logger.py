@@ -1,7 +1,19 @@
 import logging
 import os
+from pathlib import Path
 
-def setup_logger(log_file="app.log", log_level=logging.INFO):
+def get_snellious_job_id():
+    """
+    Function to retrieve the job ID from Snellious.
+    This should be replaced with the actual Snellious API call or environment variable.
+    """
+    job_id = os.getenv("SNELLIOUS_JOB_ID")  # Example: Fetch job ID from environment
+    if not job_id:
+        job_id = 'default'  # Get the current script name
+    return job_id
+
+
+def setup_logger(log_file=None, log_level=logging.INFO):
     """
     Set up a logger that logs messages to both the console and a file.
 
@@ -26,7 +38,14 @@ def setup_logger(log_file="app.log", log_level=logging.INFO):
         "%(asctime)s - %(levelname)s - %(message)s"
     )
 
+    if log_file is None:
+        log_file = f"{get_snellious_job_id()}.out"
+    else:
+        log_file = f"{Path(log_file).stem}.log"
+        
     # File handler to log to a file
+    os.makedirs('log', exist_ok=True)
+    log_file = os.path.join('log', log_file)
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(log_level)
     file_handler.setFormatter(log_format)

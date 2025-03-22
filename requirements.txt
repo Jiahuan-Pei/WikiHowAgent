@@ -20,3 +20,4 @@ yaml
 torchvision
 rouge_score
 accelerate
+vllm

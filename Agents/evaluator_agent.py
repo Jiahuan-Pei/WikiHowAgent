@@ -1,6 +1,5 @@
 import re
 import json
-from utils import setup_llm_and_embeddings
 from pprint import pprint
 from collections import OrderedDict
 from typing import List, Dict
@@ -8,14 +7,14 @@ from sentence_transformers import SentenceTransformer, util
 import evaluate
 from nltk.util import ngrams
 import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from util.setup_logger import *
-from utils import *
 
+# Custom utility imports
+from util import setup_llm_and_embeddings, load_yaml
+from setup_logger import setup_logger
+logger = setup_logger() # Get the current script name
 
 class ConversationEvaluator:
-    def __init__(self, config, logger=None):
-        self.logger = logger
+    def __init__(self, config):
         self.llm, self.embeddings, self.config = setup_llm_and_embeddings(config)
         with open(self.config['params']['rubric_file'], 'r') as fr:
             self.rubrics = json.load(fr)
@@ -112,7 +111,7 @@ class ConversationEvaluator:
         Provide scores in this format: {format_prompt}
         """
         response = self.llm.invoke(prompt).content
-        self.logger.info(response)
+        logger.info(response)
         matches = re.findall(r'(\w+):\s*(\d+)\s*', response, re.IGNORECASE)
         scores = {}
         for key, value in matches:
@@ -149,7 +148,7 @@ class ConversationEvaluator:
         """
 
         response = self.llm.invoke(prompt).content
-        self.logger.info(response)
+        logger.info(response)
         matches = re.findall(r'(\w+):\s*(\d+)\s*', response, re.IGNORECASE)
         scores = {}
         for key, value in matches:
@@ -184,7 +183,6 @@ class ConversationEvaluator:
             })
 
 if __name__ == "__main__":
-    logger = setup_logger(log_file=f"eval_example.log", log_level=logging.INFO)
     # Example Usage:
     tutorial = [
         "Fill a container with salt.",
