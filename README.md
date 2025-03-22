@@ -10,7 +10,10 @@ The objective of this project is to assess LLMs' ability to assist with real-wor
 
 This code implements a conversational AI system where a Teacher Agent guides a Learner Agent through a tutorial, simulating an interactive learning experience. Here's a high-level breakdown of the logic:
 
-## 2. Introduction 
+## 2. Implementation details 
+
+This diagram illutrates the workflow where Teacher-Learner Agents interact in Conversation Flow, following a comprehensive Evaluation. 
+
 #### 1. Initialization & Configuration
 - Loads dependencies (LLMs, embeddings, utilities, multiprocessing, logging, evaluation metrics).
 - Reads YAML-based configurations for:

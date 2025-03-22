@@ -13,16 +13,17 @@ from langchain.chains import LLMChain
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
-# from langchain.schema.runnable import RunnableSequence
+from concurrent.futures import ThreadPoolExecutor
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Ensure the root directory is in Python's path 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))) 
 print(sys.path)
 
 # Custom utility imports
-from setup_logger import setup_logger
+from utils.setup_logger import setup_logger
 logger = setup_logger()
-from util import load_yaml, setup_llm_and_embeddings, read_all_file_suffix_X
-from evaluator_agent import ConversationEvaluator
+from utils.util import load_yaml, setup_llm_and_embeddings, read_all_file_suffix_X
+from Agents.evaluator_agent import ConversationEvaluator
 
 import multiprocessing as mp
 
@@ -93,6 +94,19 @@ class TeacherLLMAgent:
 
         return teacher_response
     
+    def run_batch(self, user_utterances: list, batch_size=2) -> list:
+        """Process multiple learner responses in parallel."""
+        texts = [{
+            "summary": self.tutorial_document[0],
+            "current_step": self.current_step,
+            "instruction": self.tutorial_document[self.current_step],
+            "user_utterance": utterance
+        } for utterance in user_utterances]
+
+        with ThreadPoolExecutor(max_workers=batch_size) as executor:
+            results = list(executor.map(self.chain.run, texts))
+        
+        return results
 
 # Learner Agent
 class LearnerLLMAgent:
@@ -118,6 +132,15 @@ class LearnerLLMAgent:
     def run(self, instruction: str) -> str:
         # return self.chain.invoke({"instruction": instruction})
         return self.chain.run(instruction=instruction)
+    
+    def run_batch(self, instructions: list, batch_size=2) -> list:
+        """Run multiple learner responses in parallel."""
+        texts = [{"instruction": t} for t in instructions]
+
+        with ThreadPoolExecutor(max_workers=batch_size) as executor:
+            results = list(executor.map(self.chain.run, texts))
+
+        return results   
 
 # Conversation Nodes
 def teacher_node(state):
@@ -129,6 +152,21 @@ def learner_node(state):
     messages = state["messages"]
     learner_response = learner_agent.run(messages[-1].content)
     return {"messages": [HumanMessage(content=learner_response)]}
+
+# Conversation Nodes (Batch Versions)
+def teacher_node_batch(state):
+    messages = state["messages"]
+    batch_size = args.batch_size
+    batch_utterances = [msg.content for msg in messages[-batch_size:]]
+    teacher_responses = teacher_agent.run_batch(batch_utterances)
+    return {"messages": [AIMessage(content=resp) for resp in teacher_responses]}
+
+def learner_node_batch(state):
+    messages = state["messages"]
+    batch_size = args.batch_size
+    batch_instructions = [msg.content for msg in messages[-batch_size:]]
+    learner_responses = learner_agent.run_batch(batch_instructions)
+    return {"messages": [HumanMessage(content=resp) for resp in learner_responses]}
 
 # Flow Control: Determines Conversation Path
 def should_continue(state, max_steps=15):
@@ -173,7 +211,7 @@ def generate_single_conversation(tutorial_document, config_teacher, config_learn
     return conversation
 
 # Processing a tutorial document
-def process_method(method, method_id, summary, source_tutorial_path, methods=None, config_teacher=None, config_learner=None, config_evaluator=None):
+def process_method(method, method_id, summary, source_tutorial_path, methods=None):
     if methods is None:
         methods = []
 
@@ -187,7 +225,16 @@ def process_method(method, method_id, summary, source_tutorial_path, methods=Non
         logger.warning(f"Skipping tutorial with no valid steps for method {method_id} : {source_tutorial_path}")
         return None 
 
-    conversation = generate_single_conversation(tutorial_document=tutorial_document, config_teacher=config_teacher, config_learner=config_learner)
+    # **Use ThreadPoolExecutor for parallel agent interaction**
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_teacher = executor.submit(TeacherLLMAgent(config_teacher, tutorial_document).run, "")
+        future_learner = executor.submit(LearnerLLMAgent(config_learner).run, tutorial_document[1])
+
+        teacher_response = future_teacher.result()
+        learner_response = future_learner.result()
+    
+    conversation = [f"Teacher: {teacher_response}", f"Learner: {learner_response}"]
+    # conversation = generate_single_conversation(tutorial_document=tutorial_document, config_teacher=config_teacher, config_learner=config_learner)
     evaluation_results = ConversationEvaluator(config_evaluator).evaluate(conversation, tutorial_document)  
 
     logger.info("\n--- Full Conversation ---\n" + "\n".join(conversation))
@@ -201,6 +248,15 @@ def process_method(method, method_id, summary, source_tutorial_path, methods=Non
         'evaluation': evaluation_results
     }
 
+# Batch Processing for Methods
+def process_method_batch(methods_batch, summary, source_tutorial_path):
+    """Process multiple methods in batch using threading."""
+    results = []
+    with ThreadPoolExecutor(max_workers=args.batch_size) as executor:
+        futures = [executor.submit(process_method, method, i + 1, summary, source_tutorial_path) 
+                   for i, method in enumerate(methods_batch)]
+        results = [f.result() for f in futures if f.result()]
+    return results
 
 def calculate_average_scores(dialogs):
     """Calculate average scores for a list of dialog objects"""
@@ -226,56 +282,52 @@ def main():
 
     total_dialogs = []
 
-    for doc in tqdm(docs):
-        source_tutorial_path = doc['path']
-        target_dialogue_path = source_tutorial_path.replace('.json', '.txt')
+    with ThreadPoolExecutor(max_workers=args.processes) as executor:
+        for doc in tqdm(docs):
+            source_tutorial_path = doc['path']
+            target_dialogue_path = source_tutorial_path.replace('.json', '.txt')
 
-        # Dialogs per doc
-        dialogs = []
-        if glob.glob(target_dialogue_path) and args.skip_existing_gen:
-            logger.info(f'Skip generation: Loading dialogs from the exisiting file {target_dialogue_path}.')
-            with open(target_dialogue_path, 'r') as f:
-                dialogs = json.load(f)
-            dialogs.extend(dialogs)
-            total_dialogs.extend(dialogs) 
-            # Update conversation count and metrics
-            count_conversation += len(dialogs)         
-        else:
-            summary = doc['introduction']
-            methods = doc['methods']
-            # Single processing
-            # for i, method in enumerate(methods):
-            #     count_conversation += 1
-            #     logger.info(f"\n--- Generating the Conversation Number: {count_conversation} ---\n")
-            #     # Generate each dialog
-            #     dialog = process_method(method, i + 1, summary, source_tutorial_path, None, logger=logger)
-            #     dialogs.append(dialog)
-            #     total_dialogs.append(dialog)
+            # Dialogs per doc
+            dialogs = []
+            if glob.glob(target_dialogue_path) and args.skip_existing_gen:
+                logger.info(f'Skip generation: Loading dialogs from the exisiting file {target_dialogue_path}.')
+                with open(target_dialogue_path, 'r') as f:
+                    dialogs = json.load(f)
+                dialogs.extend(dialogs)
+                total_dialogs.extend(dialogs) 
+                # Update conversation count and metrics
+                count_conversation += len(dialogs)         
+            else:
+                summary = doc['introduction']
+                methods = doc['methods']
+                batch_size = args.batch_size
 
-            # Multiprocessing
-            # Create a list of arguments for each method
-            method_args = [(method, i + 1, summary, source_tutorial_path, None, config_teacher, config_learner, config_evaluator) for i, method in enumerate(methods)]
-            
-            # Use multiprocessing to generate conversations in parallel
-            with mp.Pool(processes=args.processes) as pool:
-                results = pool.starmap(process_method, method_args)
-            
-            # Update counts and collect results
-            count_conversation += len(results)
-            logger.info(f"****** Processed Conversation Number # {count_conversation} ******")
-            # Save generated dialogues per doc
-            with open(target_dialogue_path, 'w') as f:
-                json.dump(results, f, indent=4)               
-            dialogs.extend(results)
-            total_dialogs.extend(results)
+                # ** FIX: Reset `futures` per document **
+                futures = []
+                method_batches = [methods[i:i + batch_size] for i in range(0, len(methods), batch_size)]
+                for method_batch in method_batches:
+                    futures.append(executor.submit(process_method_batch, method_batch, summary, source_tutorial_path))   
+
+                # ** Collect results only for this document **
+                results = [item for f in futures for item in f.result() if item]
+                # Update counts and collect results
+                count_conversation += len(results)
+                logger.info(f"****** Processed Conversation Number # {count_conversation} ******")
+                
+                # Save generated dialogues per doc
+                with open(target_dialogue_path, 'w') as f:
+                    json.dump(results, f, indent=4)               
+                dialogs.extend(results)
+                total_dialogs.extend(results)
+    
     # Compute average scores
     avg_scores = calculate_average_scores(dialogs)
 
     # Save all dialogs together in one file
     dialouge_json = {
         'config_files': (args.config_teacher, args.config_learner, args.config_evaluator),
-        'total_evaluation': avg_scores,
         'num_conversation': count_conversation,
+        'total_evaluation': avg_scores,
         'total_conversations': total_dialogs
     }        
     with open(f'result/{config_setting_str}.json', 'w') as f:
@@ -289,7 +341,7 @@ if __name__ == "__main__":
                 "BLEU", "METEOR", "BERTScore", "ROUGE"]
 
     # Get the total CPUs on the node (for information only)
-    logger.info(f"Nnumber of available CPUs per node={mp.cpu_count()}")
+    logger.info(f"Number of available CPUs per node={mp.cpu_count()}")
     # Get the actual number of CPUs allocated by Slurm
     logger.info(f"Number of CPUs allocated by Slurm={int(os.environ.get('SLURM_CPUS_PER_TASK', 1))}")
     
@@ -300,6 +352,7 @@ if __name__ == "__main__":
     parser.add_argument("--config_learner", type=str, default="conf/ollma-llama3.yaml", help="Config file for learner agent.")
     parser.add_argument("--config_evaluator", type=str, default="conf/ollma-llama3.yaml", help="Config file for evaluator agent")
     parser.add_argument("--processes", type=int, default=min(mp.cpu_count() or 8, 8), help="Number of mutliprocessing.")
+    parser.add_argument("--batch_size", type=int, default=4, help="Number of batch size.")    
     parser.add_argument("--skip_existing_gen", action="store_true", help="Skip the generation of exisiting conversation nor not.")
     args = parser.parse_args()
 

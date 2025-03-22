@@ -21,6 +21,10 @@ module load CUDA/12.6.0
 module load cuDNN/9.5.0.50-CUDA-12.6.0
 module load Python/3.12.3-GCCcore-13.3.0
 
+
+source ~/.bashrc
+source activate worldtaskeval
+
 # --- 2. Set Environment Variables (for GPU) ---
 export PATH="~/anaconda3/envs/worldtaskeval/bin:$PATH" # Use the virtual env worldtaskeval
 # GPU Optimization
@@ -79,11 +83,12 @@ echo "Test Ollama model inference time!"
 time singularity exec --nv ollama_latest.sif ollama run llama3 "Explain quantum mechanics in 100 words."
 
 # --- 5. Run the Python Script with Correct Python Path ---
+export PYTHONPATH=$PWD  # Ensure Python finds your package
 # echo "Running the Python workflow..."
 # singularity exec --nv ollama_latest.sif bash -c "source activate worldtaskeval && /gpfs/home3/jpei1/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py"
 # DEBUG: fast run of 6 doc and skip existing generation
-# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc=6 --skip_existing_gen
-~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --skip_existing_gen
+# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc=2 --batch_size=4
+~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --batch_size=32 --skip_existing_gen
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

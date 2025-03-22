@@ -1,4 +1,4 @@
-import os
+import os, sys
 import getpass
 import yaml
 import json
@@ -10,8 +10,12 @@ import torch
 from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
+# # Ensure the root directory is in Python's path 
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# print(sys.path)
+
 # Custom utility imports
-from setup_logger import setup_logger
+from utils.setup_logger import setup_logger
 logger = setup_logger()
 
 # Ensure API Key is set

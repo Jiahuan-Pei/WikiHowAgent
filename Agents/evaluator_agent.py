@@ -9,8 +9,8 @@ from nltk.util import ngrams
 import os, sys
 
 # Custom utility imports
-from util import setup_llm_and_embeddings, load_yaml
-from setup_logger import setup_logger
+from utils.util import setup_llm_and_embeddings, load_yaml
+from utils.setup_logger import setup_logger
 logger = setup_logger() # Get the current script name
 
 class ConversationEvaluator:

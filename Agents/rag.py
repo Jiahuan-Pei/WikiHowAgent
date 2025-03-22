@@ -2,7 +2,7 @@ import numpy as np
 from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 # Utility function to set up LLM and embeddings
-from Agents.util import setup_llm_and_embeddings
+from utils.util import setup_llm_and_embeddings
 
 class RAG:
     def __init__(self, config_file='conf/ollma-llama3.yaml'): # gpt-4o
