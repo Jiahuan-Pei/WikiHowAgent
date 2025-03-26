@@ -15,7 +15,7 @@ langchain-ollama
 pywikihow
 sentence_transformers
 evaluate
-nltk
+nltk==3.6.7
 yaml
 torchvision
 rouge_score

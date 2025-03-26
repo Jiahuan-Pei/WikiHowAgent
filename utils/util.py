@@ -7,16 +7,16 @@ import logging
 import os
 import yaml
 import torch
+import multiprocessing as mp
+
+from pathlib import Path
+
 from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-# # Ensure the root directory is in Python's path 
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# print(sys.path)
-
-# Custom utility imports
-from utils.setup_logger import setup_logger
-logger = setup_logger()
+# Ensure the root directory is in Python's path 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print(sys.path)
 
 # Ensure API Key is set
 def _set_if_undefined(var: str):
@@ -51,9 +51,13 @@ def count_gpu_availability():
     else:
         return 0    
 
-def count_gpu_availability():
-    """Return the number of available GPUs."""
-    return torch.cuda.device_count() if torch.cuda.is_available() else 0
+def count_cpu_availability():
+    """Return the number of available CPUs."""
+    # Get the total CPUs on the node (for information only)
+    logger.info(f"Number of available CPUs per node={mp.cpu_count()}")
+    # Get the actual number of CPUs allocated by Slurm
+    logger.info(f"Number of CPUs allocated by Slurm={int(os.environ.get('SLURM_CPUS_PER_TASK', 1))}")
+    return 
 
 def load_yaml(config_file='conf/ollama-llama3.yaml'):
     """Load config from a YAML configuration file."""
@@ -64,7 +68,7 @@ def load_yaml(config_file='conf/ollama-llama3.yaml'):
 def setup_llm_and_embeddings(config):
 
     llm_config = config['llm']
-    embedding_config = config['embeddings']
+    # embedding_config = config['embeddings']
     
     # Detect GPUs
     num_gpu = count_gpu_availability()
@@ -97,7 +101,7 @@ def setup_llm_and_embeddings(config):
             # num_gpu=num_gpu,  # ✅ Ensure GPU acceleration
             num_thread=16  # ✅ More threads for efficiency
         )
-        embeddings = OllamaEmbeddings(model=embedding_config['model'])
+        embeddings = OllamaEmbeddings(model=llm_config['model'])
     else:
         raise ValueError(f"Unsupported model type: {llm_config['model_type']}")
 
@@ -130,3 +134,64 @@ def read_all_file_suffix_X(mdir='./data/wikihow', suffix='.json', max_doc=None):
                                 docs.append(f.read())
     return docs
 
+def get_snellious_job_id():
+    """
+    Function to retrieve the job ID from Snellious.
+    This should be replaced with the actual Snellious API call or environment variable.
+    """
+    job_id = os.getenv("SNELLIOUS_JOB_ID")  # Example: Fetch job ID from environment
+    if not job_id:
+        job_id = 'default'  # Get the current script name
+    return job_id
+
+
+def setup_logger(log_file=None, log_level=logging.INFO):
+    """
+    Set up a logger that logs messages to both the console and a file.
+
+    Parameters:
+        log_file (str): The name of the file where logs will be saved.
+        log_level (int): The logging level (e.g., logging.DEBUG, logging.INFO).
+
+    Returns:
+        logger (logging.Logger): Configured logger instance.
+    """
+
+    # Create a custom logger
+    logger = logging.getLogger("AppLogger")
+    logger.setLevel(log_level)
+
+    # Prevent duplicate logs if the logger is already set up
+    if logger.hasHandlers():
+        logger.handlers.clear()
+
+    # Define the log format
+    log_format = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"
+    )
+
+    if log_file is None:
+        log_file = f"{get_snellious_job_id()}.out"
+    else:
+        log_file = f"{Path(log_file).stem}.log"
+        
+    # File handler to log to a file
+    os.makedirs('log', exist_ok=True)
+    log_file = os.path.join('log', log_file)
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(log_level)
+    file_handler.setFormatter(log_format)
+
+    # Console handler to log to the console
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(log_level)
+    console_handler.setFormatter(log_format)
+
+    # Add both handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    logger.info("Logger initialized. Logging to file: %s", log_file)
+    return logger
+
+logger = setup_logger()

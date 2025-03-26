@@ -59,6 +59,16 @@ This diagram illutrates the workflow where Teacher-Learner Agents interact in Co
     - NLP-based quality metrics (i.e., `BLEU`, `ROUGE`, `METEOR`, `BERTScore`).
     - LLM-based metrics based on [rubrics](data/evaluation_rubrics.json) *with* and *without* reference, evaluting `Clarity`, `Truthfulness`, `Engagement`, `Coherence`, `Depth`, `Relevance`, `Progress`. The target of evaluation role include *teacher*, *learner*, and *conversation*. 
 
+#### Q & A
+##### Why ThreadPoolExecutor is Used Multiple Times?
+- *Parallelism at Different Levels*:
+Each occurrence of ThreadPoolExecutor is used at different hierarchical levels:
+    - Batch inference (teacher/learner agents)
+    - Method-level processing
+    - Document-level processing
+- *Efficiency*:
+    - Running LLM chains sequentially would be too slow.
+    - Using threading allows for concurrent execution, reducing total processing time.
 
 ## 2. Dataset
 
@@ -95,3 +105,32 @@ This diagram illutrates the workflow where Teacher-Learner Agents interact in Co
 
 ![Knowledge Graph Screenshot](figure/knowledge_graph_screenshot.png)
 
+### Project Structure
+
+```bash
+project_root/
+│-- main.py  # Entry point
+│-- config/
+│   │-- config_1.yaml
+│   │-- config_2.yaml
+│   │-- config_3.yaml
+│-- utils/
+│   │-- __init__.py
+│   │-- util.py
+│   │-- ...
+│-- agents/                        # Define the multiple LLM agents.
+│   │-- __init__.py
+│   │-- teacher_agent.py
+│   │-- learner_agent.py
+│   │-- evaluator_agent.py
+│-- manager/
+│   │-- __init__.py
+│   │-- mutiple_agent_workflow.py  # Define the conversation flow.
+│-- evaluation/
+│   │-- __init__.py
+│   │-- evaluation_metrics.py
+│-- data/
+│   │-- wikihow/                   # Store tutorial data
+│-- result/                        # Store experimental results
+│-- requirements.txt
+```
