@@ -21,7 +21,7 @@ module load CUDA/12.6.0
 module load cuDNN/9.5.0.50-CUDA-12.6.0
 module load Python/3.12.3-GCCcore-13.3.0
 
-
+echo 'export NLTK_DATA="/gpfs/home3/jpei1/nltk_data"' >> ~/.bashrc
 source ~/.bashrc
 source activate worldtaskeval
 
@@ -88,7 +88,7 @@ export PYTHONPATH=$PWD  # Ensure Python finds your package
 # singularity exec --nv ollama_latest.sif bash -c "source activate worldtaskeval && /gpfs/home3/jpei1/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py"
 # DEBUG: fast run of 6 doc and skip existing generation
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --skip_existing_gen --start_doc_id 3349
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --start_doc_id 3349 --skip_existing_gen 
 # ~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --batch_size=32
 
 # --- 6. Cleanup: Kill Ollama Server ---
