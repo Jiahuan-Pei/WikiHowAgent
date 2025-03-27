@@ -74,11 +74,11 @@ until curl -s http://localhost:11434/api/tags > /dev/null; do
 done
 echo "Ollama server is ready!"
 # 4.4 Pull LLM Model (Ensure Model is Downloaded) ---
-singularity exec --nv ollama_latest.sif ollama pull phi4
+singularity exec --nv ollama_latest.sif ollama pull qwen2
 echo "Ollama model is downloaded!"
-singularity exec --nv ollama_latest.sif ollama run phi4 --verbose
+singularity exec --nv ollama_latest.sif ollama run qwen2 --verbose
 echo "Test Ollama model inference time!"
-time singularity exec --nv ollama_latest.sif ollama run phi4 "Explain quantum mechanics in 100 words."
+time singularity exec --nv ollama_latest.sif ollama run qwen2 "Explain quantum mechanics in 100 words."
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
@@ -87,7 +87,7 @@ export PYTHONPATH=$PWD  # Ensure Python finds your package
 # DEBUG: fast run of 6 doc and skip existing generation
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --skip_existing_gen
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 32 --config_teacher conf/ollama-phi4.yaml --config_learner conf/ollama-phi4.yaml --config_evaluator conf/ollama-phi4.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 64 --config_teacher conf/ollama-qwen2.yaml --config_learner conf/ollama-qwen2.yaml --config_evaluator conf/ollama-qwen2.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"
