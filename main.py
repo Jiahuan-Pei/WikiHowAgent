@@ -3,15 +3,18 @@ import glob
 import json
 import numpy as np
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor
-from threading import Lock
+from collections import defaultdict
+from config import args
 
-# Ensure the root directory is in Python's path 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))) 
+# Ensure the project's root directory is in Python's path 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "."))) 
 print(sys.path)
-from config import EVAL_METRICS, OUTPUT_CONFIG, JOBID, config_teacher, args
+from config import EVAL_METRICS, OUTPUT_CONFIG, JOBID, config_teacher, args, config_files
 from utils.util import read_all_file_suffix_X, logger
-from manager.mutiple_agent_workflow import process_method_batch
+from utils.db import *
+from manager.multiple_agent_manager import process_batch_method
+
+from dataset.education_dataset import create_dataloader
 
 def calculate_average_scores(dialogs):
     """Calculate average scores for a list of dialog objects"""
@@ -28,89 +31,106 @@ def calculate_average_scores(dialogs):
     # Calculate averages
     return {metric: (np.mean(values), np.std(values)) if values else 0.0 for metric, values in scores.items()}
 
-# Main Execution
-def main():
-    mdir = config_teacher['params']['root_doc_dir']  # './data/wikihow'
-
+def load_existing_dialogues(docs, skip_existing, start_doc_id):
+    """Efficiently load existing dialogues from files to avoid recomputation"""
+    total_dialogs = defaultdict(list)
     count_conversation = 0
-    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json', max_doc=args.max_doc)
-
-    total_dialogs = []
-
-    doc_id = 0
-    # Runs multiple documents in parallel.
-    with ThreadPoolExecutor(max_workers=args.processes) as executor:
-        for doc in tqdm(docs):
+    
+    if skip_existing:
+        for doc_id, doc in enumerate(docs):
             source_tutorial_path = doc['path']
             target_dialogue_path = source_tutorial_path.replace('.json', f'.{OUTPUT_CONFIG}.txt')
-
-            # Dialogs per doc
-            dialogs_per_doc = []
-            if glob.glob(target_dialogue_path) and args.skip_existing_gen and doc_id <= args.start_doc_id:
+            
+            if glob.glob(target_dialogue_path) and doc_id <= start_doc_id:
                 logger.info(f'Skip generation: Loading dialogs from the existing file {target_dialogue_path}.')
                 with open(target_dialogue_path, 'r') as f:
                     dialogs_per_doc = json.load(f)
 
-                if dialogs_per_doc:  # ✅ Only count if there are valid dialogues
-                    with lock:
-                        count_conversation += len(dialogs_per_doc)
+                if dialogs_per_doc:  # Only count if there are valid dialogues
+                    count_conversation += len(dialogs_per_doc)
 
-                total_dialogs.extend(dialogs_per_doc)
+                total_dialogs[doc_id] = dialogs_per_doc # Grouping results by document
 
-            else:
-                summary = doc['introduction']
-                methods = doc['methods']
-                batch_size = args.batch_size
+    return total_dialogs, count_conversation
 
-                # ** FIX: Reset `futures` per document **
-                futures = []
-                method_batches = [methods[i:i + batch_size] for i in range(0, len(methods), batch_size)]
-                for method_batch in method_batches:
-                    futures.append(executor.submit(process_method_batch, method_batch, summary, source_tutorial_path))   
 
-                # ** Collect results only for this document **
-                dialogs_per_doc = []
-                for f in futures:
-                    try:
-                        res = f.result()  # ✅ Handle potential errors
-                        if res:
-                            dialogs_per_doc.extend(res)
-                    except Exception as e:
-                        logger.error(f"Error processing batch: {e}")
+def process_batches(data_loader, total_dialogs):
+    """Process data batches and group results by document"""
+    count_conversation = 0
+    
+    for batch in tqdm(data_loader):
+        batch_size = len(batch)
 
-                if dialogs_per_doc:  # ✅ Avoid adding empty results
-                    with lock:
-                        count_conversation += len(dialogs_per_doc)
+        # Process method batches using optimized batch inference
+        batch_conversations, batch_evaluations = process_batch_method(batch)
 
-                logger.info(f"****** Processed Conversation Number # {count_conversation} ******")
+        for i in range(batch_size):
+            if batch_conversations[i]:  # Avoid empty results
+                count_conversation += 1
+                doc_id = int(batch[i]["doc_id"])
+                dialogue = {**batch[i],  # Restore original batch data with 'conversation' and 'evaluation' as the results
+                            "conversation": batch_conversations[i],
+                            "evaluation": batch_evaluations[i]}
+                total_dialogs[doc_id].append(dialogue)
+                # Save each dialogue to db
+                save_dialogue_to_config_db(dialogue_id=batch[i]['conversation_id'], dialogue_data=dialogue, config_files=config_files)
+                
+        # # Query the dialogues based on certain criteria
+        # criteria = {
+        #     "doc_id": "0",
+        #     "method_id": "1"
+        # }
+        # matching_dialogues = query_dialogues_from_config(criteria, config_files)
 
-                # Save generated dialogues per doc
-                with open(target_dialogue_path, 'w') as f:
-                    json.dump(dialogs_per_doc, f, indent=4)
+        # # Print the matching dialogues
+        # for dialogue in matching_dialogues:
+        #     print(dialogue)
 
-                total_dialogs.extend(dialogs_per_doc)
+        return total_dialogs, count_conversation
 
-            doc_id += 1
 
-    # Compute average scores
-    avg_scores = calculate_average_scores(total_dialogs) if total_dialogs else {}
+def save_consolidated_results(total_dialogs, count_conversation):
+    """Save consolidated results into a single JSON file"""
+    # Flattening the defaultdict into a plain list
+    list_total_dialogs =  [item for sublist in total_dialogs.values() for item in sublist] 
 
-    # Save all dialogs together in one file
+    avg_scores = calculate_average_scores(list_total_dialogs) if list_total_dialogs else {}
+
     dialogue_json = {
         'config_files': (args.config_teacher, args.config_learner, args.config_evaluator),
         'num_conversation': count_conversation,
         'total_evaluation': avg_scores,
-        'total_conversations': total_dialogs
+        'total_conversations': list_total_dialogs
     }
+    
     final_all_dialogue_path = f'result/{OUTPUT_CONFIG}_{JOBID}.json'      
     logger.info(f"Save all dialogue to the path: {final_all_dialogue_path}")  
     with open(final_all_dialogue_path, 'w') as f:
         json.dump(dialogue_json, f, indent=4)
 
-    logger.info(f'Generated {count_conversation} conversations!')
+
+# Main Execution
+def main():
+    mdir = config_teacher['params']['root_doc_dir']  # './data/wikihow'
+    docs = read_all_file_suffix_X(mdir=mdir, suffix='.json', max_doc=args.max_doc)
+
+    # Load dialogs if required
+    total_dialogs, count_conversation = load_existing_dialogues(docs, args.skip_existing, args.start_doc_id)
+
+    # Use DataLoader to efficiently load and process data
+    data_loader = create_dataloader(docs, batch_size=args.batch_size, output_config=OUTPUT_CONFIG, skip_existing=args.skip_existing, start_doc_id=args.start_doc_id)
+    logger.info(f"****** Processed {len(data_loader)} batches of data in total ******")
+
+    # Process data batches and group results by document
+    total_dialogs, count_conversation = process_batches(data_loader, total_dialogs)
+    # print(total_dialogs)
+    
+    # Save consolidated results
+    save_consolidated_results(total_dialogs, count_conversation)
+
+    logger.info(f"****** Processed Conversation Number # {len(data_loader.dataset)} over all {count_conversation} ******")
+
 
 
 if __name__ == "__main__":
-    # Initialize a lock for thread safety
-    lock = Lock()
     main()

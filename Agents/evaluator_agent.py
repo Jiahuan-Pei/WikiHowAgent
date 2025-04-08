@@ -72,21 +72,72 @@ class ConversationEvaluator:
         
         return round(unique_ngrams / max(1, total_ngrams), 4)  # Avoid division by zero
     
-    # BLEU Score (n-gram precision-based metric)
-    def compute_bleu(self, reference, generated):
-        """Computes BLEU score using Hugging Face evaluate."""
-        return round(self.bleu.compute(predictions=[generated], references=[reference])['bleu'], 4)
+    # Revised BLEU Score (n-gram precision-based metric)
+    def compute_bleu(self, references, generations):
+        """
+        Computes corpus-level or document-level BLEU score.
+        
+        If the lengths of references and generations differ, the function assumes
+        that the entire list should be treated as a single document. In that case,
+        it joins all generations into one document and—if there are multiple 
+        references per generation—it combines each reference candidate into a full
+        document, then computes a document-level BLEU score.
+        
+        :param references: List of reference texts. Each element can be a string or a list of strings 
+                        (if multiple references per generation are provided).
+        :param generations: List of generated texts.
+        :return: BLEU score rounded to 4 decimal places.
+        """
+        if not references or not generations:
+            logger.error("Error: Empty reference or generated list")
+            return 0.0
+
+        # If references are simple strings, wrap them to support multiple references per generation.
+        if isinstance(references[0], str):
+            references = [[ref] for ref in references]
+
+        try:
+            # Check if the number of reference items matches the number of generation items.
+            if len(references) == len(generations):
+                # Standard corpus-level BLEU computation.
+                result = self.bleu.compute(predictions=generations, references=references)
+                return round(result["bleu"], 4)
+            else:
+                # Document-level BLEU: combine all generations into one document.
+                combined_generation = " ".join(generations)
+                
+                # For references, combine each reference candidate (assumed consistent across sentences)
+                # into one document.
+                # Determine how many reference candidates there are from the first sentence.
+                num_candidates = len(references[0])
+                combined_references = []
+                for i in range(num_candidates):
+                    candidate_sentences = []
+                    for ref_list in references:
+                        if i < len(ref_list):
+                            candidate_sentences.append(ref_list[i])
+                    # Join all sentences for this candidate into one document.
+                    combined_references.append(" ".join(candidate_sentences))
+                
+                # Compute document-level BLEU on a single prediction with multiple reference documents.
+                result = self.bleu.compute(predictions=[combined_generation], references=[combined_references])
+                return round(result["bleu"], 4)
+        except Exception as e:
+            logger.error(f"BLEU computation failed: {e}")
+            return 0.0
+        
 
     # Instructional accuracy: ROUGE (useful for summarization-based tasks)
     def compute_rouge(self, reference, generated):
         """Computes ROUGE score using Hugging Face evaluate."""
-        rouge_scores = self.rouge.compute(predictions=[generated], references=[reference])
-        return {'ROUGE': round(rouge_scores['rouge1'], 4)}
+        rouge_scores = self.rouge.compute(predictions=[generated], references=[reference])['rouge1']
+        return {"ROUGE":round(float(rouge_scores), 4)}
 
     # METEOR Score (Recall-based metric, considers synonyms & stemming)
     def compute_meteor(self, reference, generated):
         """Computes METEOR score using Hugging Face evaluate."""
-        return round(self.meteor.compute(predictions=[generated], references=[reference])['meteor'], 4)
+        meteor_scores = self.meteor.compute(predictions=[generated], references=[reference])['meteor']
+        return round(float(meteor_scores), 4)
         
     # Semantic similarity: BERTScore (context-aware similarity, recall-based matching)
     def compute_bert_score(self, reference, generated):
@@ -111,7 +162,7 @@ class ConversationEvaluator:
         Provide scores in this format: {format_prompt}
         """
         response = self.llm.invoke(prompt).content
-        logger.info(response)
+        # logger.info(response)
         matches = re.findall(r'(\w+):\s*(\d+)\s*', response, re.IGNORECASE)
         scores = {}
         for key, value in matches:
@@ -119,9 +170,9 @@ class ConversationEvaluator:
                 scores[key.capitalize()] = int(value)
         return scores, response
 
-    def evaluate_with_reference(self, conversation, tutorial):
+    def evaluate_with_reference(self, conversation, tutorial, role="Teacher"):
         reference = '\n'.join(tutorial)
-        generated = '\n'.join([line for line in conversation if line.startswith("Teacher:")])
+        generated = '\n'.join([line for line in conversation if f"{role}:" in line])
         rouge_scores = self.compute_rouge(reference, generated)
         ref_llm_scores, response = self.check_factual_consistency(reference, generated)
         scores = {
@@ -148,7 +199,7 @@ class ConversationEvaluator:
         """
 
         response = self.llm.invoke(prompt).content
-        logger.info(response)
+        # logger.info(response)
         matches = re.findall(r'(\w+):\s*(\d+)\s*', response, re.IGNORECASE)
         scores = {}
         for key, value in matches:
@@ -156,18 +207,18 @@ class ConversationEvaluator:
                 scores[key.capitalize()] = int(value)
         return scores, response
     
-    def evaluate(self, conversation:  List[str], tutorial: List[str]=None):
+    def evaluate(self, conversation: List[str], tutorial: List[str]=None):
         num_questions = self.calculate_question_ratio(conversation)
         completed = self.check_completion(conversation)
         diversity_score = self.check_diversity(conversation)
         ngram_diversity_score = self.compute_ngram_diversity(conversation)
         llm_scores, llm_scores_response = self.evaluate_with_llm(conversation)
-        if tutorial:
+        if tutorial and conversation:
             ref_scores, ref_scores_response = self.evaluate_with_reference(conversation, tutorial)
             return OrderedDict({
                 "Question Ratio": num_questions,
                 "Completion Achieved": completed,
-                "Diversity Score": round(ngram_diversity_score, 2),
+                "Diversity Score": round(ngram_diversity_score, 4),
                 **llm_scores,  # Unpack the LLM scores
                 **ref_scores,
                 "llm_scores_response": llm_scores_response,
@@ -177,7 +228,7 @@ class ConversationEvaluator:
             return OrderedDict({
                 "Question Ratio": num_questions,
                 "Completion Achieved": completed,
-                "Diversity Score": round(diversity_score, 2),
+                "Diversity Score": round(diversity_score, 4),
                 **llm_scores,  # Unpack the LLM scores
                 "llm_scores_response": llm_scores_response,
             })
@@ -206,4 +257,4 @@ if __name__ == "__main__":
     evaluator = ConversationEvaluator(config)
     results = evaluator.evaluate(conversation, tutorial)
     # pprint(results, indent=4)
-    logger.info(results)
+    # logger.info(results)

@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=8        # 🔥 Assign #number CPUs per task; Match with args.processes=8; If inference is GPU-bound, having too many CPU processes won't help.
 
 #SBATCH --mem=16GB               # Request of memory
-#SBATCH --partition=gpu          # Use the GPU partition
+#SBATCH --partition=gpu_a100     # Use the GPU partition
 
 echo "Starting job on $(hostname) at $(date)"
 echo "Total CPUs allocated: $SLURM_JOB_CPUS_PER_NODE"
@@ -88,8 +88,8 @@ export PYTHONPATH=$PWD  # Ensure Python finds your package
 # singularity exec --nv ollama_latest.sif bash -c "source activate worldtaskeval && /gpfs/home3/jpei1/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py"
 # DEBUG: fast run of 6 doc and skip existing generation
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 32 --start_doc_id 3349 --skip_existing_gen 
-# ~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --batch_size=32
+# ~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 32 --start_doc_id 3349 --skip_existing_gen 
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size=32
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

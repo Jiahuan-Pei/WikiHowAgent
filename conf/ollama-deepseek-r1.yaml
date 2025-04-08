@@ -8,4 +8,4 @@ params:
   index_file: data/faiss_vector_store
   rubric_file: data/evaluation_rubrics.json
   k: 1 # Top k docs
-  verbose: True
+  verbose: False

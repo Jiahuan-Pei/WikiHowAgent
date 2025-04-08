@@ -8,7 +8,7 @@ import os
 import yaml
 import torch
 import multiprocessing as mp
-
+import colorlog
 from pathlib import Path
 
 from langchain_ollama import ChatOllama, OllamaEmbeddings
@@ -82,6 +82,8 @@ def setup_llm_and_embeddings(config):
     else:
         os.environ["OLLAMA_ACCELERATE"] = "0"
         logger.warning("No GPUs detected, running on CPU.")
+    
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Initialize LLM and embeddings
     if llm_config['model_type'] == "openai":
@@ -160,6 +162,7 @@ def setup_logger(log_file=None, log_level=logging.INFO):
     # Create a custom logger
     logger = logging.getLogger("AppLogger")
     logger.setLevel(log_level)
+    logger.propagate = False  # Prevent logs from propagating to the root logger
 
     # Prevent duplicate logs if the logger is already set up
     if logger.hasHandlers():
