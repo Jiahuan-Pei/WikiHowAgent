@@ -74,19 +74,8 @@ def process_batches(data_loader, total_dialogs):
                 total_dialogs[doc_id].append(dialogue)
                 # Save each dialogue to db
                 save_dialogue_to_config_db(dialogue_id=batch[i]['conversation_id'], dialogue_data=dialogue, config_files=config_files)
-                
-        # # Query the dialogues based on certain criteria
-        # criteria = {
-        #     "doc_id": "0",
-        #     "method_id": "1"
-        # }
-        # matching_dialogues = query_dialogues_from_config(criteria, config_files)
 
-        # # Print the matching dialogues
-        # for dialogue in matching_dialogues:
-        #     print(dialogue)
-
-        return total_dialogs, count_conversation
+    return total_dialogs, count_conversation
 
 
 def save_consolidated_results(total_dialogs, count_conversation):
