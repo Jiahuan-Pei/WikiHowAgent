@@ -6,7 +6,6 @@ from typing import List, Dict
 from sentence_transformers import SentenceTransformer, util
 import evaluate
 from nltk.util import ngrams
-import os, sys
 
 # Custom utility imports
 from utils.util import setup_llm_and_embeddings, load_yaml

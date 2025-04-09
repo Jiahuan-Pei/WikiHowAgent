@@ -3,8 +3,7 @@ from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
 from typing import Annotated, TypedDict, List, Dict, Literal
 from langchain_core.runnables import RunnableLambda
-from utils.util import logger
-from config import args, config_teacher, config_learner, config_evaluator, PINK_COLOR, RESET_COLOR
+from config import args, config_teacher, config_learner, config_evaluator, PINK_COLOR, RESET_COLOR, logger
 
 # Import Agents
 from agents.teacher_agent import TeacherLLMAgent
@@ -42,6 +41,7 @@ def teacher_node(state: LearningState) -> LearningState:
             }) + '\n'
         response += "We've reached the end of the tutorial. Bye! FINISHED"
         state["finished"] = True  
+        state["needs_clarification"] = False
     else:
         current_step_content = tutorial[current_step_index]
         last_message = messages[-1] if messages else None
@@ -89,10 +89,14 @@ def dialogue_policy(state: LearningState) -> Literal["teacher", "learner", "__en
     print("✅ Finished flag:", state["finished"])
 
     # Core routing logic
-    if state["finished"] or len(state["messages"]) >= args.max_interaction:
+    if state["finished"]:
+        return "__end__"
+    
+    if len(state["messages"]) >= args.max_interaction:
+        print("⚠️ Max interaction hit!")
         return "__end__"
 
-    if any(isinstance(m, AIMessage) and "finished" in m.content.lower() for m in state["messages"]):
+    if any("finished" in m.content.lower() for m in state["messages"]):
         state["finished"] = True
         return "__end__"
     
@@ -112,12 +116,12 @@ def generate_single_conversation(summary: str, tutorial: List[str]) -> List[str]
     graph_builder.add_edge("teacher", "learner")
     graph_builder.add_edge(START, "teacher")
 
-    chat_graph = graph_builder.compile().with_config(recursion_limit=args.max_interaction)
+    chat_graph = graph_builder.compile().with_config(recursion_limit=50)
     
     if args.plot_agent_workflow:
         try:
             image_data = chat_graph.get_graph().draw_mermaid_png()
-            with open("figures/chat_graph_simulation.png", "wb") as f:
+            with open("figure/chat_graph_simulation.png", "wb") as f:
                 f.write(image_data)
         except Exception as e:
             logger.warning(f"Graph visualization failed: {e}")
@@ -150,10 +154,10 @@ def process_method(data: Dict) -> Dict:
 
     conversation = generate_single_conversation(summary, tutorial)
     evaluation_results = ConversationEvaluator(config_evaluator).evaluate(conversation=conversation, tutorial=tutorial)
-    logger.info('----- Full Conversation -----\n')
-    logger.info('\n'.join(conversation))
-    logger.info('----- Evaluation Result -----\n')
-    logger.info(evaluation_results)
+    # logger.info('----- Full Conversation -----\n')
+    # logger.info('\n'.join(conversation))
+    # logger.info('----- Evaluation Result -----\n')
+    # logger.info(evaluation_results)
     return {**data, "conversation": conversation, "evaluation": evaluation_results}
 
 

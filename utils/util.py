@@ -69,21 +69,6 @@ def setup_llm_and_embeddings(config):
 
     llm_config = config['llm']
     # embedding_config = config['embeddings']
-    
-    # Detect GPUs
-    num_gpu = count_gpu_availability()
-    logger.info(f"Detected {num_gpu} available GPUs")
-    
-    if num_gpu > 0:
-        os.environ["OLLAMA_ACCELERATE"] = "1"
-        os.environ["OLLAMA_NUM_GPU"] = str(num_gpu)
-        os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(str(i) for i in range(num_gpu))
-        logger.info(f"Running model with {num_gpu} GPUs.")
-    else:
-        os.environ["OLLAMA_ACCELERATE"] = "0"
-        logger.warning("No GPUs detected, running on CPU.")
-    
-    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Initialize LLM and embeddings
     if llm_config['model_type'] == "openai":
@@ -93,6 +78,9 @@ def setup_llm_and_embeddings(config):
         )
         embeddings = OpenAIEmbeddings()
     elif llm_config['model_type'] == "ollama":
+        os.environ["OLLAMA_ACCELERATE"] = "1"
+        os.environ["OLLAMA_NUM_GPU"] ="1"
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         llm = ChatOllama(
             model=llm_config['model'],
             temperature=llm_config['temperature'],
@@ -196,5 +184,3 @@ def setup_logger(log_file=None, log_level=logging.INFO):
 
     logger.info("Logger initialized. Logging to file: %s", log_file)
     return logger
-
-logger = setup_logger()

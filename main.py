@@ -9,8 +9,8 @@ from config import args
 # Ensure the project's root directory is in Python's path 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "."))) 
 print(sys.path)
-from config import EVAL_METRICS, OUTPUT_CONFIG, JOBID, config_teacher, args, config_files
-from utils.util import read_all_file_suffix_X, logger
+from config import EVAL_METRICS, OUTPUT_CONFIG, JOBID, config_teacher, args, config_files, logger
+from utils.util import read_all_file_suffix_X, count_gpu_availability
 from utils.db import *
 from manager.multiple_agent_manager import process_batch_method
 
@@ -74,6 +74,10 @@ def process_batches(data_loader, total_dialogs):
                 total_dialogs[doc_id].append(dialogue)
                 # Save each dialogue to db
                 save_dialogue_to_config_db(dialogue_id=batch[i]['conversation_id'], dialogue_data=dialogue, config_files=config_files)
+                logger.info(f'----- Full Conversation {count_conversation} -----\n')
+                logger.info('\n'.join(batch_conversations[i]))
+                logger.info(f'----- Evaluation Result {count_conversation} -----\n')
+                logger.info(batch_evaluations[i])
 
     return total_dialogs, count_conversation
 
@@ -122,4 +126,6 @@ def main():
 
 
 if __name__ == "__main__":
+    # Detect GPUs
+    num_gpu = count_gpu_availability()
     main()

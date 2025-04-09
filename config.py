@@ -1,8 +1,7 @@
 import argparse
 from datetime import datetime
 import multiprocessing as mp
-from utils.util import load_yaml
-
+from utils.util import load_yaml, setup_logger
 
 EVAL_METRICS = ["Question Ratio", "Completion Achieved", "Diversity Score", 
                 "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
@@ -14,7 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--job_id", type=str, default=None, help="Get the job id from the slurm sbatch.")
 parser.add_argument("--max_doc", type=int, default=None, help="Debug by running on max_doc number of tutorials.")
 # parser.add_argument("--max_doc", type=int, default=2, help="Debug by running on max_doc number of tutorials.")
-parser.add_argument("--max_interaction", type=int, default=100, help="The max steps of teacher-learner interactions.")
+parser.add_argument("--max_interaction", type=int, default=40, help="The max steps of teacher-learner interactions.")
 parser.add_argument("--config_teacher", type=str, default="conf/ollama-llama3.yaml", help="Config file for teacher agent.")
 parser.add_argument("--config_learner", type=str, default="conf/ollama-llama3.yaml", help="Config file for learner agent.")
 parser.add_argument("--config_evaluator", type=str, default="conf/ollama-llama3.yaml", help="Config file for evaluator agent")
@@ -44,3 +43,5 @@ RESET_COLOR = '\033[0m'  # Reset color back to normal
 BEGIN = 'BEGIN'
 NEXT = 'NEXT'
 FINISHED = 'FINISHED'
+
+logger = setup_logger(log_file=f'{args.job_id}.out')
