@@ -12,7 +12,12 @@ print(sys.path)
 from config import EVAL_METRICS, OUTPUT_CONFIG, JOBID, config_teacher, args, config_files, logger
 from utils.util import read_all_file_suffix_X, count_gpu_availability
 from utils.db import *
-from manager.multiple_agent_manager import process_batch_method
+if args.manager == 'workflow':
+    from manager.multiple_agent_manager_workflow import process_batch_method
+elif args.manager == 'agent':
+    from manager.multiple_agent_manager_agentic import process_batch_method
+else:
+    print('Err: No such a type of manager.')
 
 from dataset.education_dataset import create_dataloader
 

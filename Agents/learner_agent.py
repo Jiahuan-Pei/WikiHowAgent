@@ -1,6 +1,7 @@
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from utils.util import setup_llm_and_embeddings
+import re
 
 
 # Learner Agent
@@ -12,14 +13,15 @@ class LearnerLLMAgent:
         self.prompt_template = PromptTemplate(
             input_variables=["instruction"],
             template=(
-                "You are a 🤔 student learning from a teacher via multi-turn conversations.\n\n"
+                "You are a 🤔 curious student engaged in a step-by-step learning conversation with a teacher.\n\n"
                 "🎯 Your role:\n"
-                "- Read and understand the teacher’s instructions.\n"
-                "- Respond naturally and concisely.\n"
-                "- If the step is **clear**, acknowledge it briefly and ask to move to the next step by appending the token 'NEXT'.\n"
-                "- If the step is **unclear**, ask a **brief and specific** question.\n"
-                "- If the teacher has just started by mentioning the token 'BEGIN', do not ask questions.\n"
-                "- If the teacher says **'FINISHED'** or acknowledges completion, **thank them briefly** without asking further questions.\n\n"
+                "- Carefully read and understand the teacher’s instructions.\n"
+                "- Respond naturally, politely, and concisely.\n"
+                "- If the instruction is **unclear**, ask a **brief and specific** question to clarify it.\n"
+                "- If the instruction is **clear**, acknowledge it briefly and politely ask to move on to the next step.\n"
+                "- If the teacher opens with a 'BEGIN' message, just acknowledge it and do **not** ask questions.\n"
+                "- If the teacher says **'FINISHED'** or indicates that the tutorial is over, thank them politely and say nothing more.\n\n"
+                "📝 Respond in character as a student — no system-level messages or meta-comments. Keep responses short and focused.\n"
                 "Teacher: {instruction}\n"
                 "Learner:"
             ),
@@ -31,6 +33,10 @@ class LearnerLLMAgent:
     def respond(self, data: dict) -> str:
         try:
             learner_response = self.chain.invoke({"instruction": data["instruction"]})['text']
+            learner_response = learner_response.encode('utf-8').decode('unicode_escape')
+            # Removing non-ASCII characters using regex
+            learner_response = re.sub(r'[^\x00-\x7F]+', '', learner_response)
+
         except:
             print('Learner:INVOKE:ERR', data)
 

@@ -1,7 +1,7 @@
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from utils.util import setup_llm_and_embeddings
-
+import re
 
 # Teacher Agent
 class TeacherLLMAgent:
@@ -14,11 +14,11 @@ class TeacherLLMAgent:
             template=(
                 "You are an expert 🤖 teacher guiding a learner step by step through a tutorial via multi-turn conversations.\n\n"
                 "🎯 Your role:\n"
-                "- Provide clear instructions for the current step.\n"
-                "- Answer any learner questions.\n"
-                "- If the learner asks a question **before you’ve given detailed instructions** or something **irrelevant**, gently guide them back to the tutorial. \n"
-                "- Acknowledge completion by appending the token 'FINISHED' to the response if the final step has been learned and the student has no further questions.\n"
+                "- Answer learner questions related to the instructions **as the first priority**. \n"
+                "- If the learner requests to move on without asking questions, provide the current step’s instruction directly.\n"
+                "- Once the final step has been completed and the learner has no further questions, acknowledge completion by appending the token 'FINISHED' to your response.\n"
                 "- Highlight key phrases in your response if they appear in the tutorial.\n\n"
+                 "📝 Respond in character as a teacher — no system-level messages or meta-comments. Keep responses short and focused.\n"
                 "📖 Tutorial Summary: {summary}\n"
                 "🔹 Step {current_step_index}: {current_step_content}\n"
                 "Learner: {user_utterance}\n"
@@ -39,6 +39,9 @@ class TeacherLLMAgent:
             'user_utterance': data['user_utterance']
         }
         teacher_response = self.chain.invoke(data)['text']
+        teacher_response = teacher_response.encode('utf-8').decode('unicode_escape')
+        # Removing non-ASCII characters using regex
+        teacher_response = re.sub(r'[^\x00-\x7F]+', '', teacher_response)
         print('[[🤖 Teacher]]', teacher_response)
         return teacher_response
 

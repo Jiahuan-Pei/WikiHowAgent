@@ -54,9 +54,9 @@ def count_gpu_availability():
 def count_cpu_availability():
     """Return the number of available CPUs."""
     # Get the total CPUs on the node (for information only)
-    logger.info(f"Number of available CPUs per node={mp.cpu_count()}")
+    print(f"Number of available CPUs per node={mp.cpu_count()}")
     # Get the actual number of CPUs allocated by Slurm
-    logger.info(f"Number of CPUs allocated by Slurm={int(os.environ.get('SLURM_CPUS_PER_TASK', 1))}")
+    print(f"Number of CPUs allocated by Slurm={int(os.environ.get('SLURM_CPUS_PER_TASK', 1))}")
     return 
 
 def load_yaml(config_file='conf/ollama-llama3.yaml'):
@@ -182,5 +182,5 @@ def setup_logger(log_file=None, log_level=logging.INFO):
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
-    logger.info("Logger initialized. Logging to file: %s", log_file)
+    print("Logger initialized. Logging to file: %s", log_file)
     return logger

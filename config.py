@@ -17,7 +17,7 @@ parser.add_argument("--max_interaction", type=int, default=40, help="The max ste
 parser.add_argument("--config_teacher", type=str, default="conf/ollama-llama3.yaml", help="Config file for teacher agent.")
 parser.add_argument("--config_learner", type=str, default="conf/ollama-llama3.yaml", help="Config file for learner agent.")
 parser.add_argument("--config_evaluator", type=str, default="conf/ollama-llama3.yaml", help="Config file for evaluator agent")
-parser.add_argument("--manager", type=str, default="agent", help="'agent' or 'workflow'")
+parser.add_argument("--manager", type=str, default="workflow", help="'agent' or 'workflow'")
 parser.add_argument("--processes", type=int, default=min(mp.cpu_count() or 8, 8), help="Number of mutliprocessing.")
 parser.add_argument("--batch_size", type=int, default=64, help="Number of batch size.")    
 parser.add_argument("--skip_existing", action="store_true", help="Skip the generation of exisiting conversation nor not.")

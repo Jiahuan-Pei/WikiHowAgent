@@ -12,7 +12,18 @@ from agents.evaluator_agent import ConversationEvaluator
 
 
 class LearningState(TypedDict):
-    """State representation of the learning process."""
+    """State representation of the learning process.
+    The state is a dictionary holding everything the agents need to continue the conversation:
+    - messages: the entire history
+    - current_step_index: progress through the tutorial
+    - needs_clarification: whether learner needs clarification
+    - finished: whether conversation should end
+    - next_node: decision routing
+    💡 Update state based on the effect of the node you're in, not based on what the next node will do.
+    > The teacher node should update current_step_index, finished, needs_clarification
+    > The learner node should update needs_clarification (based on whether the response has a ?)
+    > The manager or dialogue_policy only decides routing — it shouldn't mutate state
+    """
     messages: Annotated[List, add_messages]  # Conversation history
     summary: str
     tutorial: List[str]
@@ -20,45 +31,73 @@ class LearningState(TypedDict):
     needs_clarification: bool
     finished: bool
 
-
 def teacher_node(state: LearningState) -> LearningState:
-    """Handles teacher responses and tutorial progression."""
-    messages, summary, tutorial, current_step_index, needs_clarification = (
-        state["messages"], state["summary"], state["tutorial"], state["current_step_index"], state["needs_clarification"]
-    )
+    messages = state["messages"]
+    summary = state["summary"]
+    tutorial = state["tutorial"]
+    current_step_index = state["current_step_index"]
+    finished = False
     teacher_agent = TeacherLLMAgent(config=config_teacher)
 
-    if current_step_index >= len(tutorial):
-        last_message = messages[-1] if messages else None
-        needs_clarification = "?" in last_message.content if last_message else False
-        response = ""
-        if last_message and needs_clarification:
-            response += teacher_agent.respond({
+    last_message = messages[-1] if messages else None
+    needs_clarification = False
+    response_parts = []
+
+    # Check if learner asked a question
+    if last_message and isinstance(last_message, HumanMessage):
+        needs_clarification = '?' in last_message.content and 'next step' not in last_message.content
+
+    # If this is the very beginning, start the tutorial
+    if current_step_index == 0 and last_message is None:
+        instruction = tutorial[0]
+        response_parts.append(f"Let's begin: {instruction}. BEGIN")
+        current_step_index += 1  # move to next step
+    # If tutorial is complete
+    elif current_step_index >= len(tutorial):
+        if needs_clarification and last_message:
+            clarification = teacher_agent.respond({
                 "summary": summary,
-                "current_step_index": current_step_index,
+                "current_step_index": current_step_index - 1,
                 "current_step_content": tutorial[-1],
                 "user_utterance": last_message.content
-            }) + '\n'
-        response += "We've reached the end of the tutorial. Bye! FINISHED"
-        state["finished"] = True  
-        state["needs_clarification"] = False
+            })
+            response_parts.append(clarification)
+        response_parts.append("We've reached the end of the tutorial. Bye! FINISHED")
+        finished = True
+        needs_clarification = False
     else:
-        current_step_content = tutorial[current_step_index]
-        last_message = messages[-1] if messages else None
-        if last_message is None:
-            response = f"Let's begin: {current_step_content}. BEGIN"
-            state["current_step_index"] += 1
-        elif isinstance(last_message, HumanMessage):
-            response = teacher_agent.respond({
+        # If learner has a question, respond to it, but do NOT advance the step
+        if needs_clarification and last_message:
+            clarification = teacher_agent.respond({
                 "summary": summary,
                 "current_step_index": current_step_index,
-                "current_step_content": current_step_content,
+                "current_step_content": tutorial[current_step_index],
                 "user_utterance": last_message.content
             })
-            needs_clarification = "?" in last_message.content
-    
-    messages.append(AIMessage(content=response))
-    return {**state, "messages": messages, "needs_clarification": needs_clarification}
+            response_parts.append(clarification)
+        else:
+            # Provide the next instruction, then advance
+            instruction = teacher_agent.respond({
+                "summary": summary,
+                "current_step_index": current_step_index,
+                "current_step_content": tutorial[current_step_index],
+                "user_utterance": last_message.content if last_message else ""
+            })
+            response_parts.append(instruction)
+            current_step_index += 1  # advance only if no question
+            needs_clarification = False
+
+    messages.append(AIMessage(content="\n".join(response_parts)))
+
+    return {
+        **state,
+        "messages": messages,
+        "current_step_index": current_step_index,
+        "needs_clarification": needs_clarification,
+        "finished": finished,
+    }
+
+
 
 
 def learner_node(state: LearningState) -> LearningState:
@@ -67,16 +106,13 @@ def learner_node(state: LearningState) -> LearningState:
     learner_agent = LearnerLLMAgent(config=config_learner)
     last_message = messages[-1] if messages else None
 
-    response = ""
     if isinstance(last_message, AIMessage):
         response = learner_agent.respond({"instruction": last_message.content})
-    messages.append(HumanMessage(content=response))
-
-    if "NEXT" in response:
-        state["needs_clarification"] = False
-        state["current_step_index"] += 1
+        messages.append(HumanMessage(content=response))
+        return {**state, "messages": messages}
     
-    return {**state, "messages": messages}
+    return state  # No valid teacher message to respond to
+
 
 
 def dialogue_policy(state: LearningState) -> Literal["teacher", "learner", "__end__"]:
@@ -95,12 +131,9 @@ def dialogue_policy(state: LearningState) -> Literal["teacher", "learner", "__en
     if len(state["messages"]) >= args.max_interaction:
         print("⚠️ Max interaction hit!")
         return "__end__"
-
-    if any("finished" in m.content.lower() for m in state["messages"]):
-        state["finished"] = True
-        return "__end__"
     
     if state["needs_clarification"]:
+        print("📍 Need clarification!")
         return "teacher"
     
     last_message = state["messages"][-1] if state["messages"] else None
@@ -116,12 +149,12 @@ def generate_single_conversation(summary: str, tutorial: List[str]) -> List[str]
     graph_builder.add_edge("teacher", "learner")
     graph_builder.add_edge(START, "teacher")
 
-    chat_graph = graph_builder.compile().with_config(recursion_limit=50)
+    chat_graph = graph_builder.compile().with_config(recursion_limit=100)
     
     if args.plot_agent_workflow:
         try:
             image_data = chat_graph.get_graph().draw_mermaid_png()
-            with open("figure/chat_graph_simulation.png", "wb") as f:
+            with open("figure/chat_graph_simulation_workflow.png", "wb") as f:
                 f.write(image_data)
         except Exception as e:
             logger.warning(f"Graph visualization failed: {e}")
