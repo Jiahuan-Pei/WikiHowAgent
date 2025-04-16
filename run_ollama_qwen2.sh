@@ -74,11 +74,11 @@ until curl -s http://localhost:11434/api/tags > /dev/null; do
 done
 echo "Ollama server is ready!"
 # 4.4 Pull LLM Model (Ensure Model is Downloaded) ---
-singularity exec --nv ollama_latest.sif ollama pull qwen2
+singularity exec --nv ollama_latest.sif ollama pull qwen2.5
 echo "Ollama model is downloaded!"
-singularity exec --nv ollama_latest.sif ollama run qwen2 --verbose
+singularity exec --nv ollama_latest.sif ollama run qwen2.5 --verbose
 echo "Test Ollama model inference time!"
-time singularity exec --nv ollama_latest.sif ollama run qwen2 "Explain quantum mechanics in 100 words."
+time singularity exec --nv ollama_latest.sif ollama run qwen2.5 "Explain quantum mechanics in 100 words."
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package

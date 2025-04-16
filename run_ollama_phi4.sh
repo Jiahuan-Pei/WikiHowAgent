@@ -87,7 +87,7 @@ export PYTHONPATH=$PWD  # Ensure Python finds your package
 # DEBUG: fast run of 6 doc and skip existing generation
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --skip_existing_gen
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 128 --start_doc_id 370 --config_teacher conf/ollama-phi4.yaml --config_learner conf/ollama-phi4.yaml --config_evaluator conf/ollama-phi4.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 128 --config_teacher conf/ollama-phi4.yaml --config_learner conf/ollama-phi4.yaml --config_evaluator conf/ollama-phi4.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

@@ -38,7 +38,7 @@ class LearnerLLMAgent:
             learner_response = re.sub(r'[^\x00-\x7F]+', '', learner_response)
 
         except:
-            print('Learner:INVOKE:ERR', data)
+            print('Learner:INVOKE:ERR', data, 'Please check if you have the current llm or not.')
 
         print('<<🤔 Learner>>', learner_response)
         return learner_response

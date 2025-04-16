@@ -59,4 +59,4 @@ time singularity exec --nv ollama_latest.sif ollama run llama3 "Explain quantum 
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size=128  --config_teacher conf/openai-gpt-3.5.yaml --config_learner conf/openai-gpt-3.5.yaml --config_evaluator conf/openai-gpt-3.5.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size=128  --config_teacher conf/openai-gpt.yaml --config_learner conf/openai-gpt.yaml --config_evaluator conf/openai-gpt.yaml
