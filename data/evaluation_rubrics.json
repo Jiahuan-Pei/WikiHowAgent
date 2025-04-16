@@ -1,0 +1,98 @@
+{
+    "Clarity": {
+        "role": "teacher",
+        "reference": "no",
+        "question": "Is the teacher’s instruction clear, well-structured, and easy to understand?",
+        "rubric": [
+            "5 (Excellent): The instruction is highly clear, logically structured, and easy to understand. No ambiguity, and key concepts are well explained.",
+            "4 (Good): The instruction is mostly clear, with minor ambiguities or areas that could be refined. The overall structure is logical.",
+            "3 (Average): The instruction is somewhat clear, but there are noticeable ambiguities or structural issues that may cause some confusion.",
+            "2 (Poor): The instruction is difficult to follow due to unclear phrasing, missing details, or a lack of logical flow. Learners may struggle to understand.",
+            "1 (Very Poor): The instruction is highly unclear, disorganized, or misleading. Learners are likely to be confused or misunderstand key points."
+        ]
+    },
+    "Truthfulness": {
+        "role": "teacher",
+        "reference": "tutorial",
+        "question": "Does the generated response stay within the scope of the reference tutorial?",
+        "rubric": [
+            "5 (Perfectly Factual): All information is completely accurate, directly aligned with the given tutorial or trusted sources. No hallucinations or misleading details.",
+            "4 (Mostly Factual with Minor Errors): The response is largely correct but may contain small factual errors, slightly ambiguous statements, or minor misinterpretations.",
+            "3 (Partially Factual but Some Inconsistencies): Includes some correct information but also contains notable factual errors, misrepresentations, or unsupported claims.",
+            "2 (Mostly Inaccurate): A majority of the response is incorrect or misleading, with only a small portion being factually accurate.",
+            "1 (Completely Incorrect / Hallucinated): The response is entirely false, misleading, or contradicts known facts or the provided tutorial."
+        ]
+    },
+    "Engagement": {
+        "role": "learner",
+        "reference": "no",
+        "question": "Does the learner actively participate by asking meaningful questions or responding thoughtfully?",
+        "rubric": [
+            "5 (Excellent): The learner frequently asks insightful questions, provides thoughtful responses, and demonstrates strong engagement.",
+            "4 (Good): The learner engages well, asking relevant questions and responding appropriately, with only minor missed opportunities.",
+            "3 (Average): The learner participates but does not consistently ask meaningful questions or provide detailed responses.",
+            "2 (Poor): The learner shows minimal engagement, rarely asking questions or contributing meaningfully to the discussion.",
+            "1 (Very Poor): The learner is disengaged, does not ask questions, and provides minimal or no meaningful responses."
+        ]
+    },
+    "Coherence": {
+        "role": "conversation",
+        "reference": "no",
+        "question": "Is the conversation logically structured, with smooth transitions between steps?",
+        "rubric": [
+            "5 (Excellent): The conversation is well-structured, with smooth transitions and a logical flow from one step to the next.",
+            "4 (Good): The conversation is mostly coherent, with only minor inconsistencies or abrupt transitions.",
+            "3 (Average): The conversation has some structural issues, with occasional jumps or awkward transitions.",
+            "2 (Poor): The conversation lacks logical flow, with multiple abrupt or confusing transitions.",
+            "1 (Very Poor): The conversation is highly disorganized, making it difficult to follow the sequence of steps."
+        ]
+    },
+    "Depth": {
+        "role": "conversation",
+        "reference": "no",
+        "question": "Does the conversation go beyond surface-level discussion and explore concepts in sufficient detail?",
+        "rubric": [
+            "5 (Excellent): The conversation explores concepts in-depth, with thorough explanations and critical thinking.",
+            "4 (Good): The conversation provides mostly in-depth discussion, but some areas could be explored further.",
+            "3 (Average): The conversation touches on key concepts but lacks depth in explanations or follow-up discussions.",
+            "2 (Poor): The conversation is mostly superficial, with little exploration beyond basic information.",
+            "1 (Very Poor): The conversation is highly shallow, lacking any meaningful discussion or explanation."
+        ]
+    },
+    "Relevance": {
+        "role": "conversation",
+        "reference": "no",
+        "question": "Do the responses stay on-topic and align with the tutorial’s instructions and context?",
+        "rubric": [
+            "5 (Excellent): The responses are consistently relevant and closely follow the tutorial's instructions and context.",
+            "4 (Good): The responses are mostly relevant, with only occasional minor deviations.",
+            "3 (Average): The responses are somewhat relevant but occasionally stray off-topic.",
+            "2 (Poor): The conversation frequently goes off-topic, with limited alignment to the tutorial's instructions.",
+            "1 (Very Poor): The responses are largely irrelevant, making it difficult to follow the intended learning path."
+        ]
+    },
+    "Progress": {
+        "role": "conversation",
+        "reference": "no",
+        "question": "Does the conversation effectively move forward through the tutorial steps in a logical manner?",
+        "rubric": [
+            "5 (Excellent): The conversation progresses efficiently, covering each step logically and without unnecessary repetition.",
+            "4 (Good): The conversation generally moves forward well, with only minor delays or repetitions.",
+            "3 (Average): The conversation progresses but sometimes gets stuck or moves inefficiently.",
+            "2 (Poor): The conversation struggles to move forward, often repeating steps or getting sidetracked.",
+            "1 (Very Poor): The conversation lacks clear progress, frequently revisiting previous steps or failing to complete the tutorial."
+        ]
+    },
+    "Naturalness": {
+        "role": "conversation",
+        "reference": "no",
+        "question": "Does the conversation feel fluid and human-like, avoiding robotic or overly scripted responses?",
+        "rubric": [
+            "5 (Excellent): The conversation feels natural and human-like, with engaging and varied responses.",
+            "4 (Good): The conversation is mostly natural, but some responses feel slightly mechanical or repetitive.",
+            "3 (Average): The conversation has a mix of natural and robotic responses, with some unnatural phrasing.",
+            "2 (Poor): The conversation often feels artificial or scripted, with little variation in responses.",
+            "1 (Very Poor): The conversation is highly robotic or formulaic, making it feel unnatural and disengaging."
+        ]
+    }
+}

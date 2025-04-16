@@ -1,0 +1,5400 @@
+{
+  "Categories": {
+    "children": [
+      "Hobbies and Crafts",
+      "Arts and Entertainment",
+      "Philosophy and Religion",
+      "Relationships",
+      "Finance and Business",
+      "Sports and Fitness",
+      "Home and Garden",
+      "Family Life",
+      "Pets and Animals",
+      "Holidays and Traditions",
+      "Health",
+      "Work World",
+      "Cars & Other Vehicles",
+      "Travel",
+      "Youth",
+      "Computers and Electronics",
+      "Education and Communications",
+      "Personal Care and Style",
+      "Food and Entertaining"
+    ],
+    "parents": []
+  },
+  "Home and Garden": {
+    "children": [
+      "Yard and Outdoors",
+      "Heating and Cooling",
+      "Tools",
+      "Home Appliances",
+      "Home Maintenance",
+      "Home Improvements",
+      "Housekeeping",
+      "DIY",
+      "Gardening",
+      "Lighting",
+      "Moving and Removals",
+      "Disaster Preparedness",
+      "Sustainable Living",
+      "Swimming Pools"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Housekeeping": {
+    "children": [
+      "Stain Removal",
+      "Home Organization",
+      "Laundry",
+      "Pest Control",
+      "Cleaning",
+      "Household Waste Disposal",
+      "Tableware"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Pest Control": {
+    "children": [
+      "Ant and Termite Control"
+    ],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "Ant and Termite Control": {
+    "children": [],
+    "parents": [
+      "Pest Control"
+    ]
+  },
+  "Pets and Animals": {
+    "children": [
+      "Crustaceans",
+      "Rabbits",
+      "Fish",
+      "Birds",
+      "Pet Hazards",
+      "Rodents",
+      "Cats",
+      "Dogs",
+      "Ferrets",
+      "Reptiles",
+      "General Pet Health",
+      "Wildlife",
+      "Animal Rescue",
+      "Bugs",
+      "Snails and Slugs",
+      "Hedgehogs"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Dogs": {
+    "children": [
+      "Dog Behavior",
+      "Canine Health",
+      "Dog Grooming"
+    ],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Yard and Outdoors": {
+    "children": [
+      "Lawn Care"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Lawn Care": {
+    "children": [
+      "Lawn Problems"
+    ],
+    "parents": [
+      "Yard and Outdoors"
+    ]
+  },
+  "Dog Grooming": {
+    "children": [
+      "Washing Dogs"
+    ],
+    "parents": [
+      "Dogs"
+    ]
+  },
+  "Washing Dogs": {
+    "children": [],
+    "parents": [
+      "Dog Grooming"
+    ]
+  },
+  "Finance and Business": {
+    "children": [
+      "Investments and Trading",
+      "Fundraising and Charity",
+      "Finance Careers",
+      "Managing Your Money",
+      "Legal Matters",
+      "Real Estate",
+      "Banks and Financial Institutions",
+      "Risk Management",
+      "Business",
+      "Shopping",
+      "Government"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Managing Your Money": {
+    "children": [
+      "Making Money"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Making Money": {
+    "children": [
+      "Selling"
+    ],
+    "parents": [
+      "Managing Your Money"
+    ]
+  },
+  "Selling": {
+    "children": [],
+    "parents": [
+      "Making Money"
+    ]
+  },
+  "Computers and Electronics": {
+    "children": [
+      "Internet",
+      "Robots",
+      "Software",
+      "Video",
+      "Computers",
+      "Technology Hacks",
+      "Telephones",
+      "Operating Systems",
+      "Basic Computer Skills",
+      "Television",
+      "Audio",
+      "Computer Networking",
+      "Consumer Electronics"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Computers": {
+    "children": [
+      "Building Your Own Computer",
+      "Tablet Computers",
+      "Laptops"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Technology Hacks": {
+    "children": [],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Internet": {
+    "children": [
+      "Website Application Instructions",
+      "Social Media",
+      "Internet Security",
+      "Search Engines",
+      "Downloading",
+      "Online Communications"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Arts and Entertainment": {
+    "children": [
+      "Role Playing",
+      "Performing Arts",
+      "Costumes",
+      "Movies",
+      "Concerts",
+      "Fun Activities",
+      "Books",
+      "Music",
+      "Celebrities",
+      "Artwork",
+      "Fandom",
+      "Cosplay"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Fun Activities": {
+    "children": [
+      "Pranks (Practical Jokes)",
+      "Boredom Busters"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Household Waste Disposal": {
+    "children": [
+      "Waste Reduction"
+    ],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "Moving and Removals": {
+    "children": [
+      "Home Packing"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Home Packing": {
+    "children": [],
+    "parents": [
+      "Moving and Removals"
+    ]
+  },
+  "Gardening": {
+    "children": [
+      "Gardening Tools",
+      "Planting and Growing",
+      "Garden Pests and Weeds"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Garden Pests and Weeds": {
+    "children": [],
+    "parents": [
+      "Gardening"
+    ]
+  },
+  "Planting and Growing": {
+    "children": [
+      "Growing Succulents and Cacti",
+      "Growing Flowers",
+      "Growing Trees and Shrubs"
+    ],
+    "parents": [
+      "Gardening"
+    ]
+  },
+  "Growing Trees and Shrubs": {
+    "children": [
+      "Tree Services"
+    ],
+    "parents": [
+      "Planting and Growing"
+    ]
+  },
+  "Tree Services": {
+    "children": [],
+    "parents": [
+      "Growing Trees and Shrubs"
+    ]
+  },
+  "Lawn Problems": {
+    "children": [],
+    "parents": [
+      "Lawn Care"
+    ]
+  },
+  "Reptiles": {
+    "children": [
+      "Lizards",
+      "Snakes"
+    ],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Lizards": {
+    "children": [],
+    "parents": [
+      "Reptiles"
+    ]
+  },
+  "Sports and Fitness": {
+    "children": [
+      "Outdoor Recreation",
+      "Team Sports",
+      "Individual Sports",
+      "Personal Fitness"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Outdoor Recreation": {
+    "children": [
+      "Outdoor Safety",
+      "Camping",
+      "Guns and Shooting"
+    ],
+    "parents": [
+      "Sports and Fitness"
+    ]
+  },
+  "Outdoor Safety": {
+    "children": [
+      "Animal and Insect Safety"
+    ],
+    "parents": [
+      "Outdoor Recreation"
+    ]
+  },
+  "Animal and Insect Safety": {
+    "children": [
+      "Bites and Stings"
+    ],
+    "parents": [
+      "Outdoor Safety"
+    ]
+  },
+  "Bites and Stings": {
+    "children": [
+      "Plant Stings and Rashes"
+    ],
+    "parents": [
+      "Animal and Insect Safety"
+    ]
+  },
+  "Plant Stings and Rashes": {
+    "children": [],
+    "parents": [
+      "Bites and Stings"
+    ]
+  },
+  "Snakes": {
+    "children": [],
+    "parents": [
+      "Reptiles"
+    ]
+  },
+  "Gardening Tools": {
+    "children": [],
+    "parents": [
+      "Gardening"
+    ]
+  },
+  "Growing Flowers": {
+    "children": [
+      "Roses"
+    ],
+    "parents": [
+      "Planting and Growing"
+    ]
+  },
+  "Roses": {
+    "children": [],
+    "parents": [
+      "Growing Flowers"
+    ]
+  },
+  "Growing Succulents and Cacti": {
+    "children": [],
+    "parents": [
+      "Planting and Growing"
+    ]
+  },
+  "Education and Communications": {
+    "children": [
+      "Contacting Companies",
+      "Personal Development",
+      "Stationery",
+      "Conscious Media Consumption",
+      "Academic Careers",
+      "Research",
+      "News",
+      "World Languages",
+      "College University and Postgraduate",
+      "Postal System",
+      "Studying",
+      "Presentations",
+      "Social Activism",
+      "Letters",
+      "Thinking Skills",
+      "Reading",
+      "Writing",
+      "Communication Skills",
+      "Teaching"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Studying": {
+    "children": [
+      "Tests and Exams",
+      "Mathematics",
+      "Science",
+      "Marks and Grades",
+      "English",
+      "Law Studies"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Science": {
+    "children": [
+      "Science Writing",
+      "Biology",
+      "Physics",
+      "Meteorology"
+    ],
+    "parents": [
+      "Studying"
+    ]
+  },
+  "Biology": {
+    "children": [
+      "Botany"
+    ],
+    "parents": [
+      "Science"
+    ]
+  },
+  "Botany": {
+    "children": [
+      "Plant Identification"
+    ],
+    "parents": [
+      "Biology"
+    ]
+  },
+  "Plant Identification": {
+    "children": [],
+    "parents": [
+      "Botany"
+    ]
+  },
+  "Personal Fitness": {
+    "children": [
+      "Gym",
+      "Motivation to Exercise",
+      "Building Muscle & Strength",
+      "Warm Ups Stretching and Flexibility"
+    ],
+    "parents": [
+      "Sports and Fitness"
+    ]
+  },
+  "Individual Sports": {
+    "children": [
+      "Swimming",
+      "Walking",
+      "Combat Sports"
+    ],
+    "parents": [
+      "Sports and Fitness"
+    ]
+  },
+  "Building Muscle & Strength": {
+    "children": [
+      "Upper Body Strengthening and Toning",
+      "Weights for Strength Training",
+      "Abdominal Exercises"
+    ],
+    "parents": [
+      "Personal Fitness"
+    ]
+  },
+  "Upper Body Strengthening and Toning": {
+    "children": [],
+    "parents": [
+      "Building Muscle & Strength"
+    ]
+  },
+  "Work World": {
+    "children": [
+      "Workplace Management Skills",
+      "Socializing at Work",
+      "Working Abroad",
+      "Job Skills",
+      "Job Search",
+      "Occupations",
+      "Job Attendance",
+      "Workplace Conflicts Coping and Issues"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Occupations": {
+    "children": [
+      "Trade Occupations",
+      "Science Careers",
+      "Animal Care and Wildlife Occupations",
+      "Farming",
+      "Sports Careers",
+      "Transport Careers"
+    ],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Sports Careers": {
+    "children": [
+      "Teaching Sports and Fitness"
+    ],
+    "parents": [
+      "Occupations"
+    ]
+  },
+  "Teaching Sports and Fitness": {
+    "children": [],
+    "parents": [
+      "Sports Careers"
+    ]
+  },
+  "Weights for Strength Training": {
+    "children": [],
+    "parents": [
+      "Building Muscle & Strength"
+    ]
+  },
+  "Health": {
+    "children": [
+      "Skin Health",
+      "Coping with Illness",
+      "Nervous System Health",
+      "Ear Health",
+      "Alternative Health",
+      "Travel Health",
+      "Sleep Health",
+      "Psychological Health",
+      "Men's Health",
+      "Musculoskeletal System Health",
+      "Women\u2019s Health",
+      "Reproductive System Health",
+      "Medicines and Drugs",
+      "Nutrition and Food Health",
+      "Workplace Health and Safety",
+      "First Aid and Emergency Health Care",
+      "Infectious Diseases"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Nutrition and Food Health": {
+    "children": [
+      "Lifestyle Diets",
+      "Weight Management",
+      "Water Health Benefits",
+      "Dietary Nutrients",
+      "Healthy Eating"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Weight Management": {
+    "children": [
+      "Losing Weight"
+    ],
+    "parents": [
+      "Nutrition and Food Health"
+    ]
+  },
+  "Team Sports": {
+    "children": [
+      "Hockey"
+    ],
+    "parents": [
+      "Sports and Fitness"
+    ]
+  },
+  "Warm Ups Stretching and Flexibility": {
+    "children": [],
+    "parents": [
+      "Personal Fitness"
+    ]
+  },
+  "Water Health Benefits": {
+    "children": [],
+    "parents": [
+      "Nutrition and Food Health"
+    ]
+  },
+  "Personal Care and Style": {
+    "children": [
+      "Personal Hygiene",
+      "Massage",
+      "Fashion",
+      "Clothing",
+      "Hair Care",
+      "Personal Safety",
+      "Tattoos and Piercing",
+      "Spa Treatments",
+      "Looking Good",
+      "Jewelry",
+      "Naturism",
+      "Skin Care"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Fashion": {
+    "children": [
+      "Body Type and Fashion",
+      "Fashion Styles",
+      "Sexy Fashion Style"
+    ],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Body Type and Fashion": {
+    "children": [
+      "Changing Your Body Shape",
+      "Curve Fashion"
+    ],
+    "parents": [
+      "Fashion"
+    ]
+  },
+  "Changing Your Body Shape": {
+    "children": [],
+    "parents": [
+      "Body Type and Fashion"
+    ]
+  },
+  "Celebrities": {
+    "children": [
+      "Contacting Celebrities",
+      "Celebrity Style"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Contacting Celebrities": {
+    "children": [
+      "Contacting Athletes"
+    ],
+    "parents": [
+      "Celebrities"
+    ]
+  },
+  "Contacting Athletes": {
+    "children": [],
+    "parents": [
+      "Contacting Celebrities"
+    ]
+  },
+  "Swimming": {
+    "children": [
+      "Swimming Safety"
+    ],
+    "parents": [
+      "Individual Sports"
+    ]
+  },
+  "Swimming Safety": {
+    "children": [],
+    "parents": [
+      "Swimming"
+    ]
+  },
+  "Hockey": {
+    "children": [
+      "Ice Hockey"
+    ],
+    "parents": [
+      "Team Sports"
+    ]
+  },
+  "Ice Hockey": {
+    "children": [],
+    "parents": [
+      "Hockey"
+    ]
+  },
+  "Family Life": {
+    "children": [
+      "In Laws",
+      "Retirement",
+      "Weddings",
+      "Family Vacations",
+      "Parenting",
+      "Married Life",
+      "Death",
+      "Genealogy"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Death": {
+    "children": [
+      "Grief",
+      "Funerals",
+      "Wills and Testaments"
+    ],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "First Aid and Emergency Health Care": {
+    "children": [
+      "Wound First Aid"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Government": {
+    "children": [
+      "Vital Records",
+      "Careers in Government"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Vital Records": {
+    "children": [
+      "Name Changes"
+    ],
+    "parents": [
+      "Government"
+    ]
+  },
+  "Genealogy": {
+    "children": [],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Married Life": {
+    "children": [
+      "Wedding Anniversaries",
+      "Marriage Problems"
+    ],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Marriage Problems": {
+    "children": [
+      "Saving a Marriage"
+    ],
+    "parents": [
+      "Married Life"
+    ]
+  },
+  "Legal Matters": {
+    "children": [
+      "Law Enforcement",
+      "Contracts and Legal Agreements",
+      "Intellectual Property"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Psychological Health": {
+    "children": [
+      "Psychological Resilience",
+      "Relaxation",
+      "Personality Traits",
+      "Emotions and Feelings",
+      "Stress Management",
+      "Cultural Adjustment"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Emotions and Feelings": {
+    "children": [
+      "Fear",
+      "Emotional Detachment",
+      "Love",
+      "Gratitude",
+      "Confidence",
+      "Happiness",
+      "Trust",
+      "Emotional Pain",
+      "Empathy"
+    ],
+    "parents": [
+      "Psychological Health"
+    ]
+  },
+  "Fear": {
+    "children": [
+      "Phobias"
+    ],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Phobias": {
+    "children": [],
+    "parents": [
+      "Fear"
+    ]
+  },
+  "Teaching": {
+    "children": [
+      "Teacher Resources"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Travel": {
+    "children": [
+      "Road Travel",
+      "Travel Safety",
+      "Destinations",
+      "United States Travel",
+      "Official Travel Documentation",
+      "Navigation and Directions",
+      "Solo Travel"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Official Travel Documentation": {
+    "children": [],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "Writing": {
+    "children": [
+      "Writing Techniques",
+      "Critical Reviews",
+      "Fiction Writing",
+      "Technical Writing",
+      "Article Writing",
+      "Writing Genres",
+      "Official Writing"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Writing Genres": {
+    "children": [
+      "Writing for Children"
+    ],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Writing for Children": {
+    "children": [],
+    "parents": [
+      "Writing Genres"
+    ]
+  },
+  "Hobbies and Crafts": {
+    "children": [
+      "Kite Making and Kite Flying",
+      "Amateur Radio",
+      "Toys",
+      "Collecting",
+      "Photography",
+      "Flags",
+      "Model Making",
+      "Astronomy",
+      "Knot Tying",
+      "Woodworking",
+      "Drawing",
+      "Crafts",
+      "Games",
+      "Digital Technology Art and Craft Projects"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Drawing": {
+    "children": [
+      "Drawing Text and Lettering",
+      "Drawing Styles",
+      "Learning to Draw",
+      "Drawing People"
+    ],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Learning to Draw": {
+    "children": [],
+    "parents": [
+      "Drawing"
+    ]
+  },
+  "Fandom": {
+    "children": [],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Drawing People": {
+    "children": [],
+    "parents": [
+      "Drawing"
+    ]
+  },
+  "Drawing Styles": {
+    "children": [],
+    "parents": [
+      "Drawing"
+    ]
+  },
+  "Stress Management": {
+    "children": [],
+    "parents": [
+      "Psychological Health"
+    ]
+  },
+  "Mathematics": {
+    "children": [
+      "Probability and Statistics",
+      "Geometry"
+    ],
+    "parents": [
+      "Studying"
+    ]
+  },
+  "Geometry": {
+    "children": [
+      "Calculating Volume and Area"
+    ],
+    "parents": [
+      "Mathematics"
+    ]
+  },
+  "Calculating Volume and Area": {
+    "children": [
+      "Volume"
+    ],
+    "parents": [
+      "Geometry"
+    ]
+  },
+  "Volume": {
+    "children": [],
+    "parents": [
+      "Calculating Volume and Area"
+    ]
+  },
+  "Postal System": {
+    "children": [],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Physics": {
+    "children": [],
+    "parents": [
+      "Science"
+    ]
+  },
+  "Crafts": {
+    "children": [
+      "Animal Art and Craft",
+      "Sewing",
+      "Craft for Kids",
+      "Paper Craft",
+      "Nature Crafts"
+    ],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Games": {
+    "children": [
+      "Video Games",
+      "Party Games",
+      "Board Games",
+      "Backyard Games"
+    ],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Video Games": {
+    "children": [
+      "PlayStation Video Game Consoles",
+      "PC Games",
+      "Xbox",
+      "Emulators and Roms"
+    ],
+    "parents": [
+      "Games"
+    ]
+  },
+  "PC Games": {
+    "children": [
+      "Online Games"
+    ],
+    "parents": [
+      "Video Games"
+    ]
+  },
+  "Online Games": {
+    "children": [
+      "Minecraft"
+    ],
+    "parents": [
+      "PC Games"
+    ]
+  },
+  "Minecraft": {
+    "children": [
+      "Minecraft Building"
+    ],
+    "parents": [
+      "Online Games"
+    ]
+  },
+  "Home Organization": {
+    "children": [],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "Artwork": {
+    "children": [
+      "Careers in Art",
+      "Art Studies",
+      "Sculpting",
+      "Painting",
+      "Framing"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Painting": {
+    "children": [],
+    "parents": [
+      "Artwork"
+    ]
+  },
+  "Framing": {
+    "children": [],
+    "parents": [
+      "Artwork"
+    ]
+  },
+  "Intellectual Property": {
+    "children": [
+      "Copyright Law"
+    ],
+    "parents": [
+      "Legal Matters"
+    ]
+  },
+  "Copyright Law": {
+    "children": [],
+    "parents": [
+      "Intellectual Property"
+    ]
+  },
+  "Stationery": {
+    "children": [
+      "Pens"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Pens": {
+    "children": [],
+    "parents": [
+      "Stationery"
+    ]
+  },
+  "Careers in Art": {
+    "children": [
+      "Photography Careers"
+    ],
+    "parents": [
+      "Artwork"
+    ]
+  },
+  "Performing Arts": {
+    "children": [
+      "Theater"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Theater": {
+    "children": [],
+    "parents": [
+      "Performing Arts"
+    ]
+  },
+  "Science Writing": {
+    "children": [],
+    "parents": [
+      "Science"
+    ]
+  },
+  "Teacher Resources": {
+    "children": [],
+    "parents": [
+      "Teaching"
+    ]
+  },
+  "World Languages": {
+    "children": [
+      "German",
+      "Spanish",
+      "Multiple Language Guides",
+      "English Dialects and Slang"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "English Dialects and Slang": {
+    "children": [],
+    "parents": [
+      "World Languages"
+    ]
+  },
+  "Research": {
+    "children": [],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Presentations": {
+    "children": [],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Parenting": {
+    "children": [
+      "Raising Teens",
+      "Teaching Children Skills"
+    ],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Teaching Children Skills": {
+    "children": [],
+    "parents": [
+      "Parenting"
+    ]
+  },
+  "College University and Postgraduate": {
+    "children": [
+      "Academic Writing"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Academic Writing": {
+    "children": [
+      "Citation",
+      "Essays"
+    ],
+    "parents": [
+      "College University and Postgraduate"
+    ]
+  },
+  "Essays": {
+    "children": [
+      "Research Papers"
+    ],
+    "parents": [
+      "Academic Writing"
+    ]
+  },
+  "Research Papers": {
+    "children": [],
+    "parents": [
+      "Essays"
+    ]
+  },
+  "English": {
+    "children": [
+      "English Vocabulary",
+      "English Grammar",
+      "Studying Literature"
+    ],
+    "parents": [
+      "Studying"
+    ]
+  },
+  "English Grammar": {
+    "children": [
+      "Writing Paragraphs"
+    ],
+    "parents": [
+      "English"
+    ]
+  },
+  "Writing Paragraphs": {
+    "children": [],
+    "parents": [
+      "English Grammar"
+    ]
+  },
+  "Business": {
+    "children": [
+      "Business Skills",
+      "Starting a Business",
+      "Business Personnel",
+      "Business by Industry",
+      "Running a Business",
+      "Customer Relations"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Business Skills": {
+    "children": [
+      "Change Management",
+      "Meetings",
+      "Business Writing"
+    ],
+    "parents": [
+      "Business"
+    ]
+  },
+  "Business Writing": {
+    "children": [],
+    "parents": [
+      "Business Skills"
+    ]
+  },
+  "Personal Development": {
+    "children": [
+      "Showing Respect",
+      "Kindness",
+      "Personal Goals",
+      "Self Learning",
+      "Self Fulfillment",
+      "Humility",
+      "Creativity",
+      "Motivation",
+      "Routines and Habits",
+      "Maturity",
+      "Self Discovery",
+      "Intelligence"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Intelligence": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Law Studies": {
+    "children": [
+      "Legal Writing"
+    ],
+    "parents": [
+      "Studying"
+    ]
+  },
+  "Legal Writing": {
+    "children": [],
+    "parents": [
+      "Law Studies"
+    ]
+  },
+  "English Vocabulary": {
+    "children": [],
+    "parents": [
+      "English"
+    ]
+  },
+  "Critical Reviews": {
+    "children": [],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Social Activism": {
+    "children": [
+      "Human Rights"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Youth": {
+    "children": [
+      "Health for Teens and Kids",
+      "Youth Culture",
+      "Personal Space",
+      "School Stuff",
+      "You and Your Parents",
+      "Youth Dating",
+      "Personal Care for Youth",
+      "Money Management for Young People",
+      "Social Interactions for Youth"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "School Stuff": {
+    "children": [
+      "Surviving School",
+      "Dealing with Teachers",
+      "Academic Dishonesty"
+    ],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Academic Dishonesty": {
+    "children": [
+      "Cheating"
+    ],
+    "parents": [
+      "School Stuff"
+    ]
+  },
+  "Cheating": {
+    "children": [],
+    "parents": [
+      "Academic Dishonesty"
+    ]
+  },
+  "Citation": {
+    "children": [
+      "APA Style"
+    ],
+    "parents": [
+      "Academic Writing"
+    ]
+  },
+  "Job Skills": {
+    "children": [
+      "Self Management at Work",
+      "Teamwork",
+      "Job Strategies"
+    ],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Relationships": {
+    "children": [
+      "Marriage & Partnership",
+      "Self",
+      "Social Interactions",
+      "Relationship Issues",
+      "Managing Conflict and Difficult Interactions",
+      "LGBT",
+      "Dating",
+      "Friends",
+      "Sex & Intimacy"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Dating": {
+    "children": [
+      "Online Dating",
+      "Ideas for Dates",
+      "Love and Romance",
+      "Long Term Dating",
+      "Kissing"
+    ],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "News": {
+    "children": [
+      "News Writing"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "News Writing": {
+    "children": [],
+    "parents": [
+      "News"
+    ]
+  },
+  "Academic Careers": {
+    "children": [
+      "Teacher Careers"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Teacher Careers": {
+    "children": [],
+    "parents": [
+      "Academic Careers"
+    ]
+  },
+  "APA Style": {
+    "children": [],
+    "parents": [
+      "Citation"
+    ]
+  },
+  "Article Writing": {
+    "children": [],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Tests and Exams": {
+    "children": [
+      "Exam Revision"
+    ],
+    "parents": [
+      "Studying"
+    ]
+  },
+  "Exam Revision": {
+    "children": [],
+    "parents": [
+      "Tests and Exams"
+    ]
+  },
+  "Spanish": {
+    "children": [
+      "Spanish Phrases"
+    ],
+    "parents": [
+      "World Languages"
+    ]
+  },
+  "Spanish Phrases": {
+    "children": [],
+    "parents": [
+      "Spanish"
+    ]
+  },
+  "Fiction Writing": {
+    "children": [
+      "Fictional Languages"
+    ],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Fictional Languages": {
+    "children": [],
+    "parents": [
+      "Fiction Writing"
+    ]
+  },
+  "Official Writing": {
+    "children": [
+      "Report Writing"
+    ],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Report Writing": {
+    "children": [],
+    "parents": [
+      "Official Writing"
+    ]
+  },
+  "Drawing Text and Lettering": {
+    "children": [
+      "Handwriting"
+    ],
+    "parents": [
+      "Drawing"
+    ]
+  },
+  "Handwriting": {
+    "children": [],
+    "parents": [
+      "Drawing Text and Lettering"
+    ]
+  },
+  "Marks and Grades": {
+    "children": [
+      "Getting Good Grades"
+    ],
+    "parents": [
+      "Studying"
+    ]
+  },
+  "Getting Good Grades": {
+    "children": [],
+    "parents": [
+      "Marks and Grades"
+    ]
+  },
+  "Cultural Adjustment": {
+    "children": [],
+    "parents": [
+      "Psychological Health"
+    ]
+  },
+  "Letters": {
+    "children": [],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Multiple Language Guides": {
+    "children": [],
+    "parents": [
+      "World Languages"
+    ]
+  },
+  "Music": {
+    "children": [
+      "Singing",
+      "Music Production",
+      "Music Techniques",
+      "Musical Instruments",
+      "Songs"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Singing": {
+    "children": [
+      "Singing Technique"
+    ],
+    "parents": [
+      "Music"
+    ]
+  },
+  "Singing Technique": {
+    "children": [
+      "Voice Training"
+    ],
+    "parents": [
+      "Singing"
+    ]
+  },
+  "Voice Training": {
+    "children": [],
+    "parents": [
+      "Singing Technique"
+    ]
+  },
+  "Thinking Skills": {
+    "children": [
+      "Critical Thinking"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Critical Thinking": {
+    "children": [],
+    "parents": [
+      "Thinking Skills"
+    ]
+  },
+  "Operating Systems": {
+    "children": [
+      "Linux",
+      "Windows",
+      "Mac"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Windows": {
+    "children": [],
+    "parents": [
+      "Operating Systems"
+    ]
+  },
+  "Software": {
+    "children": [
+      "Office",
+      "Virtual Machines",
+      "Adobe Software"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Virtual Machines": {
+    "children": [],
+    "parents": [
+      "Software"
+    ]
+  },
+  "Holidays and Traditions": {
+    "children": [
+      "Superstitions",
+      "Gift Giving",
+      "Celebration Events",
+      "Halloween",
+      "National Days",
+      "New Year",
+      "Vacation Time",
+      "Valentine's Day",
+      "Holiday Season",
+      "Birthdays",
+      "Christmas",
+      "Jewish Holy Days",
+      "Thanksgiving"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Valentine's Day": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Pranks (Practical Jokes)": {
+    "children": [],
+    "parents": [
+      "Fun Activities"
+    ]
+  },
+  "Superstitions": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Jewish Holy Days": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Costumes": {
+    "children": [
+      "Halloween Costumes"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Halloween Costumes": {
+    "children": [],
+    "parents": [
+      "Costumes"
+    ]
+  },
+  "Halloween": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Thanksgiving": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Birthdays": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Philosophy and Religion": {
+    "children": [
+      "Religion",
+      "Paranormal Beliefs",
+      "Philosophy",
+      "Faith and Belief"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Religion": {
+    "children": [
+      "Hinduism",
+      "Christianity",
+      "Islam",
+      "Taoism",
+      "Buddhism"
+    ],
+    "parents": [
+      "Philosophy and Religion"
+    ]
+  },
+  "Hinduism": {
+    "children": [
+      "Hindu Holy Days and Festivals"
+    ],
+    "parents": [
+      "Religion"
+    ]
+  },
+  "Hindu Holy Days and Festivals": {
+    "children": [],
+    "parents": [
+      "Hinduism"
+    ]
+  },
+  "National Days": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Christianity": {
+    "children": [
+      "Catholicism"
+    ],
+    "parents": [
+      "Religion"
+    ]
+  },
+  "Catholicism": {
+    "children": [],
+    "parents": [
+      "Christianity"
+    ]
+  },
+  "Human Rights": {
+    "children": [],
+    "parents": [
+      "Social Activism"
+    ]
+  },
+  "Holiday Season": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Christmas": {
+    "children": [
+      "Christmas Gifts"
+    ],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "New Year": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Celebration Events": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Gift Giving": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Video": {
+    "children": [
+      "Video Hosting and Sharing Websites"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Video Hosting and Sharing Websites": {
+    "children": [
+      "Netflix"
+    ],
+    "parents": [
+      "Video"
+    ]
+  },
+  "Netflix": {
+    "children": [
+      "Netflix Accounts"
+    ],
+    "parents": [
+      "Video Hosting and Sharing Websites"
+    ]
+  },
+  "Netflix Accounts": {
+    "children": [],
+    "parents": [
+      "Netflix"
+    ]
+  },
+  "Wedding Anniversaries": {
+    "children": [],
+    "parents": [
+      "Married Life"
+    ]
+  },
+  "Sustainable Living": {
+    "children": [],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Waste Reduction": {
+    "children": [],
+    "parents": [
+      "Household Waste Disposal"
+    ]
+  },
+  "Guns and Shooting": {
+    "children": [],
+    "parents": [
+      "Outdoor Recreation"
+    ]
+  },
+  "Lighting": {
+    "children": [],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Home Appliances": {
+    "children": [
+      "Kitchen Appliances"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Kitchen Appliances": {
+    "children": [
+      "Cooking Appliances"
+    ],
+    "parents": [
+      "Home Appliances"
+    ]
+  },
+  "Cooking Appliances": {
+    "children": [],
+    "parents": [
+      "Kitchen Appliances"
+    ]
+  },
+  "Home Maintenance": {
+    "children": [
+      "Electrical Maintenance",
+      "Bathrooms",
+      "Home Repairs",
+      "Doors and Windows"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Bathrooms": {
+    "children": [
+      "Bathroom Cleaning",
+      "Toilets"
+    ],
+    "parents": [
+      "Home Maintenance"
+    ]
+  },
+  "Toilets": {
+    "children": [],
+    "parents": [
+      "Bathrooms"
+    ]
+  },
+  "Disaster Preparedness": {
+    "children": [],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Medicines and Drugs": {
+    "children": [
+      "Recreational Drugs"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Recreational Drugs": {
+    "children": [
+      "Smoking"
+    ],
+    "parents": [
+      "Medicines and Drugs"
+    ]
+  },
+  "Cleaning": {
+    "children": [
+      "Cleaning Metals",
+      "House Cleaning"
+    ],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "House Cleaning": {
+    "children": [
+      "Kitchen Cleaning",
+      "Bedroom Cleaning"
+    ],
+    "parents": [
+      "Cleaning"
+    ]
+  },
+  "Kitchen Cleaning": {
+    "children": [
+      "Dishwashing",
+      "Cleaning Refrigerators"
+    ],
+    "parents": [
+      "House Cleaning"
+    ]
+  },
+  "Dishwashing": {
+    "children": [
+      "Dishwashers"
+    ],
+    "parents": [
+      "Kitchen Cleaning"
+    ]
+  },
+  "Dishwashers": {
+    "children": [
+      "Dishwasher Repairs"
+    ],
+    "parents": [
+      "Dishwashing"
+    ]
+  },
+  "Dishwasher Repairs": {
+    "children": [],
+    "parents": [
+      "Dishwashers"
+    ]
+  },
+  "Swimming Pools": {
+    "children": [],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Heating and Cooling": {
+    "children": [],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "DIY": {
+    "children": [
+      "Plumbing"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Plumbing": {
+    "children": [
+      "Water"
+    ],
+    "parents": [
+      "DIY"
+    ]
+  },
+  "Personal Safety": {
+    "children": [],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Tools": {
+    "children": [
+      "Holding and Support Tools",
+      "Fastening Tools"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "Holding and Support Tools": {
+    "children": [
+      "Rope"
+    ],
+    "parents": [
+      "Tools"
+    ]
+  },
+  "Travel Safety": {
+    "children": [],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "Water": {
+    "children": [
+      "Water Filters"
+    ],
+    "parents": [
+      "Plumbing"
+    ]
+  },
+  "Water Filters": {
+    "children": [],
+    "parents": [
+      "Water"
+    ]
+  },
+  "Home Improvements": {
+    "children": [
+      "House Building"
+    ],
+    "parents": [
+      "Home and Garden"
+    ]
+  },
+  "House Building": {
+    "children": [],
+    "parents": [
+      "Home Improvements"
+    ]
+  },
+  "Doors and Windows": {
+    "children": [
+      "Door Types"
+    ],
+    "parents": [
+      "Home Maintenance"
+    ]
+  },
+  "Door Types": {
+    "children": [
+      "Garage Doors"
+    ],
+    "parents": [
+      "Doors and Windows"
+    ]
+  },
+  "Garage Doors": {
+    "children": [],
+    "parents": [
+      "Door Types"
+    ]
+  },
+  "Gym": {
+    "children": [],
+    "parents": [
+      "Personal Fitness"
+    ]
+  },
+  "Home Repairs": {
+    "children": [],
+    "parents": [
+      "Home Maintenance"
+    ]
+  },
+  "Love": {
+    "children": [
+      "Romance"
+    ],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Love and Romance": {
+    "children": [],
+    "parents": [
+      "Dating"
+    ]
+  },
+  "Communication Skills": {
+    "children": [
+      "Interview Skills",
+      "Questions",
+      "Speaking Skills",
+      "Assertiveness",
+      "Phone Skills",
+      "Conversation Skills"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Phone Skills": {
+    "children": [
+      "Texting"
+    ],
+    "parents": [
+      "Communication Skills"
+    ]
+  },
+  "Texting": {
+    "children": [],
+    "parents": [
+      "Phone Skills"
+    ]
+  },
+  "Psychological Resilience": {
+    "children": [
+      "Self Esteem"
+    ],
+    "parents": [
+      "Psychological Health"
+    ]
+  },
+  "Self Esteem": {
+    "children": [],
+    "parents": [
+      "Psychological Resilience"
+    ]
+  },
+  "Food and Entertaining": {
+    "children": [
+      "Dining Out",
+      "Nuts and Seeds",
+      "Barbecue",
+      "Recipes",
+      "Drinks",
+      "Food Preparation",
+      "Food Safety",
+      "Appreciation of Food",
+      "Parties",
+      "Dining Etiquette",
+      "Herbs and Spices"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Recipes": {
+    "children": [
+      "Meat",
+      "Eggs and Dairy",
+      "Sandwiches and Quick Meals",
+      "Baking",
+      "Fruits and Vegetables"
+    ],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Meat": {
+    "children": [
+      "Poultry Recipes"
+    ],
+    "parents": [
+      "Recipes"
+    ]
+  },
+  "Poultry Recipes": {
+    "children": [
+      "Turkey Dishes"
+    ],
+    "parents": [
+      "Meat"
+    ]
+  },
+  "Turkey Dishes": {
+    "children": [],
+    "parents": [
+      "Poultry Recipes"
+    ]
+  },
+  "Women\u2019s Health": {
+    "children": [
+      "Vaginal Health"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Personal Hygiene": {
+    "children": [
+      "Bathing"
+    ],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Bathing": {
+    "children": [
+      "Showering"
+    ],
+    "parents": [
+      "Personal Hygiene"
+    ]
+  },
+  "Showering": {
+    "children": [],
+    "parents": [
+      "Bathing"
+    ]
+  },
+  "Vaginal Health": {
+    "children": [],
+    "parents": [
+      "Women\u2019s Health"
+    ]
+  },
+  "Travel Health": {
+    "children": [],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Cleaning Metals": {
+    "children": [
+      "Rust Stain Removal"
+    ],
+    "parents": [
+      "Cleaning"
+    ]
+  },
+  "Rust Stain Removal": {
+    "children": [],
+    "parents": [
+      "Cleaning Metals"
+    ]
+  },
+  "Cleaning Refrigerators": {
+    "children": [],
+    "parents": [
+      "Kitchen Cleaning"
+    ]
+  },
+  "Bathroom Cleaning": {
+    "children": [
+      "Cleaning Sinks"
+    ],
+    "parents": [
+      "Bathrooms"
+    ]
+  },
+  "Cleaning Sinks": {
+    "children": [],
+    "parents": [
+      "Bathroom Cleaning"
+    ]
+  },
+  "Laundry": {
+    "children": [
+      "Ironing"
+    ],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "Ironing": {
+    "children": [],
+    "parents": [
+      "Laundry"
+    ]
+  },
+  "Tableware": {
+    "children": [],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "Stain Removal": {
+    "children": [],
+    "parents": [
+      "Housekeeping"
+    ]
+  },
+  "Food Preparation": {
+    "children": [
+      "Food Selection and Storage",
+      "Basic Cooking Skills",
+      "Food Cutting Techniques"
+    ],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Food Selection and Storage": {
+    "children": [],
+    "parents": [
+      "Food Preparation"
+    ]
+  },
+  "Food Cutting Techniques": {
+    "children": [],
+    "parents": [
+      "Food Preparation"
+    ]
+  },
+  "Baking": {
+    "children": [
+      "Cakes"
+    ],
+    "parents": [
+      "Recipes"
+    ]
+  },
+  "Cakes": {
+    "children": [],
+    "parents": [
+      "Baking"
+    ]
+  },
+  "Losing Weight": {
+    "children": [
+      "Weight Loss Goals"
+    ],
+    "parents": [
+      "Weight Management"
+    ]
+  },
+  "Weight Loss Goals": {
+    "children": [],
+    "parents": [
+      "Losing Weight"
+    ]
+  },
+  "Workplace Management Skills": {
+    "children": [],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Job Search": {
+    "children": [
+      "Job Application Documents"
+    ],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Maturity": {
+    "children": [
+      "Leadership"
+    ],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Leadership": {
+    "children": [
+      "School Leadership"
+    ],
+    "parents": [
+      "Maturity"
+    ]
+  },
+  "Science Careers": {
+    "children": [],
+    "parents": [
+      "Occupations"
+    ]
+  },
+  "Workplace Health and Safety": {
+    "children": [
+      "Work Life Balance"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Self Management at Work": {
+    "children": [],
+    "parents": [
+      "Job Skills"
+    ]
+  },
+  "Socializing at Work": {
+    "children": [],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Kindness": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Business by Industry": {
+    "children": [
+      "Consultancy Freelance and Contracting",
+      "Automotive and Transportation Businesses"
+    ],
+    "parents": [
+      "Business"
+    ]
+  },
+  "Consultancy Freelance and Contracting": {
+    "children": [],
+    "parents": [
+      "Business by Industry"
+    ]
+  },
+  "Contracts and Legal Agreements": {
+    "children": [],
+    "parents": [
+      "Legal Matters"
+    ]
+  },
+  "Trade Occupations": {
+    "children": [],
+    "parents": [
+      "Occupations"
+    ]
+  },
+  "Business Personnel": {
+    "children": [
+      "Entrepreneurs"
+    ],
+    "parents": [
+      "Business"
+    ]
+  },
+  "Job Attendance": {
+    "children": [
+      "Employment Leave"
+    ],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Employment Leave": {
+    "children": [],
+    "parents": [
+      "Job Attendance"
+    ]
+  },
+  "Teamwork": {
+    "children": [],
+    "parents": [
+      "Job Skills"
+    ]
+  },
+  "Change Management": {
+    "children": [
+      "Changing Your Life"
+    ],
+    "parents": [
+      "Business Skills"
+    ]
+  },
+  "Changing Your Life": {
+    "children": [
+      "Reinventing Yourself",
+      "Letting Go"
+    ],
+    "parents": [
+      "Change Management"
+    ]
+  },
+  "Reinventing Yourself": {
+    "children": [],
+    "parents": [
+      "Changing Your Life"
+    ]
+  },
+  "Workplace Conflicts Coping and Issues": {
+    "children": [
+      "Interacting with Bosses"
+    ],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Job Strategies": {
+    "children": [],
+    "parents": [
+      "Job Skills"
+    ]
+  },
+  "Alternative Health": {
+    "children": [
+      "Home Remedies",
+      "Meditation"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Home Remedies": {
+    "children": [],
+    "parents": [
+      "Alternative Health"
+    ]
+  },
+  "Wound First Aid": {
+    "children": [],
+    "parents": [
+      "First Aid and Emergency Health Care"
+    ]
+  },
+  "Ear Health": {
+    "children": [
+      "Vestibular System (Sense of Balance)"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Vestibular System (Sense of Balance)": {
+    "children": [],
+    "parents": [
+      "Ear Health"
+    ]
+  },
+  "Dietary Nutrients": {
+    "children": [
+      "Vitamins"
+    ],
+    "parents": [
+      "Nutrition and Food Health"
+    ]
+  },
+  "Vitamins": {
+    "children": [],
+    "parents": [
+      "Dietary Nutrients"
+    ]
+  },
+  "Routines and Habits": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Smoking": {
+    "children": [],
+    "parents": [
+      "Recreational Drugs"
+    ]
+  },
+  "Emotional Pain": {
+    "children": [
+      "Handling Rejection"
+    ],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Handling Rejection": {
+    "children": [],
+    "parents": [
+      "Emotional Pain"
+    ]
+  },
+  "Friends": {
+    "children": [
+      "Supporting Friends"
+    ],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Supporting Friends": {
+    "children": [],
+    "parents": [
+      "Friends"
+    ]
+  },
+  "Managing Conflict and Difficult Interactions": {
+    "children": [],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "School Leadership": {
+    "children": [],
+    "parents": [
+      "Leadership"
+    ]
+  },
+  "Role Playing": {
+    "children": [],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Music Production": {
+    "children": [
+      "Composing Music"
+    ],
+    "parents": [
+      "Music"
+    ]
+  },
+  "Job Application Documents": {
+    "children": [
+      "Resume Preparation"
+    ],
+    "parents": [
+      "Job Search"
+    ]
+  },
+  "Resume Preparation": {
+    "children": [],
+    "parents": [
+      "Job Application Documents"
+    ]
+  },
+  "Composing Music": {
+    "children": [
+      "Songwriting"
+    ],
+    "parents": [
+      "Music Production"
+    ]
+  },
+  "Songwriting": {
+    "children": [],
+    "parents": [
+      "Composing Music"
+    ]
+  },
+  "Songs": {
+    "children": [],
+    "parents": [
+      "Music"
+    ]
+  },
+  "Musical Instruments": {
+    "children": [
+      "Piano",
+      "String Instruments"
+    ],
+    "parents": [
+      "Music"
+    ]
+  },
+  "String Instruments": {
+    "children": [
+      "Guitar"
+    ],
+    "parents": [
+      "Musical Instruments"
+    ]
+  },
+  "Guitar": {
+    "children": [
+      "Learning Guitar"
+    ],
+    "parents": [
+      "String Instruments"
+    ]
+  },
+  "Reading": {
+    "children": [
+      "Improving Reading Skills"
+    ],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Art Studies": {
+    "children": [],
+    "parents": [
+      "Artwork"
+    ]
+  },
+  "Books": {
+    "children": [
+      "EBook Readers"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Party Games": {
+    "children": [],
+    "parents": [
+      "Games"
+    ]
+  },
+  "Concerts": {
+    "children": [],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Speaking Skills": {
+    "children": [],
+    "parents": [
+      "Communication Skills"
+    ]
+  },
+  "Self Learning": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Audio": {
+    "children": [
+      "Audio Recording"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Audio Recording": {
+    "children": [],
+    "parents": [
+      "Audio"
+    ]
+  },
+  "Studying Literature": {
+    "children": [],
+    "parents": [
+      "English"
+    ]
+  },
+  "Movies": {
+    "children": [
+      "Filmmaking"
+    ],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Filmmaking": {
+    "children": [
+      "Animation",
+      "Making Videos"
+    ],
+    "parents": [
+      "Movies"
+    ]
+  },
+  "Making Videos": {
+    "children": [],
+    "parents": [
+      "Filmmaking"
+    ]
+  },
+  "Improving Reading Skills": {
+    "children": [],
+    "parents": [
+      "Reading"
+    ]
+  },
+  "Piano": {
+    "children": [
+      "Playing Piano"
+    ],
+    "parents": [
+      "Musical Instruments"
+    ]
+  },
+  "Playing Piano": {
+    "children": [],
+    "parents": [
+      "Piano"
+    ]
+  },
+  "Animation": {
+    "children": [
+      "Anime"
+    ],
+    "parents": [
+      "Filmmaking"
+    ]
+  },
+  "Anime": {
+    "children": [
+      "Watching Anime"
+    ],
+    "parents": [
+      "Animation"
+    ]
+  },
+  "Watching Anime": {
+    "children": [],
+    "parents": [
+      "Anime"
+    ]
+  },
+  "Cosplay": {
+    "children": [],
+    "parents": [
+      "Arts and Entertainment"
+    ]
+  },
+  "Destinations": {
+    "children": [
+      "Asia Travel",
+      "Europe Travel"
+    ],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "Asia Travel": {
+    "children": [
+      "India Travel"
+    ],
+    "parents": [
+      "Destinations"
+    ]
+  },
+  "India Travel": {
+    "children": [],
+    "parents": [
+      "Asia Travel"
+    ]
+  },
+  "Relationship Issues": {
+    "children": [
+      "Former Relationships"
+    ],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Tattoos and Piercing": {
+    "children": [],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Marriage & Partnership": {
+    "children": [],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Trust": {
+    "children": [],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Abdominal Exercises": {
+    "children": [],
+    "parents": [
+      "Building Muscle & Strength"
+    ]
+  },
+  "Musculoskeletal System Health": {
+    "children": [
+      "Musculoskeletal Pain"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Musculoskeletal Pain": {
+    "children": [
+      "Muscle Soreness"
+    ],
+    "parents": [
+      "Musculoskeletal System Health"
+    ]
+  },
+  "Muscle Soreness": {
+    "children": [],
+    "parents": [
+      "Musculoskeletal Pain"
+    ]
+  },
+  "Technical Writing": {
+    "children": [],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Interacting with Bosses": {
+    "children": [],
+    "parents": [
+      "Workplace Conflicts Coping and Issues"
+    ]
+  },
+  "Running a Business": {
+    "children": [],
+    "parents": [
+      "Business"
+    ]
+  },
+  "Personal Goals": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Customer Relations": {
+    "children": [],
+    "parents": [
+      "Business"
+    ]
+  },
+  "Social Interactions": {
+    "children": [
+      "Etiquette"
+    ],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Etiquette": {
+    "children": [],
+    "parents": [
+      "Social Interactions"
+    ]
+  },
+  "Personal Care for Youth": {
+    "children": [
+      "Acne"
+    ],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Skin Care": {
+    "children": [
+      "Skin Types"
+    ],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Transport Careers": {
+    "children": [],
+    "parents": [
+      "Occupations"
+    ]
+  },
+  "Drinks": {
+    "children": [
+      "Coffee",
+      "Tea",
+      "Juice",
+      "Alcoholic Drinks"
+    ],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Coffee": {
+    "children": [
+      "Starbucks Coffee"
+    ],
+    "parents": [
+      "Drinks"
+    ]
+  },
+  "Starbucks Coffee": {
+    "children": [],
+    "parents": [
+      "Coffee"
+    ]
+  },
+  "Working Abroad": {
+    "children": [],
+    "parents": [
+      "Work World"
+    ]
+  },
+  "Parties": {
+    "children": [
+      "Party Decorations"
+    ],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Party Decorations": {
+    "children": [],
+    "parents": [
+      "Parties"
+    ]
+  },
+  "Website Application Instructions": {
+    "children": [
+      "Google Applications"
+    ],
+    "parents": [
+      "Internet"
+    ]
+  },
+  "Google Applications": {
+    "children": [],
+    "parents": [
+      "Website Application Instructions"
+    ]
+  },
+  "Social Media": {
+    "children": [
+      "Social Networking Services"
+    ],
+    "parents": [
+      "Internet"
+    ]
+  },
+  "Social Networking Services": {
+    "children": [
+      "Tik Tok",
+      "Facebook"
+    ],
+    "parents": [
+      "Social Media"
+    ]
+  },
+  "Facebook": {
+    "children": [],
+    "parents": [
+      "Social Networking Services"
+    ]
+  },
+  "German": {
+    "children": [],
+    "parents": [
+      "World Languages"
+    ]
+  },
+  "Long Term Dating": {
+    "children": [],
+    "parents": [
+      "Dating"
+    ]
+  },
+  "Online Dating": {
+    "children": [],
+    "parents": [
+      "Dating"
+    ]
+  },
+  "Fashion Styles": {
+    "children": [
+      "Youth Fashion",
+      "Elegant Fashion Style"
+    ],
+    "parents": [
+      "Fashion"
+    ]
+  },
+  "Looking Good": {
+    "children": [],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Clothing": {
+    "children": [
+      "Clothes by Type"
+    ],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Clothes by Type": {
+    "children": [
+      "Outerwear",
+      "Pants and Shorts"
+    ],
+    "parents": [
+      "Clothing"
+    ]
+  },
+  "Outerwear": {
+    "children": [
+      "Jackets"
+    ],
+    "parents": [
+      "Clothes by Type"
+    ]
+  },
+  "Faith and Belief": {
+    "children": [
+      "Prayer"
+    ],
+    "parents": [
+      "Philosophy and Religion"
+    ]
+  },
+  "Paranormal Beliefs": {
+    "children": [
+      "Ghosts",
+      "Astrology"
+    ],
+    "parents": [
+      "Philosophy and Religion"
+    ]
+  },
+  "Prayer": {
+    "children": [],
+    "parents": [
+      "Faith and Belief"
+    ]
+  },
+  "Letting Go": {
+    "children": [],
+    "parents": [
+      "Changing Your Life"
+    ]
+  },
+  "Personality Traits": {
+    "children": [
+      "Optimism"
+    ],
+    "parents": [
+      "Psychological Health"
+    ]
+  },
+  "Optimism": {
+    "children": [],
+    "parents": [
+      "Personality Traits"
+    ]
+  },
+  "Philosophy": {
+    "children": [
+      "Positive and Reflective Lifestyles"
+    ],
+    "parents": [
+      "Philosophy and Religion"
+    ]
+  },
+  "Relaxation": {
+    "children": [
+      "Inner Peace"
+    ],
+    "parents": [
+      "Psychological Health"
+    ]
+  },
+  "Inner Peace": {
+    "children": [],
+    "parents": [
+      "Relaxation"
+    ]
+  },
+  "Gratitude": {
+    "children": [],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Self Discovery": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Taoism": {
+    "children": [],
+    "parents": [
+      "Religion"
+    ]
+  },
+  "Showing Respect": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Ghosts": {
+    "children": [],
+    "parents": [
+      "Paranormal Beliefs"
+    ]
+  },
+  "Self": {
+    "children": [],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Humility": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Lifestyle Diets": {
+    "children": [
+      "Detox and Cleansing Diets"
+    ],
+    "parents": [
+      "Nutrition and Food Health"
+    ]
+  },
+  "Detox and Cleansing Diets": {
+    "children": [
+      "Fasting"
+    ],
+    "parents": [
+      "Lifestyle Diets"
+    ]
+  },
+  "Fasting": {
+    "children": [],
+    "parents": [
+      "Detox and Cleansing Diets"
+    ]
+  },
+  "Christmas Gifts": {
+    "children": [
+      "Gift Wrapping"
+    ],
+    "parents": [
+      "Christmas"
+    ]
+  },
+  "Gift Wrapping": {
+    "children": [],
+    "parents": [
+      "Christmas Gifts"
+    ]
+  },
+  "EBook Readers": {
+    "children": [
+      "EBooks"
+    ],
+    "parents": [
+      "Books"
+    ]
+  },
+  "EBooks": {
+    "children": [],
+    "parents": [
+      "EBook Readers"
+    ]
+  },
+  "Consumer Electronics": {
+    "children": [
+      "Radio"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Radio": {
+    "children": [],
+    "parents": [
+      "Consumer Electronics"
+    ]
+  },
+  "Grief": {
+    "children": [],
+    "parents": [
+      "Death"
+    ]
+  },
+  "Self Fulfillment": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Retirement": {
+    "children": [],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Money Management for Young People": {
+    "children": [
+      "Money Saving Hints for Young People"
+    ],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Money Saving Hints for Young People": {
+    "children": [],
+    "parents": [
+      "Money Management for Young People"
+    ]
+  },
+  "Islam": {
+    "children": [],
+    "parents": [
+      "Religion"
+    ]
+  },
+  "Coping with Illness": {
+    "children": [
+      "End of Life Care"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "End of Life Care": {
+    "children": [],
+    "parents": [
+      "Coping with Illness"
+    ]
+  },
+  "Saving a Marriage": {
+    "children": [],
+    "parents": [
+      "Marriage Problems"
+    ]
+  },
+  "Weddings": {
+    "children": [
+      "Engagement"
+    ],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Engagement": {
+    "children": [
+      "Deciding to Get Married"
+    ],
+    "parents": [
+      "Weddings"
+    ]
+  },
+  "Deciding to Get Married": {
+    "children": [],
+    "parents": [
+      "Engagement"
+    ]
+  },
+  "Work Life Balance": {
+    "children": [],
+    "parents": [
+      "Workplace Health and Safety"
+    ]
+  },
+  "Funerals": {
+    "children": [],
+    "parents": [
+      "Death"
+    ]
+  },
+  "Happiness": {
+    "children": [],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "In Laws": {
+    "children": [],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Youth Dating": {
+    "children": [],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Youth Fashion": {
+    "children": [],
+    "parents": [
+      "Fashion Styles"
+    ]
+  },
+  "Personal Space": {
+    "children": [],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Social Interactions for Youth": {
+    "children": [],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Health for Teens and Kids": {
+    "children": [],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Boredom Busters": {
+    "children": [],
+    "parents": [
+      "Fun Activities"
+    ]
+  },
+  "Cars & Other Vehicles": {
+    "children": [
+      "Motorcycles",
+      "Trucks",
+      "Vehicles and the Law",
+      "Trailers",
+      "Automotive Tools",
+      "Cars",
+      "Cycling",
+      "Driving Vehicles",
+      "Aviation",
+      "Vehicle Sports",
+      "Recreational Vehicles"
+    ],
+    "parents": [
+      "Categories"
+    ]
+  },
+  "Driving Vehicles": {
+    "children": [
+      "Learning to Drive",
+      "Road Safety"
+    ],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Learning to Drive": {
+    "children": [
+      "Parking Vehicles"
+    ],
+    "parents": [
+      "Driving Vehicles"
+    ]
+  },
+  "Curve Fashion": {
+    "children": [],
+    "parents": [
+      "Body Type and Fashion"
+    ]
+  },
+  "Emotional Detachment": {
+    "children": [],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Youth Culture": {
+    "children": [
+      "Nonconformist Styles"
+    ],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Motivation": {
+    "children": [],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "You and Your Parents": {
+    "children": [
+      "Improving Relations with Parents"
+    ],
+    "parents": [
+      "Youth"
+    ]
+  },
+  "Improving Relations with Parents": {
+    "children": [],
+    "parents": [
+      "You and Your Parents"
+    ]
+  },
+  "Surviving School": {
+    "children": [],
+    "parents": [
+      "School Stuff"
+    ]
+  },
+  "Model Making": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Celebrity Style": {
+    "children": [
+      "Model Inspired Style"
+    ],
+    "parents": [
+      "Celebrities"
+    ]
+  },
+  "Model Inspired Style": {
+    "children": [],
+    "parents": [
+      "Celebrity Style"
+    ]
+  },
+  "Bedroom Cleaning": {
+    "children": [],
+    "parents": [
+      "House Cleaning"
+    ]
+  },
+  "Motivation to Exercise": {
+    "children": [],
+    "parents": [
+      "Personal Fitness"
+    ]
+  },
+  "Bugs": {
+    "children": [
+      "Butterflies and Moths"
+    ],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Animal Art and Craft": {
+    "children": [],
+    "parents": [
+      "Crafts"
+    ]
+  },
+  "Crustaceans": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Animal Care and Wildlife Occupations": {
+    "children": [],
+    "parents": [
+      "Occupations"
+    ]
+  },
+  "Hedgehogs": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Rodents": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Birds": {
+    "children": [
+      "Wild Birds"
+    ],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "General Pet Health": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Snails and Slugs": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Farming": {
+    "children": [
+      "Farm Animals and Livestock"
+    ],
+    "parents": [
+      "Occupations"
+    ]
+  },
+  "Farm Animals and Livestock": {
+    "children": [],
+    "parents": [
+      "Farming"
+    ]
+  },
+  "Wild Birds": {
+    "children": [],
+    "parents": [
+      "Birds"
+    ]
+  },
+  "Cats": {
+    "children": [
+      "Cat Behavior",
+      "Getting a Cat"
+    ],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Getting a Cat": {
+    "children": [],
+    "parents": [
+      "Cats"
+    ]
+  },
+  "Fish": {
+    "children": [
+      "Aquariums"
+    ],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Wildlife": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Careers in Government": {
+    "children": [],
+    "parents": [
+      "Government"
+    ]
+  },
+  "Rabbits": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Ferrets": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Canine Health": {
+    "children": [
+      "Canine Reproductive System Health"
+    ],
+    "parents": [
+      "Dogs"
+    ]
+  },
+  "Canine Reproductive System Health": {
+    "children": [],
+    "parents": [
+      "Canine Health"
+    ]
+  },
+  "Animal Rescue": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Pet Hazards": {
+    "children": [],
+    "parents": [
+      "Pets and Animals"
+    ]
+  },
+  "Butterflies and Moths": {
+    "children": [],
+    "parents": [
+      "Bugs"
+    ]
+  },
+  "Aquariums": {
+    "children": [],
+    "parents": [
+      "Fish"
+    ]
+  },
+  "Dog Behavior": {
+    "children": [
+      "Dog Behavioral Problems"
+    ],
+    "parents": [
+      "Dogs"
+    ]
+  },
+  "Dog Behavioral Problems": {
+    "children": [
+      "Unwanted Barking"
+    ],
+    "parents": [
+      "Dog Behavior"
+    ]
+  },
+  "Unwanted Barking": {
+    "children": [],
+    "parents": [
+      "Dog Behavioral Problems"
+    ]
+  },
+  "Trailers": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Cycling": {
+    "children": [
+      "Bicycles"
+    ],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Bicycles": {
+    "children": [
+      "Bicycle Maintenance",
+      "Bicycle Parts"
+    ],
+    "parents": [
+      "Cycling"
+    ]
+  },
+  "Starting a Business": {
+    "children": [
+      "Business Entities"
+    ],
+    "parents": [
+      "Business"
+    ]
+  },
+  "Business Entities": {
+    "children": [
+      "Nonprofit Organizations",
+      "Business Licenses"
+    ],
+    "parents": [
+      "Starting a Business"
+    ]
+  },
+  "Business Licenses": {
+    "children": [],
+    "parents": [
+      "Business Entities"
+    ]
+  },
+  "Electrical Maintenance": {
+    "children": [
+      "Electrical Wiring and Safety Switches",
+      "Electrical Power Storage"
+    ],
+    "parents": [
+      "Home Maintenance"
+    ]
+  },
+  "Electrical Wiring and Safety Switches": {
+    "children": [],
+    "parents": [
+      "Electrical Maintenance"
+    ]
+  },
+  "Electrical Power Storage": {
+    "children": [],
+    "parents": [
+      "Electrical Maintenance"
+    ]
+  },
+  "Bicycle Maintenance": {
+    "children": [
+      "Bicycle Brake and Chain Maintenance"
+    ],
+    "parents": [
+      "Bicycles"
+    ]
+  },
+  "Bicycle Brake and Chain Maintenance": {
+    "children": [],
+    "parents": [
+      "Bicycle Maintenance"
+    ]
+  },
+  "Motorcycles": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Automotive Tools": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Vehicle Sports": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Trucks": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Vehicles and the Law": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Bicycle Parts": {
+    "children": [],
+    "parents": [
+      "Bicycles"
+    ]
+  },
+  "Cars": {
+    "children": [
+      "Car Maintenance and Repair"
+    ],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Car Maintenance and Repair": {
+    "children": [
+      "Tires and Suspension",
+      "Car Engines",
+      "Cleaning Cars"
+    ],
+    "parents": [
+      "Cars"
+    ]
+  },
+  "Tires and Suspension": {
+    "children": [],
+    "parents": [
+      "Car Maintenance and Repair"
+    ]
+  },
+  "Aviation": {
+    "children": [
+      "Air Travel"
+    ],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Fastening Tools": {
+    "children": [],
+    "parents": [
+      "Tools"
+    ]
+  },
+  "Car Engines": {
+    "children": [
+      "Car Batteries and Ignitions"
+    ],
+    "parents": [
+      "Car Maintenance and Repair"
+    ]
+  },
+  "Car Batteries and Ignitions": {
+    "children": [],
+    "parents": [
+      "Car Engines"
+    ]
+  },
+  "Automotive and Transportation Businesses": {
+    "children": [],
+    "parents": [
+      "Business by Industry"
+    ]
+  },
+  "Recreational Vehicles": {
+    "children": [],
+    "parents": [
+      "Cars & Other Vehicles"
+    ]
+  },
+  "Meteorology": {
+    "children": [],
+    "parents": [
+      "Science"
+    ]
+  },
+  "Road Safety": {
+    "children": [],
+    "parents": [
+      "Driving Vehicles"
+    ]
+  },
+  "Law Enforcement": {
+    "children": [
+      "Traffic Violations"
+    ],
+    "parents": [
+      "Legal Matters"
+    ]
+  },
+  "Traffic Violations": {
+    "children": [],
+    "parents": [
+      "Law Enforcement"
+    ]
+  },
+  "Cleaning Cars": {
+    "children": [],
+    "parents": [
+      "Car Maintenance and Repair"
+    ]
+  },
+  "Parking Vehicles": {
+    "children": [],
+    "parents": [
+      "Learning to Drive"
+    ]
+  },
+  "Combat Sports": {
+    "children": [
+      "Martial Arts"
+    ],
+    "parents": [
+      "Individual Sports"
+    ]
+  },
+  "Martial Arts": {
+    "children": [
+      "Self Defense"
+    ],
+    "parents": [
+      "Combat Sports"
+    ]
+  },
+  "Self Defense": {
+    "children": [],
+    "parents": [
+      "Martial Arts"
+    ]
+  },
+  "Walking": {
+    "children": [],
+    "parents": [
+      "Individual Sports"
+    ]
+  },
+  "Creativity": {
+    "children": [
+      "Improving Mental Abilities"
+    ],
+    "parents": [
+      "Personal Development"
+    ]
+  },
+  "Improving Mental Abilities": {
+    "children": [],
+    "parents": [
+      "Creativity"
+    ]
+  },
+  "Massage": {
+    "children": [],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Pants and Shorts": {
+    "children": [],
+    "parents": [
+      "Clothes by Type"
+    ]
+  },
+  "Sexy Fashion Style": {
+    "children": [],
+    "parents": [
+      "Fashion"
+    ]
+  },
+  "Jewelry": {
+    "children": [
+      "Necklaces"
+    ],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Necklaces": {
+    "children": [],
+    "parents": [
+      "Jewelry"
+    ]
+  },
+  "Spa Treatments": {
+    "children": [],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Elegant Fashion Style": {
+    "children": [],
+    "parents": [
+      "Fashion Styles"
+    ]
+  },
+  "Romance": {
+    "children": [],
+    "parents": [
+      "Love"
+    ]
+  },
+  "Reproductive System Health": {
+    "children": [
+      "Sexual Activity"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Sexual Activity": {
+    "children": [],
+    "parents": [
+      "Reproductive System Health"
+    ]
+  },
+  "Nonconformist Styles": {
+    "children": [],
+    "parents": [
+      "Youth Culture"
+    ]
+  },
+  "Hair Care": {
+    "children": [
+      "Hair Care Products",
+      "Haircuts",
+      "Hair Growth",
+      "Hair Texture",
+      "Regular Hair Care",
+      "Hair Length",
+      "Hairstyles"
+    ],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Hairstyles": {
+    "children": [
+      "Hair Bangs (Fringes)",
+      "Updos",
+      "Vintage Hairstyles"
+    ],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "LGBT": {
+    "children": [
+      "Gender Expression"
+    ],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Gender Expression": {
+    "children": [],
+    "parents": [
+      "LGBT"
+    ]
+  },
+  "Assertiveness": {
+    "children": [],
+    "parents": [
+      "Communication Skills"
+    ]
+  },
+  "Jackets": {
+    "children": [
+      "Leather Jackets"
+    ],
+    "parents": [
+      "Outerwear"
+    ]
+  },
+  "Leather Jackets": {
+    "children": [],
+    "parents": [
+      "Jackets"
+    ]
+  },
+  "Adobe Software": {
+    "children": [
+      "Portable Document Format (PDF)"
+    ],
+    "parents": [
+      "Software"
+    ]
+  },
+  "Portable Document Format (PDF)": {
+    "children": [
+      "Reading PDF Documents"
+    ],
+    "parents": [
+      "Adobe Software"
+    ]
+  },
+  "Reading PDF Documents": {
+    "children": [],
+    "parents": [
+      "Portable Document Format (PDF)"
+    ]
+  },
+  "Dealing with Teachers": {
+    "children": [],
+    "parents": [
+      "School Stuff"
+    ]
+  },
+  "Conversation Skills": {
+    "children": [],
+    "parents": [
+      "Communication Skills"
+    ]
+  },
+  "Former Relationships": {
+    "children": [],
+    "parents": [
+      "Relationship Issues"
+    ]
+  },
+  "Confidence": {
+    "children": [],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Empathy": {
+    "children": [],
+    "parents": [
+      "Emotions and Feelings"
+    ]
+  },
+  "Haircuts": {
+    "children": [],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "Hair Texture": {
+    "children": [
+      "Curly Hair",
+      "Wavy Hair",
+      "Straight Hair",
+      "Thick Hair"
+    ],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "Curly Hair": {
+    "children": [],
+    "parents": [
+      "Hair Texture"
+    ]
+  },
+  "Thick Hair": {
+    "children": [],
+    "parents": [
+      "Hair Texture"
+    ]
+  },
+  "Hair Care Products": {
+    "children": [],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "Straight Hair": {
+    "children": [
+      "Straightening Hair"
+    ],
+    "parents": [
+      "Hair Texture"
+    ]
+  },
+  "Straightening Hair": {
+    "children": [],
+    "parents": [
+      "Straight Hair"
+    ]
+  },
+  "Updos": {
+    "children": [
+      "Hair Buns",
+      "Ponytails"
+    ],
+    "parents": [
+      "Hairstyles"
+    ]
+  },
+  "Hair Buns": {
+    "children": [],
+    "parents": [
+      "Updos"
+    ]
+  },
+  "Sleep Health": {
+    "children": [],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Ponytails": {
+    "children": [],
+    "parents": [
+      "Updos"
+    ]
+  },
+  "Hair Bangs (Fringes)": {
+    "children": [],
+    "parents": [
+      "Hairstyles"
+    ]
+  },
+  "Wavy Hair": {
+    "children": [
+      "Making Wavy Hair"
+    ],
+    "parents": [
+      "Hair Texture"
+    ]
+  },
+  "Vintage Hairstyles": {
+    "children": [],
+    "parents": [
+      "Hairstyles"
+    ]
+  },
+  "Hair Length": {
+    "children": [
+      "Short Hair",
+      "Long Hair"
+    ],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "Short Hair": {
+    "children": [],
+    "parents": [
+      "Hair Length"
+    ]
+  },
+  "Regular Hair Care": {
+    "children": [
+      "Drying Hair"
+    ],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "Drying Hair": {
+    "children": [],
+    "parents": [
+      "Regular Hair Care"
+    ]
+  },
+  "Making Wavy Hair": {
+    "children": [],
+    "parents": [
+      "Wavy Hair"
+    ]
+  },
+  "Hair Growth": {
+    "children": [],
+    "parents": [
+      "Hair Care"
+    ]
+  },
+  "Long Hair": {
+    "children": [],
+    "parents": [
+      "Hair Length"
+    ]
+  },
+  "Tik Tok": {
+    "children": [],
+    "parents": [
+      "Social Networking Services"
+    ]
+  },
+  "Telephones": {
+    "children": [
+      "Cell Phones",
+      "Bluetooth",
+      "Smartphones"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Smartphones": {
+    "children": [
+      "IPhone",
+      "Android"
+    ],
+    "parents": [
+      "Telephones"
+    ]
+  },
+  "Android": {
+    "children": [
+      "Samsung Galaxy",
+      "Android Applications"
+    ],
+    "parents": [
+      "Smartphones"
+    ]
+  },
+  "Android Applications": {
+    "children": [],
+    "parents": [
+      "Android"
+    ]
+  },
+  "Samsung Galaxy": {
+    "children": [],
+    "parents": [
+      "Android"
+    ]
+  },
+  "Downloading": {
+    "children": [],
+    "parents": [
+      "Internet"
+    ]
+  },
+  "Computer Networking": {
+    "children": [
+      "Internet Access",
+      "Wireless Networking"
+    ],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Internet Access": {
+    "children": [],
+    "parents": [
+      "Computer Networking"
+    ]
+  },
+  "Bluetooth": {
+    "children": [],
+    "parents": [
+      "Telephones"
+    ]
+  },
+  "Cell Phones": {
+    "children": [
+      "Apple iOS"
+    ],
+    "parents": [
+      "Telephones"
+    ]
+  },
+  "Apple iOS": {
+    "children": [],
+    "parents": [
+      "Cell Phones"
+    ]
+  },
+  "Tablet Computers": {
+    "children": [],
+    "parents": [
+      "Computers"
+    ]
+  },
+  "PlayStation Video Game Consoles": {
+    "children": [
+      "PlayStation 2"
+    ],
+    "parents": [
+      "Video Games"
+    ]
+  },
+  "PlayStation 2": {
+    "children": [],
+    "parents": [
+      "PlayStation Video Game Consoles"
+    ]
+  },
+  "Banks and Financial Institutions": {
+    "children": [
+      "Personal Savings",
+      "Checks and Checkbooks",
+      "Opening a Bank Account",
+      "Online Banking"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Checks and Checkbooks": {
+    "children": [],
+    "parents": [
+      "Banks and Financial Institutions"
+    ]
+  },
+  "Opening a Bank Account": {
+    "children": [],
+    "parents": [
+      "Banks and Financial Institutions"
+    ]
+  },
+  "Buddhism": {
+    "children": [
+      "Zen"
+    ],
+    "parents": [
+      "Religion"
+    ]
+  },
+  "Zen": {
+    "children": [],
+    "parents": [
+      "Buddhism"
+    ]
+  },
+  "Skin Health": {
+    "children": [],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Cat Behavior": {
+    "children": [
+      "Cat Training"
+    ],
+    "parents": [
+      "Cats"
+    ]
+  },
+  "Cat Training": {
+    "children": [
+      "House Training Cats"
+    ],
+    "parents": [
+      "Cat Behavior"
+    ]
+  },
+  "House Training Cats": {
+    "children": [],
+    "parents": [
+      "Cat Training"
+    ]
+  },
+  "Healthy Eating": {
+    "children": [],
+    "parents": [
+      "Nutrition and Food Health"
+    ]
+  },
+  "Herbs and Spices": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Fruits and Vegetables": {
+    "children": [
+      "Maize"
+    ],
+    "parents": [
+      "Recipes"
+    ]
+  },
+  "Maize": {
+    "children": [],
+    "parents": [
+      "Fruits and Vegetables"
+    ]
+  },
+  "Nuts and Seeds": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Dining Etiquette": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Dining Out": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Nervous System Health": {
+    "children": [
+      "Sensory Nervous System Health"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Sensory Nervous System Health": {
+    "children": [],
+    "parents": [
+      "Nervous System Health"
+    ]
+  },
+  "Appreciation of Food": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Juice": {
+    "children": [],
+    "parents": [
+      "Drinks"
+    ]
+  },
+  "Tea": {
+    "children": [
+      "Herbal Tea"
+    ],
+    "parents": [
+      "Drinks"
+    ]
+  },
+  "Herbal Tea": {
+    "children": [],
+    "parents": [
+      "Tea"
+    ]
+  },
+  "Ideas for Dates": {
+    "children": [],
+    "parents": [
+      "Dating"
+    ]
+  },
+  "Sandwiches and Quick Meals": {
+    "children": [],
+    "parents": [
+      "Recipes"
+    ]
+  },
+  "Camping": {
+    "children": [
+      "Camping Gear"
+    ],
+    "parents": [
+      "Outdoor Recreation"
+    ]
+  },
+  "Camping Gear": {
+    "children": [
+      "Tents"
+    ],
+    "parents": [
+      "Camping"
+    ]
+  },
+  "Tents": {
+    "children": [],
+    "parents": [
+      "Camping Gear"
+    ]
+  },
+  "Food Safety": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Alcoholic Drinks": {
+    "children": [
+      "Spirits and Liqueurs"
+    ],
+    "parents": [
+      "Drinks"
+    ]
+  },
+  "Spirits and Liqueurs": {
+    "children": [
+      "Cocktails"
+    ],
+    "parents": [
+      "Alcoholic Drinks"
+    ]
+  },
+  "Cocktails": {
+    "children": [],
+    "parents": [
+      "Spirits and Liqueurs"
+    ]
+  },
+  "Barbecue": {
+    "children": [],
+    "parents": [
+      "Food and Entertaining"
+    ]
+  },
+  "Men's Health": {
+    "children": [
+      "Penis Health"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Penis Health": {
+    "children": [],
+    "parents": [
+      "Men's Health"
+    ]
+  },
+  "Infectious Diseases": {
+    "children": [
+      "Sexually Transmitted Diseases"
+    ],
+    "parents": [
+      "Health"
+    ]
+  },
+  "Sexually Transmitted Diseases": {
+    "children": [],
+    "parents": [
+      "Infectious Diseases"
+    ]
+  },
+  "Meetings": {
+    "children": [],
+    "parents": [
+      "Business Skills"
+    ]
+  },
+  "Writing Techniques": {
+    "children": [
+      "Improving Your Writing"
+    ],
+    "parents": [
+      "Writing"
+    ]
+  },
+  "Improving Your Writing": {
+    "children": [],
+    "parents": [
+      "Writing Techniques"
+    ]
+  },
+  "Fundraising and Charity": {
+    "children": [
+      "Donations"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Donations": {
+    "children": [],
+    "parents": [
+      "Fundraising and Charity"
+    ]
+  },
+  "Investments and Trading": {
+    "children": [],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Photography": {
+    "children": [
+      "Photography Editing",
+      "Cameras",
+      "Photographic Techniques",
+      "Photography Genres"
+    ],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Photography Genres": {
+    "children": [
+      "People and Portrait Photography"
+    ],
+    "parents": [
+      "Photography"
+    ]
+  },
+  "People and Portrait Photography": {
+    "children": [
+      "Identification Photographs"
+    ],
+    "parents": [
+      "Photography Genres"
+    ]
+  },
+  "Identification Photographs": {
+    "children": [],
+    "parents": [
+      "People and Portrait Photography"
+    ]
+  },
+  "Probability and Statistics": {
+    "children": [],
+    "parents": [
+      "Mathematics"
+    ]
+  },
+  "Real Estate": {
+    "children": [],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Shopping": {
+    "children": [
+      "Shopping Online"
+    ],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Shopping Online": {
+    "children": [
+      "Amazon"
+    ],
+    "parents": [
+      "Shopping"
+    ]
+  },
+  "Amazon": {
+    "children": [],
+    "parents": [
+      "Shopping Online"
+    ]
+  },
+  "Interview Skills": {
+    "children": [
+      "Job Interviews"
+    ],
+    "parents": [
+      "Communication Skills"
+    ]
+  },
+  "Job Interviews": {
+    "children": [],
+    "parents": [
+      "Interview Skills"
+    ]
+  },
+  "Online Banking": {
+    "children": [],
+    "parents": [
+      "Banks and Financial Institutions"
+    ]
+  },
+  "Contacting Companies": {
+    "children": [],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Finance Careers": {
+    "children": [],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Personal Savings": {
+    "children": [],
+    "parents": [
+      "Banks and Financial Institutions"
+    ]
+  },
+  "Online Communications": {
+    "children": [
+      "Email",
+      "Instant Messaging"
+    ],
+    "parents": [
+      "Internet"
+    ]
+  },
+  "Email": {
+    "children": [
+      "Writing Emails"
+    ],
+    "parents": [
+      "Online Communications"
+    ]
+  },
+  "Writing Emails": {
+    "children": [],
+    "parents": [
+      "Email"
+    ]
+  },
+  "Office": {
+    "children": [
+      "Spreadsheets"
+    ],
+    "parents": [
+      "Software"
+    ]
+  },
+  "Spreadsheets": {
+    "children": [
+      "Microsoft Excel"
+    ],
+    "parents": [
+      "Office"
+    ]
+  },
+  "Microsoft Excel": {
+    "children": [],
+    "parents": [
+      "Spreadsheets"
+    ]
+  },
+  "Nonprofit Organizations": {
+    "children": [],
+    "parents": [
+      "Business Entities"
+    ]
+  },
+  "Wills and Testaments": {
+    "children": [],
+    "parents": [
+      "Death"
+    ]
+  },
+  "Collecting": {
+    "children": [
+      "Coins"
+    ],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Coins": {
+    "children": [],
+    "parents": [
+      "Collecting"
+    ]
+  },
+  "Risk Management": {
+    "children": [],
+    "parents": [
+      "Finance and Business"
+    ]
+  },
+  "Name Changes": {
+    "children": [],
+    "parents": [
+      "Vital Records"
+    ]
+  },
+  "Kissing": {
+    "children": [],
+    "parents": [
+      "Dating"
+    ]
+  },
+  "Naturism": {
+    "children": [],
+    "parents": [
+      "Personal Care and Style"
+    ]
+  },
+  "Sex & Intimacy": {
+    "children": [],
+    "parents": [
+      "Relationships"
+    ]
+  },
+  "Air Travel": {
+    "children": [],
+    "parents": [
+      "Aviation"
+    ]
+  },
+  "Craft for Kids": {
+    "children": [
+      "Putty Dough and Slime"
+    ],
+    "parents": [
+      "Crafts"
+    ]
+  },
+  "Putty Dough and Slime": {
+    "children": [],
+    "parents": [
+      "Craft for Kids"
+    ]
+  },
+  "Board Games": {
+    "children": [
+      "Strategy Board Games"
+    ],
+    "parents": [
+      "Games"
+    ]
+  },
+  "Strategy Board Games": {
+    "children": [],
+    "parents": [
+      "Board Games"
+    ]
+  },
+  "Questions": {
+    "children": [],
+    "parents": [
+      "Communication Skills"
+    ]
+  },
+  "Toys": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Rope": {
+    "children": [],
+    "parents": [
+      "Holding and Support Tools"
+    ]
+  },
+  "Vacation Time": {
+    "children": [],
+    "parents": [
+      "Holidays and Traditions"
+    ]
+  },
+  "Road Travel": {
+    "children": [
+      "Road Trips"
+    ],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "Road Trips": {
+    "children": [],
+    "parents": [
+      "Road Travel"
+    ]
+  },
+  "United States Travel": {
+    "children": [
+      "New York Travel"
+    ],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "New York Travel": {
+    "children": [],
+    "parents": [
+      "United States Travel"
+    ]
+  },
+  "Solo Travel": {
+    "children": [],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "Navigation and Directions": {
+    "children": [],
+    "parents": [
+      "Travel"
+    ]
+  },
+  "Europe Travel": {
+    "children": [],
+    "parents": [
+      "Destinations"
+    ]
+  },
+  "Family Vacations": {
+    "children": [],
+    "parents": [
+      "Family Life"
+    ]
+  },
+  "Positive and Reflective Lifestyles": {
+    "children": [],
+    "parents": [
+      "Philosophy"
+    ]
+  },
+  "Mac": {
+    "children": [],
+    "parents": [
+      "Operating Systems"
+    ]
+  },
+  "Internet Security": {
+    "children": [],
+    "parents": [
+      "Internet"
+    ]
+  },
+  "Linux": {
+    "children": [],
+    "parents": [
+      "Operating Systems"
+    ]
+  },
+  "Television": {
+    "children": [],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Wireless Networking": {
+    "children": [
+      "Wi Fi"
+    ],
+    "parents": [
+      "Computer Networking"
+    ]
+  },
+  "Wi Fi": {
+    "children": [],
+    "parents": [
+      "Wireless Networking"
+    ]
+  },
+  "Basic Computer Skills": {
+    "children": [],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "IPhone": {
+    "children": [],
+    "parents": [
+      "Smartphones"
+    ]
+  },
+  "Conscious Media Consumption": {
+    "children": [],
+    "parents": [
+      "Education and Communications"
+    ]
+  },
+  "Laptops": {
+    "children": [
+      "MacBook"
+    ],
+    "parents": [
+      "Computers"
+    ]
+  },
+  "MacBook": {
+    "children": [],
+    "parents": [
+      "Laptops"
+    ]
+  },
+  "Search Engines": {
+    "children": [],
+    "parents": [
+      "Internet"
+    ]
+  },
+  "Instant Messaging": {
+    "children": [
+      "WhatsApp"
+    ],
+    "parents": [
+      "Online Communications"
+    ]
+  },
+  "WhatsApp": {
+    "children": [],
+    "parents": [
+      "Instant Messaging"
+    ]
+  },
+  "Eggs and Dairy": {
+    "children": [
+      "Egg Basics"
+    ],
+    "parents": [
+      "Recipes"
+    ]
+  },
+  "Egg Basics": {
+    "children": [],
+    "parents": [
+      "Eggs and Dairy"
+    ]
+  },
+  "Basic Cooking Skills": {
+    "children": [
+      "Steaming Food"
+    ],
+    "parents": [
+      "Food Preparation"
+    ]
+  },
+  "Steaming Food": {
+    "children": [],
+    "parents": [
+      "Basic Cooking Skills"
+    ]
+  },
+  "Astrology": {
+    "children": [],
+    "parents": [
+      "Paranormal Beliefs"
+    ]
+  },
+  "Meditation": {
+    "children": [
+      "Mindfulness"
+    ],
+    "parents": [
+      "Alternative Health"
+    ]
+  },
+  "Mindfulness": {
+    "children": [],
+    "parents": [
+      "Meditation"
+    ]
+  },
+  "Astronomy": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Photography Careers": {
+    "children": [],
+    "parents": [
+      "Careers in Art"
+    ]
+  },
+  "Minecraft Building": {
+    "children": [
+      "Minecraft Structures"
+    ],
+    "parents": [
+      "Minecraft"
+    ]
+  },
+  "Minecraft Structures": {
+    "children": [],
+    "parents": [
+      "Minecraft Building"
+    ]
+  },
+  "Woodworking": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Sculpting": {
+    "children": [],
+    "parents": [
+      "Artwork"
+    ]
+  },
+  "Raising Teens": {
+    "children": [],
+    "parents": [
+      "Parenting"
+    ]
+  },
+  "Knot Tying": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Digital Technology Art and Craft Projects": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Emulators and Roms": {
+    "children": [],
+    "parents": [
+      "Video Games"
+    ]
+  },
+  "Paper Craft": {
+    "children": [
+      "Papermaking"
+    ],
+    "parents": [
+      "Crafts"
+    ]
+  },
+  "Papermaking": {
+    "children": [],
+    "parents": [
+      "Paper Craft"
+    ]
+  },
+  "Nature Crafts": {
+    "children": [],
+    "parents": [
+      "Crafts"
+    ]
+  },
+  "Entrepreneurs": {
+    "children": [
+      "Inventions"
+    ],
+    "parents": [
+      "Business Personnel"
+    ]
+  },
+  "Inventions": {
+    "children": [],
+    "parents": [
+      "Entrepreneurs"
+    ]
+  },
+  "Cameras": {
+    "children": [],
+    "parents": [
+      "Photography"
+    ]
+  },
+  "Kite Making and Kite Flying": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Flags": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Robots": {
+    "children": [],
+    "parents": [
+      "Computers and Electronics"
+    ]
+  },
+  "Sewing": {
+    "children": [],
+    "parents": [
+      "Crafts"
+    ]
+  },
+  "Building Your Own Computer": {
+    "children": [],
+    "parents": [
+      "Computers"
+    ]
+  },
+  "Xbox": {
+    "children": [],
+    "parents": [
+      "Video Games"
+    ]
+  },
+  "Backyard Games": {
+    "children": [],
+    "parents": [
+      "Games"
+    ]
+  },
+  "Amateur Radio": {
+    "children": [],
+    "parents": [
+      "Hobbies and Crafts"
+    ]
+  },
+  "Photography Editing": {
+    "children": [],
+    "parents": [
+      "Photography"
+    ]
+  },
+  "Photographic Techniques": {
+    "children": [],
+    "parents": [
+      "Photography"
+    ]
+  },
+  "Acne": {
+    "children": [
+      "Clogged Pores (Comedones)"
+    ],
+    "parents": [
+      "Personal Care for Youth"
+    ]
+  },
+  "Clogged Pores (Comedones)": {
+    "children": [],
+    "parents": [
+      "Acne"
+    ]
+  },
+  "Skin Types": {
+    "children": [],
+    "parents": [
+      "Skin Care"
+    ]
+  },
+  "Learning Guitar": {
+    "children": [
+      "Guitar Chords"
+    ],
+    "parents": [
+      "Guitar"
+    ]
+  },
+  "Guitar Chords": {
+    "children": [],
+    "parents": [
+      "Learning Guitar"
+    ]
+  },
+  "Music Techniques": {
+    "children": [
+      "Reading Music"
+    ],
+    "parents": [
+      "Music"
+    ]
+  },
+  "Reading Music": {
+    "children": [],
+    "parents": [
+      "Music Techniques"
+    ]
+  }
+}
