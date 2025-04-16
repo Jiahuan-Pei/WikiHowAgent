@@ -8,6 +8,7 @@
 .DS_Store
 .vscode/
 data/wikihow/*
+data/wikihow.zip
 data/dialogues.db
 result/*
 models/*
