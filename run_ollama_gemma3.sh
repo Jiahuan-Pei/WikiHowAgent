@@ -44,6 +44,7 @@ export MKL_NUM_THREADS=16
 export OLLAMA_USE_CUDA_GRAPHS=1
 export OLLAMA_CONTEXT_SIZE=8192  # Increase from default (~2048)
 export OLLAMA_KEEP_LOADED=1
+export OLLAMA_PORT=11436
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 alias python=~/anaconda3/envs/worldtaskeval/bin/python
 
@@ -67,9 +68,9 @@ singularity exec --nv ollama_latest.sif which ollama
 
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-singularity exec --nv ollama_latest.sif ollama serve &
+singularity exec --nv ollama_latest.sif ollama serve&
 OLLAMA_PID=$!
-until curl -s http://localhost:11434/api/tags > /dev/null; do
+until curl -s http://localhost:11436/api/tags > /dev/null; do
     sleep 5
 done
 echo "Ollama server is ready!"
@@ -87,7 +88,7 @@ export PYTHONPATH=$PWD  # Ensure Python finds your package
 # DEBUG: fast run of 6 doc and skip existing generation
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --skip_existing_gen
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 128 --config_teacher conf/ollama-gemma3.yaml --config_learner conf/ollama-gemma3.yaml --config_evaluator conf/ollama-gemma3.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 64 --config_teacher conf/ollama-gemma3.yaml --config_learner conf/ollama-gemma3.yaml --config_evaluator conf/ollama-gemma3.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

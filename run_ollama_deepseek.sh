@@ -44,6 +44,7 @@ export MKL_NUM_THREADS=16
 export OLLAMA_USE_CUDA_GRAPHS=1
 export OLLAMA_CONTEXT_SIZE=8192  # Increase from default (~2048)
 export OLLAMA_KEEP_LOADED=1
+export OLLAMA_PORT=11435
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 alias python=~/anaconda3/envs/worldtaskeval/bin/python
 
@@ -67,9 +68,9 @@ singularity exec --nv ollama_latest.sif which ollama
 
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-singularity exec --nv ollama_latest.sif ollama serve &
+singularity exec --nv ollama_latest.sif ollama serve&
 OLLAMA_PID=$!
-until curl -s http://localhost:11434/api/tags > /dev/null; do
+until curl -s http://localhost:11435/api/tags > /dev/null; do
     sleep 5
 done
 echo "Ollama server is ready!"

@@ -44,6 +44,7 @@ export MKL_NUM_THREADS=16
 export OLLAMA_USE_CUDA_GRAPHS=1
 export OLLAMA_CONTEXT_SIZE=8192  # Increase from default (~2048)
 export OLLAMA_KEEP_LOADED=1
+export OLLAMA_PORT=11434
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 alias python=~/anaconda3/envs/worldtaskeval/bin/python
 
@@ -67,7 +68,7 @@ singularity exec --nv ollama_latest.sif which ollama
 
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-singularity exec --nv ollama_latest.sif ollama serve &
+singularity exec --nv ollama_latest.sif ollama serve&
 # singularity exec --nv --bind ~/anaconda3/envs/worldtaskeval ollama_latest.sif ollama serve &
 # singularity exec --nv --bind ~/anaconda3/envs/worldtaskeval ollama_latest.sif ollama serve &
 OLLAMA_PID=$!
@@ -89,7 +90,7 @@ export PYTHONPATH=$PWD  # Ensure Python finds your package
 # DEBUG: fast run of 6 doc and skip existing generation
 # ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
 # ~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 32 --start_doc_id 3349 --skip_existing_gen 
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size=128
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size=64
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

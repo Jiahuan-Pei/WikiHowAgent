@@ -13,16 +13,16 @@ from utils.setup_logger import setup_logger
 logger = setup_logger() # Get the current script name
 
 class ConversationEvaluator:
-    def __init__(self, config):
+    def __init__(self, config, experiment_id='default'):
         self.llm, self.embeddings, self.config = setup_llm_and_embeddings(config)
         with open(self.config['params']['rubric_file'], 'r') as fr:
             self.rubrics = json.load(fr)
         # Load BERT-based model for semantic similarity
         self.bert_model = SentenceTransformer("all-MiniLM-L6-v2")
         # Load evaluation metrics from Hugging Face's evaluate library
-        self.bleu = evaluate.load("bleu")
-        self.meteor = evaluate.load("meteor")
-        self.rouge = evaluate.load("rouge")
+        self.bleu = evaluate.load("bleu", experiment_id)
+        self.meteor = evaluate.load("meteor", experiment_id)
+        self.rouge = evaluate.load("rouge", experiment_id)
     
     # Question Ratio
     def calculate_question_ratio(self, conversation):
@@ -232,7 +232,7 @@ class ConversationEvaluator:
                 "llm_scores_response": llm_scores_response,
             })
 
-if __name__ == "__main__":
+def example():
     # Example Usage:
     tutorial = [
         "Fill a container with salt.",
@@ -255,5 +255,9 @@ if __name__ == "__main__":
     config = load_yaml(config_file)
     evaluator = ConversationEvaluator(config)
     results = evaluator.evaluate(conversation, tutorial)
-    # pprint(results, indent=4)
-    # logger.info(results)
+    pprint(results, indent=4)
+    # logger.info(results)    
+
+if __name__ == "__main__":
+    # example()
+    pass   
