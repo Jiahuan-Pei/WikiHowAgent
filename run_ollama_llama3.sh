@@ -68,20 +68,36 @@ singularity exec --nv ollama_latest.sif which ollama
 
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-singularity exec --nv ollama_latest.sif ollama serve&
-# singularity exec --nv --bind ~/anaconda3/envs/worldtaskeval ollama_latest.sif ollama serve &
-# singularity exec --nv --bind ~/anaconda3/envs/worldtaskeval ollama_latest.sif ollama serve &
+MODEL_NAME="llama3"
+# Dynamically assign a port based on the job ID
+PORT=$((11434 + ($SLURM_JOB_ID % 1000)))
+OLLAMA_DIR="~/OLLAMA_DIR/ollama_$SLURM_JOB_ID"
+
+# Create isolated model/data directory
+mkdir -p "$OLLAMA_DIR"
+
+SINGULARITYENV_OLLAMA_HOST=0.0.0.0:$PORT singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama serve&
+
 OLLAMA_PID=$!
-until curl -s http://localhost:11434/api/tags > /dev/null; do
+until curl -s http://localhost:$PORT/api/tags > /dev/null; do
     sleep 5
 done
 echo "Ollama server is ready!"
+
 # 4.4 Pull LLM Model (Ensure Model is Downloaded) ---
-singularity exec --nv ollama_latest.sif ollama pull llama3
+SINGULARITYENV_OLLAMA_HOST=0.0.0.0:$PORT singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama pull $MODEL_NAME
 echo "Ollama model is downloaded!"
-singularity exec --nv ollama_latest.sif ollama run llama3 --verbose
-echo "Test Ollama model inference time!"
-time singularity exec --nv ollama_latest.sif ollama run llama3 "Explain quantum mechanics in 100 words."
+
+SINGULARITYENV_OLLAMA_HOST=0.0.0.0:$PORT singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama run $MODEL_NAME --verbose
+
+# echo "Test Ollama model inference time!"
+# time singularity exec --nv ollama_latest.sif ollama run llama3 "Explain quantum mechanics in 100 words."
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package

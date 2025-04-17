@@ -44,7 +44,6 @@ export MKL_NUM_THREADS=16
 export OLLAMA_USE_CUDA_GRAPHS=1
 export OLLAMA_CONTEXT_SIZE=8192  # Increase from default (~2048)
 export OLLAMA_KEEP_LOADED=1
-export OLLAMA_PORT=11439
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 alias python=~/anaconda3/envs/worldtaskeval/bin/python
 
@@ -68,26 +67,43 @@ singularity exec --nv ollama_latest.sif which ollama
 
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-singularity exec --nv ollama_latest.sif ollama serve&
+MODEL_NAME="qwen2"
+# Dynamically assign a port based on the job ID
+PORT=$((11434 + ($SLURM_JOB_ID % 1000)))
+OLLAMA_DIR="~/OLLAMA_DIR/ollama_$SLURM_JOB_ID"
+
+# Set environment variable to pass into container
+export OLLAMA_HOST=0.0.0.0:$PORT
+export SINGULARITYENV_OLLAMA_HOST=0.0.0.0:$PORT
+# Optional: Bind a persistent ollama model cache dir
+export OLLAMA_DIR="$HOME/.ollama_$SLURM_JOB_ID"
+
+# Create isolated model/data directory
+mkdir -p "$OLLAMA_DIR"
+
+singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama serve&
+
 OLLAMA_PID=$!
-until curl -s http://localhost:11439/api/tags > /dev/null; do
+
+until curl -s http://localhost:$PORT/api/tags > /dev/null; do
     sleep 5
 done
 echo "Ollama server is ready!"
+
 # 4.4 Pull LLM Model (Ensure Model is Downloaded) ---
-singularity exec --nv ollama_latest.sif ollama pull qwen2.5
+singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama pull $MODEL_NAME
 echo "Ollama model is downloaded!"
-singularity exec --nv ollama_latest.sif ollama run qwen2.5 --verbose
-echo "Test Ollama model inference time!"
-time singularity exec --nv ollama_latest.sif ollama run qwen2.5 "Explain quantum mechanics in 100 words."
+
+singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama run $MODEL_NAME --verbose
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-# echo "Running the Python workflow..."
-# singularity exec --nv ollama_latest.sif bash -c "source activate worldtaskeval && /gpfs/home3/jpei1/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py"
-# DEBUG: fast run of 6 doc and skip existing generation
-# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
-# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --skip_existing_gen
 ~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 128 --config_teacher conf/ollama-qwen2.yaml --config_learner conf/ollama-qwen2.yaml --config_evaluator conf/ollama-qwen2.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---

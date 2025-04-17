@@ -44,7 +44,6 @@ export MKL_NUM_THREADS=16
 export OLLAMA_USE_CUDA_GRAPHS=1
 export OLLAMA_CONTEXT_SIZE=8192  # Increase from default (~2048)
 export OLLAMA_KEEP_LOADED=1
-export OLLAMA_PORT=11435
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 alias python=~/anaconda3/envs/worldtaskeval/bin/python
 
@@ -53,41 +52,48 @@ alias python=~/anaconda3/envs/worldtaskeval/bin/python
 # conda activate worldtaskeval
 # which python  # Verify Python path
 
-# --- 4. Singularity and GPU Access ---
-# 4.1 Verify
-singularity --version
-# Check If Singularity Detects GPUs
-singularity exec --nv ollama_latest.sif nvidia-smi
-echo "Checking available executables inside Singularity:"
-singularity exec --nv ollama_latest.sif ~/anaconda3/envs/worldtaskeval/bin/python -c "import torch; print('*'*20, torch.cuda.is_available(), torch.cuda.device_count())"
-singularity exec --nv ollama_latest.sif echo $LD_LIBRARY_PATH
-singularity exec --nv ollama_latest.sif which python
-singularity exec --nv ollama_latest.sif which ollama
-# Check If Ollama Supports Multi-GPU
-# singularity exec --nv ollama_latest.sif ollama show
-
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-singularity exec --nv ollama_latest.sif ollama serve&
+MODEL_NAME="deepseek-llm"
+# Dynamically assign a port based on the job ID
+PORT=$((11434 + ($SLURM_JOB_ID % 1000)))
+OLLAMA_DIR="~/OLLAMA_DIR/ollama_$SLURM_JOB_ID"
+
+# Set environment variable to pass into container
+export OLLAMA_HOST=0.0.0.0:$PORT
+export SINGULARITYENV_OLLAMA_HOST=0.0.0.0:$PORT
+# Optional: Bind a persistent ollama model cache dir
+export OLLAMA_DIR="$HOME/.ollama_$SLURM_JOB_ID"
+
+# Create isolated model/data directory
+mkdir -p "$OLLAMA_DIR"
+
+singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama serve&
+
 OLLAMA_PID=$!
-until curl -s http://localhost:11435/api/tags > /dev/null; do
+
+until curl -s http://localhost:$PORT/api/tags > /dev/null; do
     sleep 5
 done
 echo "Ollama server is ready!"
+
 # 4.4 Pull LLM Model (Ensure Model is Downloaded) ---
-singularity exec --nv ollama_latest.sif ollama pull deepseek-llm
+singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama pull $MODEL_NAME
 echo "Ollama model is downloaded!"
-singularity exec --nv ollama_latest.sif ollama run deepseek-llm --verbose
-echo "Test Ollama model inference time!"
-time singularity exec --nv ollama_latest.sif ollama run deepseek-llm "Explain quantum mechanics in 100 words."
+
+singularity exec --nv \
+  --bind "$OLLAMA_DIR":/root/.ollama \
+  ollama_latest.sif ollama run $MODEL_NAME --verbose
+# echo "Test Ollama model inference time!"
+# time singularity exec --nv ollama_latest.sif ollama run $MODEL_NAME "Explain quantum mechanics in 100 words."
+# curl http://localhost:$PORT/api/generate -d '{"model": "deepseek-llm", "prompt": "Hello"}'
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-# echo "Running the Python workflow..."
-# singularity exec --nv ollama_latest.sif bash -c "source activate worldtaskeval && /gpfs/home3/jpei1/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py"
-# DEBUG: fast run of 6 doc and skip existing generation
-# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --max_doc 2 --batch_size 4
-# ~/anaconda3/envs/worldtaskeval/bin/python Agents/multiple_agent_workflow.py --processes $SLURM_CPUS_PER_TASK --batch_size 32 --skip_existing_gen
 ~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --batch_size 128 --config_teacher conf/ollama-deepseek.yaml --config_learner conf/ollama-deepseek.yaml --config_evaluator conf/ollama-deepseek.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
