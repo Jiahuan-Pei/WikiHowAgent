@@ -176,7 +176,7 @@ def process_method(data: Dict) -> Dict:
         return None
 
     conversation = generate_single_conversation(summary, tutorial)
-    evaluation_results = ConversationEvaluator(config_evaluator).evaluate(conversation=conversation, tutorial=tutorial)
+    evaluation_results = ConversationEvaluator(config_evaluator, experiment_id=args.job_id).evaluate(conversation=conversation, tutorial=tutorial)
     # logger.info('----- Full Conversation -----\n')
     # logger.info('\n'.join(conversation))
     # logger.info('----- Evaluation Result -----\n')
