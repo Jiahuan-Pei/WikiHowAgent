@@ -39,9 +39,10 @@ class TeacherLLMAgent:
             'user_utterance': data['user_utterance']
         }
         teacher_response = self.chain.invoke(data)['text']
-        teacher_response = teacher_response.encode('utf-8').decode('unicode_escape')
+        # I commented this because of UnicodeDecodeError
+        # teacher_response = teacher_response.encode('utf-8').decode('unicode_escape')
         # Removing non-ASCII characters using regex
-        teacher_response = re.sub(r'[^\x00-\x7F]+', '', teacher_response)
+        # teacher_response = re.sub(r'[^\x00-\x7F]+', '', teacher_response)
         print('[[🤖 Teacher]]', teacher_response)
         return teacher_response
 

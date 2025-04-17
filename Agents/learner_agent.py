@@ -33,9 +33,9 @@ class LearnerLLMAgent:
     def respond(self, data: dict) -> str:
         try:
             learner_response = self.chain.invoke({"instruction": data["instruction"]})['text']
-            learner_response = learner_response.encode('utf-8').decode('unicode_escape')
+            # learner_response = learner_response.encode('utf-8').decode('unicode_escape')
             # Removing non-ASCII characters using regex
-            learner_response = re.sub(r'[^\x00-\x7F]+', '', learner_response)
+            # learner_response = re.sub(r'[^\x00-\x7F]+', '', learner_response)
 
         except:
             print('Learner:INVOKE:ERR', data, 'Please check if you have the current llm or your API key is valid.')
