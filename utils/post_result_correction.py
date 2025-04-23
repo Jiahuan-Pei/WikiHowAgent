@@ -28,7 +28,7 @@ def correct_result(fpath):
     # Function to parse scores from a string response
     def parse_score_string(score_str):
         result = {}
-        parts = score_str.replace("\n", ",").split(",")
+        parts = score_str.replace("\n", ",").replace("**", "").replace("/5", "").split(",")
         for part in parts:
             if ":" in part:
                 try:
@@ -78,6 +78,10 @@ def correct_result(fpath):
 
 if __name__ == "__main__":
     if len(sys.argv)==2:
+        """
+        Usage example:
+        python utils/post_result_correction.py result/T-gemma_L-gemma_E-gemma_11269574.json
+        """
         correct_result(fpath=sys.argv[1])
     elif len(sys.argv)==1:
         # fpath = "result/T-deepseek-llm_L-deepseek-llm_E-deepseek-llm_012.json"
