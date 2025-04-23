@@ -52,22 +52,9 @@ alias python=~/anaconda3/envs/worldtaskeval/bin/python
 # conda activate worldtaskeval
 # which python  # Verify Python path
 
-# --- 4. Singularity and GPU Access ---
-# 4.1 Verify
-singularity --version
-# Check If Singularity Detects GPUs
-singularity exec --nv ollama_latest.sif nvidia-smi
-echo "Checking available executables inside Singularity:"
-singularity exec --nv ollama_latest.sif ~/anaconda3/envs/worldtaskeval/bin/python -c "import torch; print('*'*20, torch.cuda.is_available(), torch.cuda.device_count())"
-singularity exec --nv ollama_latest.sif echo $LD_LIBRARY_PATH
-singularity exec --nv ollama_latest.sif which python
-singularity exec --nv ollama_latest.sif which ollama
-# Check If Ollama Supports Multi-GPU
-# singularity exec --nv ollama_latest.sif ollama show
-
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-MODEL_NAME="phi4"
+MODEL_NAME="gemma"
 # Dynamically assign a port based on the job ID
 PORT=$((11434 + ($SLURM_JOB_ID % 1000)))
 OLLAMA_DIR="~/OLLAMA_DIR/ollama_$SLURM_JOB_ID"
@@ -104,7 +91,7 @@ singularity exec --nv \
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 32 --config_teacher conf/ollama-phi4.yaml --config_learner conf/ollama-phi4.yaml --config_evaluator conf/ollama-phi4.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 16 --config_teacher conf/ollama-gemma.yaml --config_learner conf/ollama-gemma.yaml --config_evaluator conf/ollama-gemma.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

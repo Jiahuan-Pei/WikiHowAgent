@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=8        # 🔥 Assign #number CPUs per task; Match with args.processes=8; If inference is GPU-bound, having too many CPU processes won't help.
 
 #SBATCH --mem=16GB               # Request of memory
-#SBATCH --partition=gpu_a100     # Use the GPU partition
+#SBATCH --partition=gpu_h100     # Use the GPU partition
 
 echo "Starting job on $(hostname) at $(date)"
 echo "Total CPUs allocated: $SLURM_JOB_CPUS_PER_NODE"
@@ -67,7 +67,7 @@ singularity exec --nv ollama_latest.sif which ollama
 
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
-MODEL_NAME="phi4"
+MODEL_NAME="qwen2.5:14b"
 # Dynamically assign a port based on the job ID
 PORT=$((11434 + ($SLURM_JOB_ID % 1000)))
 OLLAMA_DIR="~/OLLAMA_DIR/ollama_$SLURM_JOB_ID"
@@ -104,7 +104,7 @@ singularity exec --nv \
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 32 --config_teacher conf/ollama-phi4.yaml --config_learner conf/ollama-phi4.yaml --config_evaluator conf/ollama-phi4.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 32 --config_teacher conf/ollama-qwen2.5.yaml --config_learner conf/ollama-qwen2.5.yaml --config_evaluator conf/ollama-qwen2.5.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

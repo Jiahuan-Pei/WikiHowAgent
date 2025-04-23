@@ -2,14 +2,14 @@
 #SBATCH --job-name=conversation_generation
 #SBATCH --output=log/%j.out
 #SBATCH --error=log/%j.err
-#SBATCH --time=2-00:00:00        # Max runtime (2 days)
+#SBATCH --time=5-00:00:00        # Max runtime
 #SBATCH --nodes=1                # Use #number physical machines
 #SBATCH --ntasks=1               # 🔥 Run #number parallel python scripts when you have different settings
 #SBATCH --gres=gpu:1             # Request #number GPU, when you need more control over GPU type or specific features  (A100)
 #SBATCH --cpus-per-task=8        # 🔥 Assign #number CPUs per task; Match with args.processes=8; If inference is GPU-bound, having too many CPU processes won't help.
 
 #SBATCH --mem=16GB               # Request of memory
-#SBATCH --partition=gpu_a100     # Use the GPU partition
+#SBATCH --partition=gpu_h100     # Use the GPU partition
 
 echo "Starting job on $(hostname) at $(date)"
 echo "Total CPUs allocated: $SLURM_JOB_CPUS_PER_NODE"
@@ -52,19 +52,6 @@ alias python=~/anaconda3/envs/worldtaskeval/bin/python
 # conda activate worldtaskeval
 # which python  # Verify Python path
 
-# --- 4. Singularity and GPU Access ---
-# 4.1 Verify
-singularity --version
-# Check If Singularity Detects GPUs
-singularity exec --nv ollama_latest.sif nvidia-smi
-echo "Checking available executables inside Singularity:"
-singularity exec --nv ollama_latest.sif ~/anaconda3/envs/worldtaskeval/bin/python -c "import torch; print('*'*20, torch.cuda.is_available(), torch.cuda.device_count())"
-singularity exec --nv ollama_latest.sif echo $LD_LIBRARY_PATH
-singularity exec --nv ollama_latest.sif which python
-singularity exec --nv ollama_latest.sif which ollama
-# Check If Ollama Supports Multi-GPU
-# singularity exec --nv ollama_latest.sif ollama show
-
 # 4.2 Start and test Ollama with GPU Support ---
 echo "Starting Ollama server..."
 MODEL_NAME="gemma3:12b"
@@ -104,7 +91,7 @@ singularity exec --nv \
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 64 --config_teacher conf/ollama-gemma3.yaml --config_learner conf/ollama-gemma3.yaml --config_evaluator conf/ollama-gemma3.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 16 --config_teacher conf/ollama-gemma3.yaml --config_learner conf/ollama-gemma3.yaml --config_evaluator conf/ollama-gemma3.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

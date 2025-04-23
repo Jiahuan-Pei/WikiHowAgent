@@ -1,0 +1,11 @@
+llm:
+  model_type: ollama
+  model: openchat  # Specify the model name (7b)
+  temperature: 0.0  # Set the temperature for the model
+
+params:
+  root_doc_dir: data/wikihow
+  index_file: data/faiss_vector_store
+  rubric_file: data/evaluation_rubrics.json
+  k: 1 # Top k docs
+  verbose: False

@@ -94,7 +94,7 @@ singularity exec --nv \
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --batch_size 128 --config_teacher conf/ollama-deepseek.yaml --config_learner conf/ollama-deepseek.yaml --config_evaluator conf/ollama-deepseek.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 128 --config_teacher conf/ollama-deepseek.yaml --config_learner conf/ollama-deepseek.yaml --config_evaluator conf/ollama-deepseek.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"
