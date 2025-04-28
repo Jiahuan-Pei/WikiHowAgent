@@ -10,6 +10,7 @@
 data/wikihow/*
 data/wikihow.zip
 data/dialogues.db
+conf/openai-*
 result/*
 models/*
 lib/*
