@@ -104,7 +104,7 @@ singularity exec --nv \
 
 # --- 5. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 32 --config_teacher conf/ollama-qwen2.5.yaml --config_learner conf/ollama-qwen2.5.yaml --config_evaluator conf/ollama-qwen2.5.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 16 --config_teacher conf/ollama-qwen2.5.yaml --config_learner conf/ollama-qwen2.5.yaml --config_evaluator conf/ollama-qwen2.5.yaml
 
 # --- 6. Cleanup: Kill Ollama Server ---
 echo "Job completed at $(date)"

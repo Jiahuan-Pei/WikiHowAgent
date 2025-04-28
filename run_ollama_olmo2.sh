@@ -2,7 +2,7 @@
 #SBATCH --job-name=conversation_generation
 #SBATCH --output=log/%j.out
 #SBATCH --error=log/%j.err
-#SBATCH --time=5-00:00:00        # Max runtime (2 days)
+#SBATCH --time=5-00:00:00        # Max runtime
 #SBATCH --nodes=1                # Use #number physical machines
 #SBATCH --ntasks=1               # 🔥 Run #number parallel python scripts when you have different settings
 #SBATCH --gres=gpu:1             # Request #number GPU, when you need more control over GPU type or specific features  (A100)

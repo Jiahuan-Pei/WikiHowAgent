@@ -21,3 +21,4 @@ torchvision
 rouge_score
 accelerate
 vllm
+streamlit
