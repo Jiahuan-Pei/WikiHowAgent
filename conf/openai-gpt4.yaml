@@ -1,12 +1,12 @@
 llm:
   model_type: "openai"  # or "ollama"
-  model: "gpt-3.5-turbo"  # Specify the model name
+  model: "gpt-4-nlp"  # Specify the model name
   temperature: 0.0  # Set the temperature for the model
   max_tokens: None
   timeout: None
   max_retries: 2
-  api_key: None
-  base_url: None
+  api_key: "YOUR_API_KEY"
+  base_url: "YOUR_BASE_URL"
 
 params:
   root_doc_dir: data/wikihow
