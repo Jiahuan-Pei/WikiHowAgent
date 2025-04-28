@@ -67,17 +67,12 @@ def setup_llm_and_embeddings(config):
 
     llm_config = config['llm']
     # embedding_config = config['embeddings']
-#   max_tokens: None
-#   timeout: None
-#   max_retries: 2
-#   api_key: None
-#   base_url: None
     # Initialize LLM and embeddings
     if llm_config['model_type'] == "openai":
         # _set_if_undefined("OPENAI_API_KEY")
         llm = ChatOpenAI(
             model=llm_config['model'], 
-            temperature=llm_config['temperature'] if llm_config['max_tokens'] else 0,
+            temperature=llm_config['temperature'] if llm_config['temperature'] else 0,
             max_tokens=llm_config['max_tokens'] if llm_config['max_tokens'] else None,
             timeout=llm_config['timeout'] if llm_config['timeout'] else None,
             max_retries=llm_config['max_retries'] if llm_config['max_retries'] else None,
