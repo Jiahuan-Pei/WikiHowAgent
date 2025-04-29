@@ -26,13 +26,14 @@ class LearnerLLMAgent:
                 "Learner:"
             ),
         )
-        
+
         self.chain = LLMChain(prompt=self.prompt_template, llm=self.llm, verbose=True)
         # self.chain =  RunnableSequence(self.prompt_template, self.llm)
 
     def respond(self, data: dict) -> str:
         try:
-            learner_response = self.chain.invoke({"instruction": data["instruction"]})['text']
+            learner_response = self.chain.invoke({"instruction": data["instruction"]})
+            learner_response = learner_response['text']
             # learner_response = learner_response.encode('utf-8').decode('unicode_escape')
             # Removing non-ASCII characters using regex
             # learner_response = re.sub(r'[^\x00-\x7F]+', '', learner_response)

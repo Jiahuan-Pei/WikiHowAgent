@@ -73,13 +73,13 @@ def setup_llm_and_embeddings(config):
         llm = ChatOpenAI(
             model=llm_config['model'], 
             temperature=llm_config['temperature'] if llm_config['temperature'] else 0,
-            max_tokens=llm_config['max_tokens'] if llm_config['max_tokens'] else None,
-            timeout=llm_config['timeout'] if llm_config['timeout'] else None,
+            # max_tokens=llm_config['max_tokens'] if llm_config['max_tokens'] else None,
+            # timeout=llm_config['timeout'] if llm_config['timeout'] else None,
             max_retries=llm_config['max_retries'] if llm_config['max_retries'] else None,
             api_key=llm_config['api_key'] if llm_config['api_key'] else os.environ['OPENAI_API_KEY'],
             base_url=llm_config['base_url'] if llm_config['base_url'] else None
         )
-        embeddings = OpenAIEmbeddings()
+        embeddings = None  # OpenAIEmbeddings()
     elif llm_config['model_type'] == "ollama":
         os.environ["OLLAMA_ACCELERATE"] = "1"
         os.environ["OLLAMA_NUM_GPU"] ="1"

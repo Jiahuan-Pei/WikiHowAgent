@@ -101,6 +101,7 @@ def save_consolidated_results(total_dialogs, count_conversation):
         'total_conversations': list_total_dialogs
     }
     
+    os.makedirs("result", exist_ok=True)
     final_all_dialogue_path = f'result/{OUTPUT_CONFIG}_{JOBID}.json'      
     logger.info(f"Save all dialogue to the path: {final_all_dialogue_path}")  
     with open(final_all_dialogue_path, 'w') as f:
