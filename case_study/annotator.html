@@ -115,7 +115,7 @@ function renderAnnotations(data) {
     const tutorialId = idx + 1;
     const totalSamples = tutorialConvs.length;
 
-    block.innerHTML = `<h2>Tutorial ${tutorialId} / ${totalTutorials} : ${tutorialTitle}</h2>`;
+    block.innerHTML = `<h2>Tutorial # ${tutorialId} / ${totalTutorials} : ${tutorialTitle}</h2>`;
 
     tutorialConvs.forEach((item, index) => {
       const id = `${idx}_${index}`;
@@ -152,7 +152,8 @@ function renderAnnotations(data) {
       }).join('\n');
 
       block.innerHTML += `
-        <h3>Sample ${index + 1} / ${totalSamples}</h3>
+        <h4>Categories:${item.categories.join('>>')}</h4>
+        <h3>Sample # ${index + 1} / ${totalSamples}</h3>
         <div class="steps"><pre>${item.tutorial.steps.map((step, i) => `<strong>Step ${i + 1}</strong>: ${step}`).join('\n')}</pre></div>
         <p><strong>Conversation (JID:${item.filename.split('_')[3]}):</strong></p>
         <div class="conversation">
