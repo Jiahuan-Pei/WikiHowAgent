@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Conversation Annotator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 80px; max-width: 3000px; }
+    .block { margin-bottom: 30px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+    .steps pre, .conversation pre { background: #f9f9f9; padding: 10px; white-space: pre-wrap; }
+    textarea { width: 100%; height: 80px; }
+    select { font-size: 16px; }
+    button { margin-top: 10px; padding: 8px 15px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<h2>Conversation Human Evaluation</h2>
+<h3>Guideline for Annotators</h3>
+
+<p><strong>Your Task:</strong> You are the course coordinator to assess the learning quality via the conversation.<br/>
+<ul>
+<li>Teacher: Provides instructional content; answers learner's questions.</li>
+<li>Learner: Asks questions and responds.</li>
+</ul>
+
+<strong>Evaluation Criteria. Score ranges from 1 (Very Poor) to 5 (Excellent).</strong>
+<ul>
+  <li><strong>Clarity (Teacher)</strong>: 
+    Is the teacher’s instruction clear, well-structured, and easy to understand?
+    Clear phrasing, logical steps, no ambiguity.
+  </li>
+  <li><strong>Truthfulness (Teacher, with Tutorial Reference)</strong>: 
+    Does the generated response stay within the scope of the reference tutorial? 
+    Compare the teacher's response with the provided tutorial.
+    Identify factual accuracy and alignment with source content.
+  </li>
+  <li><strong>Engagement (Learner)</strong>: Does the learner actively participate by asking meaningful questions or responding thoughtfully? 
+    Look for curiosity, thoughtful follow-ups, and interaction.
+  </li>
+  <li><strong>Coherence (Conversation)</strong>:Is the conversation logically structured, with smooth transitions between steps?
+    Look for logical order, no abrupt topic jumps, smooth flow.
+  </li>
+  <li><strong>Depth (Conversation)</strong>: Does the conversation go beyond surface-level discussion and explore concepts in sufficient detail? 
+    Consider how deeply both roles explore the topic.
+  </li>
+  <li><strong>Progress (Conversation)</strong>: Does the conversation effectively move forward through the tutorial steps in a logical manner?
+    Check if each turn moves things forward rather than stagnating or repeating.
+  </li>
+  <li><strong>Naturalness (Conversation)</strong>: Does the conversation feel fluid and human-like, avoiding robotic or overly scripted responses? 
+    Look for a natural tone, varied phrasing, and engaging dialogue.
+  </li>
+</ul>
+
+<strong>Key Steps:</strong>
+<ul>
+  <li>Understand the tutorial first.</li>
+  <li>Read the full conversation carefully.</li>
+  <li>Score using all criteria.</li>
+  <li>Click “Download CSV” when done and sent to email (j.pei2@vu.nl).</li>
+</ul>
+
+<strong>Note:</strong>
+<ul>
+  <li>If you cannot finish all annocations by one time, please record the number of tutorial and the sample of sample to make sure you can finish all the annocations by multiple times / files. </li>
+  <li>Use the provided rubrics. Each criterion has a 1–5 scale. Please reference the rubric descriptions when scoring.</li>
+  <li>Be objective. Focus on what’s actually present in the conversation. Avoid making assumptions.</li>
+  <li>Leave comments (optional but helpful). If something stands out (positively or negatively), briefly note it.</li>
+</ul>
+</p>
+
+<h3>Upload a JSON file to begin annotating:</h3>
+<input type="file" id="jsonInput" accept=".json">
+<button onclick="localStorage.removeItem('savedRatings'); location.reload();">Clear Saved Ratings</button>
+
+<div id="annotationArea"></div>
+<button id="downloadBtn" style="display:none;">Download CSV</button>
+
+<script>
+let data = [];
+let annotations = [];
+
+document.getElementById("jsonInput").addEventListener("change", function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    data = JSON.parse(e.target.result);
+    renderAnnotations(data);
+  };
+  reader.readAsText(file);
+});
+
+function renderAnnotations(data) {
+  const area = document.getElementById("annotationArea");
+  area.innerHTML = "";
+
+  const groupedByTitle = {};
+  Object.entries(data).forEach(([filename, convs]) => {
+    convs.forEach((item) => {
+      const tutorialTitle = item.title;
+      if (!groupedByTitle[tutorialTitle]) {
+        groupedByTitle[tutorialTitle] = [];
+      }
+      groupedByTitle[tutorialTitle].push({ filename, ...item });
+    });
+  });
+
+  const tutorialTitles = Object.entries(groupedByTitle);
+  tutorialTitles.forEach(([tutorialTitle, tutorialConvs], idx) => {
+    const block = document.createElement("div");
+    block.className = "block";
+
+    const totalTutorials = tutorialTitles.length;
+    const tutorialId = idx + 1;
+    const totalSamples = tutorialConvs.length;
+
+    block.innerHTML = `<h2>Tutorial ${tutorialId} / ${totalTutorials} : ${tutorialTitle}</h2>`;
+
+    tutorialConvs.forEach((item, index) => {
+      const id = `${idx}_${index}`;
+      const key = `${tutorialTitle}_${id}`;
+      const savedRatings = JSON.parse(localStorage.getItem("savedRatings") || "{}");
+      const saved = savedRatings[key] || { ratings: {}, comment: "" };
+
+      const metrics = [
+        "Clarity: Is the teacher’s instruction clear, well-structured, and easy to understand?",
+        "Engagement: Does the learner actively participate by asking meaningful questions or responding thoughtfully?",
+        "Coherence: Is the conversation logically structured, with smooth transitions?",
+        "Depth: Does it explore concepts in sufficient detail?",
+        "Relevance: Do the responses stay on-topic?",
+        "Progress: Does the conversation move logically?",
+        "Naturalness: Does it feel fluid and human-like?",
+        "Truthfulness: Does it stay within the tutorial scope?"
+      ];
+
+      const metricsIds = [
+        "clarity", "engagement", "coherence", "depth", 
+        "relevance", "progress", "naturalness", "truthfulness"
+      ];
+
+      const ratingsHTML = metrics.map((metric, i) => {
+        const metricId = metricsIds[i];
+        return `
+          <label>${metric} 
+            <select id="rating_${metricId}_${id}">
+              <option value="">-- Select --</option>
+              ${[1,2,3,4,5].map(v => `<option value="${v}" ${saved.ratings[metricId] == v ? 'selected' : ''}>${v} - ${["Poor", "Fair", "Good", "Very Good", "Excellent"][v-1]}</option>`).join("")}
+            </select>
+          </label><br>
+        `;
+      }).join('\n');
+
+      block.innerHTML += `
+        <h3>Sample ${index + 1} / ${totalSamples}</h3>
+        <div class="steps"><pre>${item.tutorial.steps.map((step, i) => `Step ${i + 1}: ${step}`).join('\n')}</pre></div>
+        <p><strong>Conversation (JID:${item.filename.split('_')[3]}):</strong></p>
+        <div class="conversation">
+          <pre>${item.conversation.map(line => {
+            return line.replace("Teacher:", "<strong>Teacher:</strong>").replace("Learner:", "<strong>Learner:</strong>");
+          }).join('\n')}</pre>
+        </div>
+        <p><strong>Quality Rating</strong></p>
+        ${ratingsHTML}
+        <br>
+        <label>Comment:</label>
+        <textarea id="comment_${id}" placeholder="Optional notes...">${saved.comment || ''}</textarea>
+        <br><br>
+      `;
+
+      // Add listeners to auto-save
+      setTimeout(() => {
+        metricsIds.forEach(metric => {
+          const sel = document.getElementById(`rating_${metric}_${id}`);
+          if (sel) {
+            sel.addEventListener("change", () => {
+              saveToLocalStorage(key, metric, sel.value);
+            });
+          }
+        });
+
+        const commentBox = document.getElementById(`comment_${id}`);
+        if (commentBox) {
+          commentBox.addEventListener("input", () => {
+            saveToLocalStorage(key, "comment", commentBox.value.trim());
+          });
+        }
+      }, 0);
+    });
+
+    area.appendChild(block);
+  });
+
+  document.getElementById("downloadBtn").style.display = "inline-block";
+}
+
+function saveToLocalStorage(key, field, value) {
+  const all = JSON.parse(localStorage.getItem("savedRatings") || "{}");
+  if (!all[key]) all[key] = { ratings: {}, comment: "" };
+
+  if (field === "comment") {
+    all[key].comment = value;
+  } else {
+    all[key].ratings[field] = value;
+  }
+
+  localStorage.setItem("savedRatings", JSON.stringify(all));
+}
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  annotations = [];
+  Object.entries(data).forEach(([filename, convs], fileIdx) => {
+    convs.forEach((item, index) => {
+      const id = `${fileIdx}_${index}`;
+      const key = `${item.title}_${id}`;
+      const saved = JSON.parse(localStorage.getItem("savedRatings") || "{}")[key] || { ratings: {}, comment: "" };
+
+      annotations.push({
+        conversation_id: item.conversation_id || '',
+        filename,
+        title: item.title,
+        clarity: saved.ratings.clarity || '',
+        engagement: saved.ratings.engagement || '',
+        coherence: saved.ratings.coherence || '',
+        depth: saved.ratings.depth || '',
+        relevance: saved.ratings.relevance || '',
+        progress: saved.ratings.progress || '',
+        naturalness: saved.ratings.naturalness || '',
+        truthfulness: saved.ratings.truthfulness || '',
+        comment: saved.comment.replace(/\n/g, ' ')
+      });
+    });
+  });
+
+  const csv = generateCSV(annotations);
+  downloadCSV(csv, "annotations.csv");
+});
+
+function generateCSV(data) {
+  const headers = [
+    "conversation_id", "filename", "title", 
+    "clarity", "engagement", "coherence", "depth", 
+    "relevance", "progress", "naturalness", "truthfulness", "comment"
+  ];
+  const rows = data.map(row => headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(","));
+  return [headers.join(",")].concat(rows).join("\n");
+}
+
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
