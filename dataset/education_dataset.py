@@ -60,7 +60,7 @@ class DatasetWrapper(Dataset):
                 else:
                     pass
                 # If current dialogue id is larger than the max_dialog, then break
-                if count_dialogue >= max_dialog:
+                if max_dialog and count_dialogue >= max_dialog:
                     break
 
     def __len__(self):

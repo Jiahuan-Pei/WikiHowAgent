@@ -8,14 +8,14 @@
 #SBATCH --gres=gpu:1             # Request #number GPU, when you need more control over GPU type or specific features  (A100)
 #SBATCH --cpus-per-task=8        # 🔥 Assign #number CPUs per task; Match with args.processes=8; If inference is GPU-bound, having too many CPU processes won't help.
 
-#SBATCH --mem=16GB               # Request of memory
+#SBATCH --mem=64GB               # Request of memory
 #SBATCH --partition=gpu_h100     # Use the GPU partition
 
 echo "Starting job on $(hostname) at $(date)"
 echo "Total CPUs allocated: $SLURM_JOB_CPUS_PER_NODE"
 echo "Number of CPUs allocated by Slurm=$SLURM_CPUS_PER_TASK"
 
-# --- 1. Load required modules ---
+# --- 1. Load environment ---
 module load 2024
 module load CUDA/12.6.0
 module load cuDNN/9.5.0.50-CUDA-12.6.0
@@ -28,7 +28,9 @@ source activate worldtaskeval
 export PATH="~/anaconda3/envs/worldtaskeval/bin:$PATH" # Use the virtual env worldtaskeval
 export NLTK_DATA="/gpfs/home3/jpei1/nltk_data"
 # GPU Optimization
-export CUDA_VISIBLE_DEVICES=0  # Use the allocated GPU
+# export CUDA_VISIBLE_DEVICES=0  # Use the allocated GPU
+export CUDA_VISIBLE_DEVICES=$SLURM_JOB_GPUS
+
 export OLLAMA_FORCE_CUDA=1
 export OLLAMA_NUM_GPU=1        # Match the number of requested GPUs
 # export CUDA_VISIBLE_DEVICES=0,1,2,3
@@ -47,52 +49,79 @@ export OLLAMA_KEEP_LOADED=1
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 alias python=~/anaconda3/envs/worldtaskeval/bin/python
 
-# --- 3. Activate Virtual Environment ---
-# source ~/.bashrc
-# conda activate worldtaskeval
-# which python  # Verify Python path
-
-# 4.2 Start and test Ollama with GPU Support ---
+# --- 2. Start Ollama Servers for Two Models ---
 echo "Starting Ollama server..."
-MODEL_NAME="gemma"
+MODEL_NAME_1="olmo2"
+MODEL_NAME_2="gemma"
 # Dynamically assign a port based on the job ID
-PORT=$((11434 + ($SLURM_JOB_ID % 1000)))
-OLLAMA_DIR="~/OLLAMA_DIR/ollama_$SLURM_JOB_ID"
-
-# Set environment variable to pass into container
-export OLLAMA_HOST=0.0.0.0:$PORT
-export SINGULARITYENV_OLLAMA_HOST=0.0.0.0:$PORT
-# Optional: Bind a persistent ollama model cache dir
-export OLLAMA_DIR="$HOME/.ollama_$SLURM_JOB_ID"
+PORT1=$((11434 + ($SLURM_JOB_ID % 1000)))
+PORT2=$((PORT1 + 1))
+# Directory for model cache
+OLLAMA_DIR_1="$HOME/.ollama_${SLURM_JOB_ID}_1"
+OLLAMA_DIR_2="$HOME/.ollama_${SLURM_JOB_ID}_2"
 
 # Create isolated model/data directory
-mkdir -p "$OLLAMA_DIR"
+mkdir -p "$OLLAMA_DIR_1"
+mkdir -p "$OLLAMA_DIR_2"
+
+# Start first Ollama server
+export OLLAMA_HOST=0.0.0.0:$PORT1
+export SINGULARITYENV_OLLAMA_HOST=$OLLAMA_HOST
+# Optional: Bind a persistent ollama model cache dir
+export OLLAMA_DIR="$OLLAMA_DIR_1"
 
 singularity exec --nv \
-  --bind "$OLLAMA_DIR":/root/.ollama \
+  --bind "$OLLAMA_DIR_1":/root/.ollama \
+  --bind "$NLTK_DATA:/root/nltk_data" \
   ollama_latest.sif ollama serve&
 
-OLLAMA_PID=$!
+OLLAMA_PID1=$!
 
-until curl -s http://localhost:$PORT/api/tags > /dev/null; do
+# Start second Ollama server
+sleep 5  # slight delay to avoid collision
+export OLLAMA_HOST=0.0.0.0:$PORT2
+export SINGULARITYENV_OLLAMA_HOST=$OLLAMA_HOST
+
+singularity exec --nv \
+  --bind "$OLLAMA_DIR_2":/root/.ollama \
+  --bind "$NLTK_DATA:/root/nltk_data" \
+  ollama_latest.sif ollama serve &
+
+OLLAMA_PID2=$!
+
+# Wait until both servers are ready
+until curl -s http://localhost:$PORT1/api/tags > /dev/null; do
     sleep 5
 done
-echo "Ollama server is ready!"
+echo "First Ollama server ready at port $PORT1"
 
-# 4.4 Pull LLM Model (Ensure Model is Downloaded) ---
+until curl -s http://localhost:$PORT2/api/tags > /dev/null; do
+    sleep 5
+done
+echo "Second Ollama server ready at port $PORT2"
+
+# --- 3. Pull both models ---
+export OLLAMA_HOST=0.0.0.0:$PORT1
 singularity exec --nv \
-  --bind "$OLLAMA_DIR":/root/.ollama \
-  ollama_latest.sif ollama pull $MODEL_NAME
-echo "Ollama model is downloaded!"
+  --bind "$OLLAMA_DIR_1":/root/.ollama \
+  --bind "$NLTK_DATA:/root/nltk_data" \
+  ollama_latest.sif ollama pull $MODEL_NAME_1
+echo "Model $MODEL_NAME_1 pulled."
 
+export OLLAMA_HOST=0.0.0.0:$PORT2
 singularity exec --nv \
-  --bind "$OLLAMA_DIR":/root/.ollama \
-  ollama_latest.sif ollama run $MODEL_NAME --verbose
+  --bind "$OLLAMA_DIR_2":/root/.ollama \
+  --bind "$NLTK_DATA:/root/nltk_data" \
+  ollama_latest.sif ollama pull $MODEL_NAME_2
+echo "Model $MODEL_NAME_2 pulled."
 
-# --- 5. Run the Python Script with Correct Python Path ---
+# --- 4. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_siz 16 --config_teacher conf/ollama-gemma.yaml --config_learner conf/ollama-gemma.yaml --config_evaluator conf/ollama-gemma.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 16 --config_teacher conf/ollama-olmo2.yaml --config_learner conf/ollama-gemma.yaml --config_evaluator conf/ollama-olmo2.yaml
 
-# --- 6. Cleanup: Kill Ollama Server ---
+# --- 5. Cleanup: Kill Ollama Server ---
+echo "Cleaning up servers..."
+kill $OLLAMA_PID1
+kill $OLLAMA_PID2
+
 echo "Job completed at $(date)"
-kill $OLLAMA_PID

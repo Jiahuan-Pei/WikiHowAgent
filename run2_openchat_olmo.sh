@@ -116,7 +116,7 @@ echo "Model $MODEL_NAME_2 pulled."
 
 # --- 4. Run the Python Script with Correct Python Path ---
 export PYTHONPATH=$PWD  # Ensure Python finds your package
-~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 16 --config_teacher conf/ollama-openchat.yaml --config_learner conf/ollama-olmo2.yaml --config_evaluator conf/ollama-openchat.yaml
+~/anaconda3/envs/worldtaskeval/bin/python main.py --processes $SLURM_CPUS_PER_TASK --job_id $SLURM_JOB_ID --batch_size 4 --config_teacher conf/ollama-openchat.yaml --config_learner conf/ollama-olmo2.yaml --config_evaluator conf/ollama-openchat.yaml
 
 # --- 5. Cleanup: Kill Ollama Server ---
 echo "Cleaning up servers..."

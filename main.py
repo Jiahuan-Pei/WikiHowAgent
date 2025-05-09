@@ -39,7 +39,7 @@ def process_batches(data_loader):
     """Process data batches and group results by document"""
     count_conversation = 0
     total_dialogs = []
-    os.makedirs("result", exist_ok=True)
+
     # Load the previous dialogues if assigned
     if args.previous_dialogue_path and os.path.exists(args.previous_dialogue_path):
         with open(args.previous_dialogue_path, 'r') as fr:
@@ -72,7 +72,8 @@ def process_batches(data_loader):
             logger.info(eval_)
         
         count_conversation += batch_size
-
+        # Write to file every batch
+        save_consolidated_results(total_dialogs, count_conversation)
     return total_dialogs, count_conversation
 
 
