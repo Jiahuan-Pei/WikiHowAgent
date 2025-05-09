@@ -59,6 +59,11 @@ def correct_result(fpath):
                 eval_data[metric] = full_metrics[metric]
             metrics_accumulator[metric].append(eval_data[metric])
 
+        # Convert to 1-5 if larger than 5: some LLM generate larger than 5
+        for k, v in eval_data.items():
+            if k in full_metrics and v > 5:
+                eval_data[k] = v * (5/10)
+
         conv["evaluation"] = eval_data
         updated_conversations.append(conv)
 
