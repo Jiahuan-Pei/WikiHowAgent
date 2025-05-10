@@ -4,7 +4,7 @@ import multiprocessing as mp
 from utils.util import load_yaml, setup_logger
 
 EVAL_METRICS = ["Question Ratio", "Completion Achieved", "Diversity Score", 
-                "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
+                "Clarity", "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
                 "BLEU", "METEOR", "BERTScore", "ROUGE"]
 
 
