@@ -53,10 +53,11 @@
 
 <strong>Key Steps:</strong>
 <ul>
-  <li>Understand the tutorial first.</li>
+  <li>Upload a josn file to load data samples.</li>
+  <li>Read the tutorial and understand the learning content.</li>
   <li>Read the full conversation carefully.</li>
   <li>Score using all criteria.</li>
-  <li>Click “Download CSV” when done and sent to email (j.pei2@vu.nl).</li>
+  <li>Click “Download CSV” when done, save it in format "SourcefileName_AnnotatorName.csv", and send files to the email (j.pei2@vu.nl).</li>
 </ul>
 
 <strong>Note:</strong>
@@ -70,7 +71,7 @@
 
 <h3>Upload a JSON file to begin annotating:</h3>
 <input type="file" id="jsonInput" accept=".json">
-<button onclick="localStorage.removeItem('savedRatings'); location.reload();">Clear Saved Ratings</button>
+<button onclick="localStorage.removeItem('savedRatings'); location.reload();">Clear All Saved Ratings</button>
 
 <div id="annotationArea"></div>
 <button id="downloadBtn" style="display:none;">Download CSV</button>
@@ -127,11 +128,11 @@ function renderAnnotations(data) {
         "Clarity: Is the teacher’s instruction clear, well-structured, and easy to understand?",
         "Engagement: Does the learner actively participate by asking meaningful questions or responding thoughtfully?",
         "Coherence: Is the conversation logically structured, with smooth transitions?",
-        "Depth: Does it explore concepts in sufficient detail?",
+        "Depth: Does the conversation explore concepts in sufficient detail?",
         "Relevance: Do the responses stay on-topic?",
         "Progress: Does the conversation move logically?",
-        "Naturalness: Does it feel fluid and human-like?",
-        "Truthfulness: Does it stay within the tutorial scope?"
+        "Naturalness: Does the conversation feel fluid and human-like?",
+        "Truthfulness: Does the teacher’s instruction stay within the tutorial scope?"
       ];
 
       const metricsIds = [
