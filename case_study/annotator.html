@@ -77,190 +77,149 @@
 <button id="downloadBtn" style="display:none;">Download CSV</button>
 
 <script>
-let data = [];
-let annotations = [];
-
-document.getElementById("jsonInput").addEventListener("change", function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    data = JSON.parse(e.target.result);
-    renderAnnotations(data);
-  };
-  reader.readAsText(file);
-});
-
-function renderAnnotations(data) {
-  const area = document.getElementById("annotationArea");
-  area.innerHTML = "";
-
-  const groupedByTitle = {};
-  Object.entries(data).forEach(([filename, convs]) => {
-    convs.forEach((item) => {
-      const tutorialTitle = item.title;
-      if (!groupedByTitle[tutorialTitle]) {
-        groupedByTitle[tutorialTitle] = [];
-      }
-      groupedByTitle[tutorialTitle].push({ filename, ...item });
-    });
+  let data = [];
+  let annotations = [];
+  
+  document.getElementById("jsonInput").addEventListener("change", function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+  
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      data = JSON.parse(e.target.result);
+      renderAnnotations(data);
+    };
+    reader.readAsText(file);
   });
-
-  const tutorialTitles = Object.entries(groupedByTitle);
-  tutorialTitles.forEach(([tutorialTitle, tutorialConvs], idx) => {
-    const block = document.createElement("div");
-    block.className = "block";
-
-    const totalTutorials = tutorialTitles.length;
-    const tutorialId = idx + 1;
-    const totalSamples = tutorialConvs.length;
-
-    block.innerHTML = `<h2>Tutorial # ${tutorialId} / ${totalTutorials} : ${tutorialTitle}</h2>`;
-
-    tutorialConvs.forEach((item, index) => {
-      const id = `${idx}_${index}`;
-      const key = `${tutorialTitle}_${id}`;
-      const savedRatings = JSON.parse(localStorage.getItem("savedRatings") || "{}");
-      const saved = savedRatings[key] || { ratings: {}, comment: "" };
-
-      const metrics = [
-        "Clarity: Is the teacher’s instruction clear, well-structured, and easy to understand?",
-        "Engagement: Does the learner actively participate by asking meaningful questions or responding thoughtfully?",
-        "Coherence: Is the conversation logically structured, with smooth transitions?",
-        "Depth: Does the conversation explore concepts in sufficient detail?",
-        "Relevance: Do the responses stay on-topic?",
-        "Progress: Does the conversation move logically?",
-        "Naturalness: Does the conversation feel fluid and human-like?",
-        "Truthfulness: Does the teacher’s instruction stay within the tutorial scope?"
-      ];
-
-      const metricsIds = [
-        "clarity", "engagement", "coherence", "depth", 
-        "relevance", "progress", "naturalness", "truthfulness"
-      ];
-
-      const ratingsHTML = metrics.map((metric, i) => {
-        const metricId = metricsIds[i];
-        return `
-          <label>${metric} 
-            <select id="rating_${metricId}_${id}">
-              <option value="">-- Select --</option>
-              ${[1,2,3,4,5].map(v => `<option value="${v}" ${saved.ratings[metricId] == v ? 'selected' : ''}>${v} - ${["Poor", "Fair", "Good", "Very Good", "Excellent"][v-1]}</option>`).join("")}
-            </select>
-          </label><br>
+  
+  function renderAnnotations(data) {
+    const area = document.getElementById("annotationArea");
+    area.innerHTML = "";
+  
+    Object.entries(data).forEach(([filename, convs]) => {
+      convs.forEach((item, index) => {
+        const id = `${filename}_${index}`;
+        const key = id;
+        const savedRatings = JSON.parse(localStorage.getItem("savedRatings") || "{}");
+        const saved = savedRatings[key] || { ratings: {}, comment: "" };
+  
+        const metrics = [
+          "Clarity: Is the teacher’s instruction clear, well-structured, and easy to understand?",
+          "Engagement: Does the learner actively participate by asking meaningful questions or responding thoughtfully?",
+          "Coherence: Is the conversation logically structured, with smooth transitions?",
+          "Depth: Does the conversation explore concepts in sufficient detail?",
+          "Relevance: Do the responses stay on-topic?",
+          "Progress: Does the conversation move logically?",
+          "Naturalness: Does the conversation feel fluid and human-like?",
+          "Truthfulness: Does the teacher’s instruction stay within the tutorial scope?"
+        ];
+  
+        const metricsIds = [
+          "clarity", "engagement", "coherence", "depth",
+          "relevance", "progress", "naturalness", "truthfulness"
+        ];
+  
+        const ratingsHTML = metrics.map((metric, i) => {
+          const metricId = metricsIds[i];
+          return `
+            <label>${metric} 
+              <select id="rating_${metricId}_${id}">
+                <option value="">-- Select --</option>
+                ${[1,2,3,4,5].map(v => `<option value="${v}" ${saved.ratings[metricId] == v ? 'selected' : ''}>${v} - ${["Poor", "Fair", "Good", "Very Good", "Excellent"][v-1]}</option>`).join("")}
+              </select>
+            </label><br>
+          `;
+        }).join('\n');
+  
+        const block = document.createElement("div");
+        block.className = "block";
+        block.innerHTML = `
+          <h3>${item.title}</h3>
+          <h4>Categories: ${item.categories.join(' >> ')}</h4>
+          <div class="steps"><pre>${item.tutorial.steps.map((s, i) => `Step ${i + 1}: ${s}`).join('\n')}</pre></div>
+          <p><strong>Conversation:</strong></p>
+          <div class="conversation">
+            <pre>${item.conversation.map(l => l.replace("Teacher:", "<strong>Teacher:</strong>").replace("Learner:", "<strong>Learner:</strong>")).join('\n')}</pre>
+          </div>
+          <p><strong>Quality Rating</strong></p>
+          ${ratingsHTML}
+          <label>Preferred Job ID list and other comments (optional):</label>
+          <textarea id="comment_${id}" placeholder="Optional notes...">${saved.comment || ''}</textarea>
         `;
-      }).join('\n');
-
-      block.innerHTML += `
-        <h4>Categories:${item.categories.join('>>')}</h4>
-        <h3>Sample # ${index + 1} / ${totalSamples}</h3>
-        <div class="steps"><pre>${item.tutorial.steps.map((step, i) => `<strong>Step ${i + 1}</strong>: ${step}`).join('\n')}</pre></div>
-        <p><strong>Conversation (JID:${item.filename.split('_')[3]}):</strong></p>
-        <div class="conversation">
-          <pre>${item.conversation.map(line => {
-            return line.replace("Teacher:", "<strong>Teacher:</strong>").replace("Learner:", "<strong>Learner:</strong>");
-          }).join('\n')}</pre>
-        </div>
-        <p><strong>Quality Rating</strong></p>
-        ${ratingsHTML}
-        <br>
-        <div class="evaluation">
-          <pre hidden>${JSON.stringify(item.evaluation, null, 2)}</pre>
-        </hidden>
-        <label>Preferred Job ID list (A>B>C>D>E>F...) and other comments (optional):</label>
-        <textarea id="comment_${id}" placeholder="Optional notes...">${saved.comment || ''}</textarea>
-        <br><br>
-      `;
-
-      // Add listeners to auto-save
-      setTimeout(() => {
-        metricsIds.forEach(metric => {
-          const sel = document.getElementById(`rating_${metric}_${id}`);
-          if (sel) {
-            sel.addEventListener("change", () => {
-              saveToLocalStorage(key, metric, sel.value);
-            });
-          }
-        });
-
-        const commentBox = document.getElementById(`comment_${id}`);
-        if (commentBox) {
-          commentBox.addEventListener("input", () => {
-            saveToLocalStorage(key, "comment", commentBox.value.trim());
+  
+        area.appendChild(block);
+  
+        setTimeout(() => {
+          metricsIds.forEach(metric => {
+            const sel = document.getElementById(`rating_${metric}_${id}`);
+            if (sel) sel.addEventListener("change", () => saveToLocalStorage(key, metric, sel.value));
           });
-        }
-      }, 0);
-    });
-
-    area.appendChild(block);
-  });
-
-  document.getElementById("downloadBtn").style.display = "inline-block";
-}
-
-function saveToLocalStorage(key, field, value) {
-  const all = JSON.parse(localStorage.getItem("savedRatings") || "{}");
-  if (!all[key]) all[key] = { ratings: {}, comment: "" };
-
-  if (field === "comment") {
-    all[key].comment = value;
-  } else {
-    all[key].ratings[field] = value;
-  }
-
-  localStorage.setItem("savedRatings", JSON.stringify(all));
-}
-
-document.getElementById("downloadBtn").addEventListener("click", () => {
-  annotations = [];
-  Object.entries(data).forEach(([filename, convs], fileIdx) => {
-    convs.forEach((item, index) => {
-      const id = `${fileIdx}_${index}`;
-      const key = `${item.title}_${id}`;
-      const saved = JSON.parse(localStorage.getItem("savedRatings") || "{}")[key] || { ratings: {}, comment: "" };
-
-      annotations.push({
-        conversation_id: item.conversation_id || '',
-        filename,
-        title: item.title,
-        clarity: saved.ratings.clarity || '',
-        engagement: saved.ratings.engagement || '',
-        coherence: saved.ratings.coherence || '',
-        depth: saved.ratings.depth || '',
-        relevance: saved.ratings.relevance || '',
-        progress: saved.ratings.progress || '',
-        naturalness: saved.ratings.naturalness || '',
-        truthfulness: saved.ratings.truthfulness || '',
-        comment: saved.comment.replace(/\n/g, ' ')
+  
+          const commentBox = document.getElementById(`comment_${id}`);
+          if (commentBox) commentBox.addEventListener("input", () => saveToLocalStorage(key, "comment", commentBox.value.trim()));
+        }, 0);
       });
     });
+  
+    document.getElementById("downloadBtn").style.display = "inline-block";
+  }
+  
+  function saveToLocalStorage(key, field, value) {
+    const all = JSON.parse(localStorage.getItem("savedRatings") || "{}");
+    if (!all[key]) all[key] = { ratings: {}, comment: "" };
+    if (field === "comment") all[key].comment = value;
+    else all[key].ratings[field] = value;
+    localStorage.setItem("savedRatings", JSON.stringify(all));
+  }
+  
+  document.getElementById("downloadBtn").addEventListener("click", () => {
+    annotations = [];
+    Object.entries(data).forEach(([filename, convs]) => {
+      convs.forEach((item, index) => {
+        const key = `${filename}_${index}`;
+        const saved = JSON.parse(localStorage.getItem("savedRatings") || "{}")[key] || { ratings: {}, comment: "" };
+  
+        annotations.push({
+          conversation_id: item.conversation_id || '',
+          filename,
+          title: item.title,
+          clarity: saved.ratings.clarity || '',
+          engagement: saved.ratings.engagement || '',
+          coherence: saved.ratings.coherence || '',
+          depth: saved.ratings.depth || '',
+          relevance: saved.ratings.relevance || '',
+          progress: saved.ratings.progress || '',
+          naturalness: saved.ratings.naturalness || '',
+          truthfulness: saved.ratings.truthfulness || '',
+          comment: (saved.comment || '').replace(/\n/g, ' ')
+        });
+      });
+    });
+  
+    const csv = generateCSV(annotations);
+    downloadCSV(csv, "annotations.csv");
   });
-
-  const csv = generateCSV(annotations);
-  downloadCSV(csv, "annotations.csv");
-});
-
-function generateCSV(data) {
-  const headers = [
-    "conversation_id", "filename", "title", 
-    "clarity", "engagement", "coherence", "depth", 
-    "relevance", "progress", "naturalness", "truthfulness", "comment"
-  ];
-  const rows = data.map(row => headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(","));
-  return [headers.join(",")].concat(rows).join("\n");
-}
-
-function downloadCSV(csv, filename) {
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-</script>
+  
+  function generateCSV(data) {
+    const headers = [
+      "conversation_id", "filename", "title",
+      "clarity", "engagement", "coherence", "depth",
+      "relevance", "progress", "naturalness", "truthfulness", "comment"
+    ];
+    const rows = data.map(row => headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(","));
+    return [headers.join(",")].concat(rows).join("\n");
+  }
+  
+  function downloadCSV(csv, filename) {
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  </script>
 
 </body>
 </html>

@@ -79,7 +79,7 @@ def plot_tasks_per_topic(df):
 
     # Show the plot
     plt.tight_layout()
-    plt.savefig(f'figure/tasks_per_topic.png')
+    plt.savefig(f'figure/tasks_per_topic.png', dpi=400)
     df_num_topic = pd.DataFrame(num_label, columns=['Number', 'Topic', 'Count'])
     # Write to CSV
     df_num_topic.to_csv('figure/tasks_per_topic.csv', index=False)
@@ -96,7 +96,7 @@ def plot_title_length(df):
     plt.grid(False)
     plt.tight_layout()
     # plt.show()
-    plt.savefig(f'figure/title_length.png')
+    plt.savefig(f'figure/title_length.png', dpi=400)
 
 def plot_title_length_by_topic(df):
     df['Title_Length'] = df['Title'].apply(len)
@@ -109,7 +109,7 @@ def plot_title_length_by_topic(df):
     plt.ylabel('Average Title Length')
     plt.grid(False)
     plt.tight_layout()
-    plt.savefig(f'figure/title_length_by_topic.png')
+    plt.savefig(f'figure/title_length_by_topic.png', dpi=400)
 
 def convert_html_to_md(mdir='./data/wikihow'):    
     markdown_docs = []
@@ -631,7 +631,7 @@ def build_up_knowledge_graph():
     
     # Save with high DPI
     plt.savefig('figure/knowledge_graph.png', 
-                dpi=300, 
+                dpi=400, 
                 bbox_inches='tight',
                 format='png')
     plt.close()
@@ -656,7 +656,7 @@ def build_up_knowledge_graph():
             arrows=True)
     
     plt.savefig('figure/knowledge_graph_simplified.png', 
-                dpi=300, 
+                dpi=400, 
                 bbox_inches='tight',
                 format='png')
     plt.close()
@@ -682,12 +682,12 @@ def load_knowledge_graph():
         return None
 
 def main():
-    # df =  load_wikihow_csv()
-    # plot_tasks_per_topic(df)
-    # plot_title_length(df)
-    # plot_title_length_by_topic(df)
+    df =  load_wikihow_csv()
+    plot_tasks_per_topic(df)
+    plot_title_length(df)
+    plot_title_length_by_topic(df)
     # convert_html_to_md()
-    convert_html_to_json()
+    # convert_html_to_json()
     # calculate_data_statistics_of_markdown_docs()
     # build_up_knowledge_graph()
 if __name__ == "__main__":
