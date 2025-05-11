@@ -34,7 +34,7 @@ def plot_tasks_per_topic(df, fpath):
         ax.plot(angles, values, label=metric,
         marker=markers[i % len(markers)],
         color=colors(i),
-        linewidth=2,
+        linewidth=1,
         markersize=6)
         # Fill area under the plot
         # ax.fill(angles, values, color=colors(i), alpha=0.1)
