@@ -8,7 +8,7 @@ import numpy as np
 metrics = ["Clarity", "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness"]
 
 def plot_tasks_per_topic(df, fpath):
-    markers = ['o', 's', 'D', '^', 'v', '<', '>', 'P']  # Circle, square, diamond, triangle, etc.
+    markers = ['o', 's', 'X', 'D', 'P', '*', '^', 'v', '<', '>']  # Circle, square, diamond, triangle, etc.
     colors = plt.cm.get_cmap('tab10', len(metrics))     # Use a colormap for different colors
 
     num_categories = len(df)
@@ -45,7 +45,7 @@ def plot_tasks_per_topic(df, fpath):
     #     ax.text(angle, 5.4, f"[{i+1}]", ha='center', va='center', fontsize=6)
 
     # Add legend
-    ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05), fontsize=8)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.05), fontsize=10)
 
     # Save the plot
     plt.tight_layout()

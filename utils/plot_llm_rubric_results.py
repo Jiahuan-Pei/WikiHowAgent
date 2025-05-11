@@ -36,8 +36,8 @@ def plot_llm_rubric(fpath):
 
     # Prepare the x-ticks: [Topic1, Topic2, ...] with angle wrapping
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels([f"{df.columns[i]}" for i in range(num_categories)], fontsize=8, ha='center', va='center') # 'top', 'bottom', 'center', 'baseline', 'center_baseline
-    ax.tick_params(axis='x', pad=11)  # Increase vertical distance from axis
+    ax.set_xticklabels([f"{df.columns[i]}" for i in range(num_categories)], fontsize=10, ha='center', va='center') # 'top', 'bottom', 'center', 'baseline', 'center_baseline
+    ax.tick_params(axis='x', pad=15)  # Increase vertical distance from axis
 
     # Plot each model as a line
     for i, model in enumerate(df.index):
@@ -60,7 +60,7 @@ def plot_llm_rubric(fpath):
     #     ax.text(angle, 5.4, f"{label}", ha='center', va='center', fontsize=6)
 
     # Add legend
-    ax.legend(loc='upper right', bbox_to_anchor=(1.05, 1.08), fontsize=8)
+    ax.legend(loc='upper left', bbox_to_anchor=(1.0, 1.08), fontsize=10)
 
     # Save the plot
     plt.tight_layout()
