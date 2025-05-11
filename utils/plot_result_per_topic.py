@@ -17,7 +17,10 @@ def plot_tasks_per_topic(df, fpath):
     # Make the plot circular by repeating the first angle at the end
     angles += angles[:1]
 
-    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
+    if plot_legend:
+        fig, ax = plt.subplots(figsize=(12, 12), subplot_kw=dict(polar=True))
+    else:
+        fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
 
     # Prepare the x-ticks: [Topic1, Topic2, ...] with angle wrapping
     ax.set_xticks(angles[:-1])
@@ -33,6 +36,8 @@ def plot_tasks_per_topic(df, fpath):
         color=colors(i),
         linewidth=2,
         markersize=6)
+        # Fill area under the plot
+        # ax.fill(angles, values, color=colors(i), alpha=0.1)
 
     # Add labels to radial axis
     ax.set_ylim(2, 5.15)
@@ -45,12 +50,17 @@ def plot_tasks_per_topic(df, fpath):
     #     ax.text(angle, 5.4, f"[{i+1}]", ha='center', va='center', fontsize=6)
 
     # Add legend
-    ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.05), fontsize=10)
+    if plot_legend:
+        ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.05), fontsize=10, ncols=len(metrics), framealpha=1.0)
+        suffix = '_legend'
+    else:
+        suffix = ''
 
     # Save the plot
     plt.tight_layout()
-    plt.savefig(fpath.replace('result', 'figure').replace('.json','.png'), dpi=400)
+    plt.savefig(fpath.replace('result', 'figure').replace('.json',f'{suffix}.png'), dpi=400)
     plt.close()
+
 
 def compute_result_per_topic(fpath):
     df_tasks_per_topic = pd.read_csv(file_tasks_per_topic) # TOPIC x 3
@@ -73,19 +83,21 @@ if __name__ == "__main__":
     if len(sys.argv)==2:
         """
         Usage example:
-        python utils/post_result_per_topic.py result/T-openchat_L-openchat_E-openchat_11297606_corrected.json
+        python utils/plot_result_per_topic.py result/T-openchat_L-openchat_E-openchat_11297606_corrected.json
         """
+        plot_legend = True
         compute_result_per_topic(fpath=sys.argv[1])
     elif len(sys.argv)==1:
-        # fpath = "result/T-deepseek-llm_L-deepseek-llm_E-deepseek-llm_012.json"
+        plot_legend = False
         fpaths = [
+            'T-openchat_L-openchat_E-openchat_11297606_corrected.json',
             'T-deepseek-llm_L-deepseek-llm_E-deepseek-llm_11246257_corrected.json',
             'T-qwen2_L-qwen2_E-qwen2_11236934_corrected.json',
             'T-gemma_L-gemma_E-gemma_11269574_corrected.json',
             'T-olmo2_L-olmo2_E-olmo2_11370185_corrected.json',
-            'T-openchat_L-openchat_E-openchat_11297606_corrected.json',
             'T-llama3_L-llama3_E-llama3_11232754_corrected.json',
             'T-phi4_L-phi4_E-phi4_11269383_corrected.json',
         ]
-        for fpath in fpaths:
+
+        for i, fpath in enumerate(fpaths):
             compute_result_per_topic(fpath=f"result/{fpath}")
