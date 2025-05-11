@@ -47,6 +47,8 @@ def plot_llm_rubric(fpath):
         color=colors(i),
         linewidth=2,
         markersize=6)
+        # Fill area under the plot
+        ax.fill(angles, values, color=colors(i), alpha=0.1)
 
     # Add labels to radial axis
     ax.set_ylim(1, 5.35)
