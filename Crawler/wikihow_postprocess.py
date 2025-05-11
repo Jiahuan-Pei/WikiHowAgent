@@ -82,7 +82,7 @@ def plot_tasks_per_topic(df):
     plt.savefig(f'figure/tasks_per_topic.png', dpi=400)
     df_num_topic = pd.DataFrame(num_label, columns=['Number', 'Topic', 'Count'])
     # Write to CSV
-    df_num_topic.to_csv('figure/tasks_per_topic.csv', index=False)
+    df_num_topic.to_csv('data/tasks_per_topic.csv', index=False)
     # plt.show()
 
 def plot_title_length(df):

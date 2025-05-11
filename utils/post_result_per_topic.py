@@ -69,7 +69,7 @@ def compute_result_per_topic(fpath):
     final_df.to_csv(fpath.replace('.json', '_topic.csv'), index=False)
 
 if __name__ == "__main__":
-    file_tasks_per_topic = 'figure/tasks_per_topic.csv'
+    file_tasks_per_topic = 'data/tasks_per_topic.csv'
     if len(sys.argv)==2:
         """
         Usage example:
