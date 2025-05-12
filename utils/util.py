@@ -79,7 +79,7 @@ def setup_llm_and_embeddings(config):
             api_key=llm_config['api_key'] if llm_config['api_key'] else os.environ['OPENAI_API_KEY'],
             base_url=llm_config['base_url'] if llm_config['base_url'] else None
         )
-        embeddings = None  # OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings(model=llm_config['model'])
     elif llm_config['model_type'] == "ollama":
         os.environ["OLLAMA_ACCELERATE"] = "1"
         os.environ["OLLAMA_NUM_GPU"] ="1"

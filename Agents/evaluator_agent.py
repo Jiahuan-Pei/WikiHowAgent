@@ -6,6 +6,9 @@ from typing import List, Dict
 from sentence_transformers import SentenceTransformer, util
 import evaluate
 from nltk.util import ngrams
+import torch
+import torch.nn.functional as F
+from config import config_evaluator
 
 # Custom utility imports
 from utils.util import setup_llm_and_embeddings, load_yaml
@@ -18,7 +21,8 @@ class ConversationEvaluator:
         with open(self.config['params']['rubric_file'], 'r') as fr:
             self.rubrics = json.load(fr)
         # Load BERT-based model for semantic similarity
-        self.bert_model = SentenceTransformer("all-MiniLM-L6-v2")
+        if config_evaluator['llm']['model_type'] == 'ollama':
+            self.bert_model = SentenceTransformer("all-MiniLM-L6-v2")
         # Load evaluation metrics from Hugging Face's evaluate library
         self.bleu = evaluate.load("bleu", experiment_id)
         self.meteor = evaluate.load("meteor", experiment_id)
@@ -139,12 +143,33 @@ class ConversationEvaluator:
         return round(float(meteor_scores), 4)
         
     # Semantic similarity: BERTScore (context-aware similarity, recall-based matching)
-    def compute_bert_score(self, reference, generated):
+    def compute_bert_score_model(self, reference, generated):
         """Computes semantic similarity using BERT embeddings."""
         ref_embedding = self.bert_model.encode(reference, convert_to_tensor=True)
         gen_embedding = self.bert_model.encode(generated, convert_to_tensor=True)
         similarity = util.pytorch_cos_sim(ref_embedding, gen_embedding).item()
         return round(similarity, 4)
+
+    def compute_bert_score_embeddings(self, reference, generated):
+        """Computes semantic similarity using OpenAI embeddings (cosine similarity)."""
+        # Get embeddings
+        ref_embedding = self.embeddings.embed_query(reference)
+        gen_embedding = self.embeddings.embed_query(generated)
+
+        # Convert to tensors
+        ref_tensor = torch.tensor(ref_embedding).unsqueeze(0)  # Shape: (1, dim)
+        gen_tensor = torch.tensor(gen_embedding).unsqueeze(0)  # Shape: (1, dim)
+
+        # Cosine similarity
+        similarity = F.cosine_similarity(ref_tensor, gen_tensor, dim=1).item()
+
+        return round(similarity, 4)
+
+    def compute_bert_score(self, reference, generated):
+        if config_evaluator['llm']['model_type'] == 'ollama':
+            return self.compute_bert_score_model(reference, generated)
+        elif config_evaluator['llm']['model_type'] == 'openai':
+            return self.compute_bert_score_embeddings(self, reference, generated)
 
     # Instruction-tutorial consistency
     def check_factual_consistency(self, reference, generated):
