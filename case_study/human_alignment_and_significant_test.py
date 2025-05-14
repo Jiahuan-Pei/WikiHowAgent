@@ -31,6 +31,7 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
     sns.boxplot(data=human_df_filtered.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore'), 
                 orient='h', palette='pastel', ax=axes[0])
     axes[0].set_title('Human Annotations')
+    # axes[0].set_xlim(0.8, 5.2)
 
     # Subplot 2: Model evaluations
     sns.boxplot(data=model_df_filtered.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore'), 
@@ -38,6 +39,7 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
     model_name = filter_filename.split('_')[0].split('-')[1] if filter_filename else 'all'
     axes[1].set_title(f'Model-{model_name} Evaluations')
     axes[1].set_yticklabels([]) # Remove the tick labels for the second subfigure
+    # axes[1].set_xlim(0.8, 5.2)
 
     plt.tight_layout()
     
