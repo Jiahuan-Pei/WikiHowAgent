@@ -37,6 +37,7 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
                 orient='h', palette='pastel', ax=axes[1])
     model_name = filter_filename.split('_')[0].split('-')[1] if filter_filename else 'all'
     axes[1].set_title(f'Model-{model_name} Evaluations')
+    axes[1].set_yticklabels([]) # Remove the tick labels for the second subfigure
 
     plt.tight_layout()
     
