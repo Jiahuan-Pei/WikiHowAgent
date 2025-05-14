@@ -7,6 +7,7 @@ EVAL_METRICS = ["Question Ratio", "Completion Achieved", "Diversity Score",
                 "Clarity", "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness",
                 "BLEU", "METEOR", "BERTScore", "ROUGE"]
 
+metrics = ["Clarity", "Engagement", "Coherence", "Depth", "Relevance", "Progress", "Naturalness", "Truthfulness"]
 
 # Argument parsing to various settings
 parser = argparse.ArgumentParser()
