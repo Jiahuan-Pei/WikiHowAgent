@@ -3,6 +3,8 @@ from scipy.stats import spearmanr, kendalltau
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import itertools
+from sklearn.metrics import cohen_kappa_score
 
 try:
     from config import metrics
@@ -44,7 +46,7 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
     plt.tight_layout()
     
     # Save figure with consistent naming
-    save_path = human_annotation_csv.replace('csv', 'png').replace('case_study', 'figure').replace('.png', f'_compare_{model_name}.png')
+    save_path = human_annotation_csv.replace('csv', 'png').replace('data/human_annotation', 'figure').replace('.png', f'_compare_{model_name}.png')
     plt.savefig(save_path, dpi=500, bbox_inches='tight')
     # plt.show()
 
@@ -183,11 +185,11 @@ def plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv,
         fig.delaxes(axes[j])
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
-    save_path = human_annotation_csv.replace('csv', 'compare_by_filename.png').replace('case_study', 'figure')
+    save_path = human_annotation_csv.replace('csv', 'compare_by_filename.png').replace('data/human_annotation', 'figure')
     plt.savefig(save_path, dpi=500, bbox_inches='tight')
     # plt.show()
 
-def human_alignment(tau_axis):
+def human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis):
     # Per model
     for f in json_files:
         print('*'*50, f)
@@ -197,6 +199,64 @@ def human_alignment(tau_axis):
     # Overall
     tau_values = measure_correlation(human_annotation_csv=human_annotation_csv, model_evaluation_csv=model_evaluation_csv, filter_filename=None, tau_axis=tau_axis)
     caculate_alignment(tau_values, model_name='all',tau_axis=tau_axis)
+
+def analysis_human_annotator(human_annotation_csv, model_evaluation_csv):
+    # 1. Calculate alignment over sample and visulize it
+    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='sample')
+    # 2. Calculate alignment over metric and visulize it
+    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='metric')
+    # 3. Plot overall comparsion between models and human
+    plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv, filenames=json_files)    
+
+def compare_kappa_annotations_by_index(file1, file2, annotation_columns, output_file):
+    """
+    Compare Cohen's Kappa for multiple annotation dimensions between two CSV files by index (row number).
+
+    Args:
+        file1 (str): Path to the first CSV file (annotator 1).
+        file2 (str): Path to the second CSV file (annotator 2).
+        annotation_columns (list): List of annotation columns to compare.
+
+    Returns:
+        dict: Dictionary of kappa values per annotation dimension.
+    """
+
+    # Read CSV files (safe load, ignore comments)
+    with open(file1, 'r', encoding='utf-8', errors='ignore') as f1:
+        df1 = pd.read_csv(f1).fillna(0)
+
+    with open(file2, 'r', encoding='utf-8', errors='ignore') as f2:
+        df2 = pd.read_csv(f2).fillna(0)
+
+    # Ensure same number of rows, warn if not
+    if len(df1) != len(df2):
+        print(f"Warning: CSV files have different number of rows! df1: {len(df1)}, df2: {len(df2)}")
+
+    # Slice annotation columns directly (aligned by index)
+    kappa_results = {}
+    for col in annotation_columns:
+        y_true = df1[col]
+        y_pred = df2[col]
+        kappa = cohen_kappa_score(y_true, y_pred)
+        kappa_results[col] = kappa
+
+    # Print results
+    print("Kappa Scores per Dimension:")
+    for dim, score in kappa_results.items():
+        print(f"{dim}: {score:.3f}")
+
+    # Concatenate side-by-side by index
+    merged_df = pd.concat([df1[annotation_columns], df2[annotation_columns]], axis=1, ignore_index=False, keys=['ann1', 'ann2'])
+
+    # Compute averages and replace in df1
+    for col in annotation_columns:
+        df1[col] = (df1[col] + df2[col]) / 2
+
+    # Save result (overwriting file1 name with _merged)
+    df1.to_csv(output_file, index=False)
+    print(f"Averaged scores saved to {output_file}")
+
+    return kappa_results
 
 
 if __name__ == "__main__":
@@ -210,14 +270,12 @@ if __name__ == "__main__":
         'T-llama3_L-llama3_E-llama3_11232754_corrected.json',
         'T-phi4_L-phi4_E-phi4_11269383_corrected.json',
     ]
-
-    human_annotation_csv='case_study/p25_Yifan.csv'
-    model_evaluation_csv='case_study/human_eval_conversation_mono_p25.csv'
-    # 1. Calculate alignment over sample and visulize it
-    human_alignment(tau_axis='sample')
-    # 2. Calculate alignment over metric and visulize it
-    human_alignment(tau_axis='metric')
-    # 3. Plot overall comparsion between models and human
-    # plot_all_comparison_by_filenames(human_annotation_csv='case_study/p25_Yifan.csv',  
-    #                             model_evaluation_csv='case_study/human_eval_conversation_mono_p25.csv',
-    #                             filenames=json_files)
+    # Step 1: Compute kappa value between human annotators and merge them
+    human_annotation_csv_1='data/human_annotation/p25_Yifan.csv'
+    human_annotation_csv_2='data/human_annotation/p25_Yue.csv'
+    # compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
+    
+    # Step 2: Human alignment analysis
+    human_annotation_csv_merged = human_annotation_csv_1.replace('.csv', '_merged.csv')
+    model_evaluation_csv='data/human_annotation/human_eval_conversation_mono_p25.csv'
+    analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
