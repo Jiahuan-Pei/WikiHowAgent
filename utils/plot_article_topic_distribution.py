@@ -169,7 +169,7 @@ def plot_sunburst_topics(df):
 
 if __name__ == "__main__":
     # Load your df with columns: Number, Topic, Domain
-    df = pd.read_csv('data/tasks_per_topic_categorization.csv')
+    df = pd.read_csv('data/tasks_per_topic_domain.csv')
     # plot_radar_with_topic_bars(df)
     # plot_radar_with_parent_bars(df)
     plot_sunburst_topics(df)
