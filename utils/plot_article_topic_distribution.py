@@ -6,9 +6,9 @@ import matplotlib.patches as mpatches
 
 def plot_radar_with_topic_bars(df):
     # === Aggregate & Sort ===
-    parent_counts = df.groupby('Parent Topic')['Count'].sum().reset_index()
+    parent_counts = df.groupby('Domain')['Count'].sum().reset_index()
     parent_counts = parent_counts.sort_values(by='Count', ascending=False)
-    df['Parent Topic'] = pd.Categorical(df['Parent Topic'], categories=parent_counts['Parent Topic'], ordered=True)
+    df['Domain'] = pd.Categorical(df['Domain'], categories=parent_counts['Domain'], ordered=True)
 
     # === Radar chart setup ===
     N = len(parent_counts)
@@ -18,7 +18,7 @@ def plot_radar_with_topic_bars(df):
     # === Plot Setup ===
     fig, ax = plt.subplots(figsize=(14, 14), subplot_kw={'polar': True})
 
-    # Plot Parent Topic Totals Outline
+    # Plot Domain Totals Outline
     values = parent_counts['Count'].tolist()
     values += values[:1]
     # ax.plot(angles, values, color='red', linewidth=2, linestyle='solid', label='Total Count')
@@ -29,8 +29,8 @@ def plot_radar_with_topic_bars(df):
     topic_colors = dict(zip(unique_topics, sns.color_palette('pastel', len(unique_topics))))
 
     # === Plot Bars for Each Topic ===
-    for idx, parent in enumerate(parent_counts['Parent Topic']):
-        topics = df[df['Parent Topic'] == parent].sort_values(by='Count', ascending=False)
+    for idx, parent in enumerate(parent_counts['Domain']):
+        topics = df[df['Domain'] == parent].sort_values(by='Count', ascending=False)
         # We will set the bar for each topic within the parent group
         width = 2 * np.pi / N * 0.7  # Bar width, adjust for overlap
         for i, row in enumerate(topics.iterrows()):
@@ -52,12 +52,12 @@ def plot_radar_with_topic_bars(df):
     ax.set_yticks(yticks)
     ax.set_yticklabels(yticks, fontsize=8)
 
-    # === X-axis Parent Topic Labels ===
+    # === X-axis Domain Labels ===
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(parent_counts['Parent Topic'], fontsize=9, ha='center', rotation=45)
+    ax.set_xticklabels(parent_counts['Domain'], fontsize=9, ha='center', rotation=45)
 
     # === Title and Grid ===
-    # ax.set_title('Radar Chart: Topic Counts per Parent Topic (Separate Bars for Each Topic)', fontsize=14, fontweight='bold', pad=20)
+    # ax.set_title('Radar Chart: Topic Counts per Domain (Separate Bars for Each Topic)', fontsize=14, fontweight='bold', pad=20)
     ax.grid(color='gray', linestyle='--', linewidth=0.5)
 
     # === Optional: Topic Legend ===
@@ -70,9 +70,9 @@ def plot_radar_with_topic_bars(df):
 
 def plot_radar_with_parent_bars(df):
     # === Aggregate & Sort ===
-    parent_counts = df.groupby('Parent Topic')['Count'].sum().reset_index()
+    parent_counts = df.groupby('Domain')['Count'].sum().reset_index()
     parent_counts = parent_counts.sort_values(by='Count', ascending=False)
-    df['Parent Topic'] = pd.Categorical(df['Parent Topic'], categories=parent_counts['Parent Topic'], ordered=True)
+    df['Domain'] = pd.Categorical(df['Domain'], categories=parent_counts['Domain'], ordered=True)
 
     # === Radar chart setup ===
     N = len(parent_counts)
@@ -82,7 +82,7 @@ def plot_radar_with_parent_bars(df):
     # === Plotting ===
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={'polar': True})
 
-    # Plot Parent Topic Totals Outline
+    # Plot Domain Totals Outline
     values = parent_counts['Count'].tolist()
     values += values[:1]
     # ax.plot(angles, values, color='olive', linewidth=2, linestyle='solid', label='Total Count')
@@ -97,8 +97,8 @@ def plot_radar_with_parent_bars(df):
     # topic_colors = dict(zip(unique_topics, sns.light_palette("#79C", len(unique_topics))))
 
     # === Plot stacked bars with topic-specific colors ===
-    for idx, parent in enumerate(parent_counts['Parent Topic']):
-        topics = df[df['Parent Topic'] == parent].sort_values(by='Count', ascending=False)
+    for idx, parent in enumerate(parent_counts['Domain']):
+        topics = df[df['Domain'] == parent].sort_values(by='Count', ascending=False)
         current_base = 0
         for _, row in topics.iterrows():
             ax.bar(
@@ -123,14 +123,14 @@ def plot_radar_with_parent_bars(df):
     # Remove outer circle
     # ax.spines['polar'].set_visible(False)
 
-    # === X-axis Parent Topic labels ===
+    # === X-axis Domain labels ===
     # ax.set_xticks(angles[:-1])
-    # ax.set_xticklabels(parent_counts['Parent Topic'], fontsize=8, ha='center', rotation=45)
+    # ax.set_xticklabels(parent_counts['Domain'], fontsize=8, ha='center', rotation=45)
 
     ax.set_xticks([])  # Remove default xtick labels
     ax.spines['polar'].set_visible(True)
     # Manually add labels with padding control
-    for i, label in enumerate(parent_counts['Parent Topic']):
+    for i, label in enumerate(parent_counts['Domain']):
         angle = angles[i]
         ax.text(
             angle, 
@@ -143,7 +143,7 @@ def plot_radar_with_parent_bars(df):
             # rotation_mode='anchor'
         )
     # === Title & Grid ===
-    # ax.set_title('Radar Chart: Topics per Parent Topic (Distinct Colors per Topic)', fontsize=14, fontweight='bold', pad=20)
+    # ax.set_title('Radar Chart: Topics per Domain (Distinct Colors per Topic)', fontsize=14, fontweight='bold', pad=20)
     ax.grid(color='gray', linestyle='--', linewidth=0.5)
 
     plt.tight_layout()
@@ -154,7 +154,7 @@ def plot_sunburst_topics(df):
     import seaborn as sns
     import plotly.express as px
     # Sunburst chart
-    fig = px.sunburst(df, path=['Parent Topic', 'Topic'], values='Count')
+    fig = px.sunburst(df, path=['Domain', 'Topic'], values='Count')
     
     # Adjust Layout for Tight Display
     fig.update_layout(
@@ -168,7 +168,7 @@ def plot_sunburst_topics(df):
 
 
 if __name__ == "__main__":
-    # Load your df with columns: Number, Topic, Parent Topic
+    # Load your df with columns: Number, Topic, Domain
     df = pd.read_csv('data/tasks_per_topic_categorization.csv')
     # plot_radar_with_topic_bars(df)
     # plot_radar_with_parent_bars(df)
