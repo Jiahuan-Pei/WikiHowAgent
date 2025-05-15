@@ -228,6 +228,30 @@ def compare_kappa_annotations_by_index(file1, file2, annotation_columns, output_
     with open(file2, 'r', encoding='utf-8', errors='ignore') as f2:
         df2 = pd.read_csv(f2).fillna(0)
 
+    # Plotting two subplots: Human vs Model
+    fig, axes = plt.subplots(1, 2, figsize=(7, 3))  # 1 row, 2 columns
+
+    # Subplot 1: Human annotation 1
+    sns.boxplot(data=df1.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore'), 
+                orient='h', palette='pastel', ax=axes[0])
+    axes[0].set_title('Human Annotation 1')
+    # axes[0].set_xlim(0.8, 5.2)
+
+    # Subplot 2: Human annotation 2
+    sns.boxplot(data=df2.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore'), 
+                orient='h', palette='pastel', ax=axes[1])
+
+    axes[1].set_title(f'Human Annotation 2')
+    axes[1].set_yticklabels([]) # Remove the tick labels for the second subfigure
+    # axes[1].set_xlim(0.8, 5.2)
+
+    plt.tight_layout()
+    
+    # Save figure with consistent naming
+    save_path = output_file.replace('csv', 'png').replace('data/human_annotation', 'figure').replace('.png', f'_compare_annotators.png')
+    plt.savefig(save_path, dpi=500, bbox_inches='tight')
+    # plt.show()
+
     # Ensure same number of rows, warn if not
     if len(df1) != len(df2):
         print(f"Warning: CSV files have different number of rows! df1: {len(df1)}, df2: {len(df2)}")
@@ -244,9 +268,6 @@ def compare_kappa_annotations_by_index(file1, file2, annotation_columns, output_
     print("Kappa Scores per Dimension:")
     for dim, score in kappa_results.items():
         print(f"{dim}: {score:.3f}")
-
-    # Concatenate side-by-side by index
-    merged_df = pd.concat([df1[annotation_columns], df2[annotation_columns]], axis=1, ignore_index=False, keys=['ann1', 'ann2'])
 
     # Compute averages and replace in df1
     for col in annotation_columns:
@@ -273,9 +294,10 @@ if __name__ == "__main__":
     # Step 1: Compute kappa value between human annotators and merge them
     human_annotation_csv_1='data/human_annotation/p25_Yifan.csv'
     human_annotation_csv_2='data/human_annotation/p25_Yue.csv'
-    # compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
-    
-    # Step 2: Human alignment analysis
     human_annotation_csv_merged = human_annotation_csv_1.replace('.csv', '_merged.csv')
     model_evaluation_csv='data/human_annotation/human_eval_conversation_mono_p25.csv'
-    analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
+
+    compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
+    
+    # Step 2: Human alignment analysis
+    # analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
