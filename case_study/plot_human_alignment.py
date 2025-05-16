@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 
 palette = sns.color_palette("pastel")  # Try "Set2", "pastel", "husl", etc.
-hatches = ['///','\\\\\\', '']  # For Pearson, Spearman, Kendalltau
+hatches = ['xxxx', '///', '']  # For Pearson, Spearman, Kendalltau
 
 # Data preparation
 data = {

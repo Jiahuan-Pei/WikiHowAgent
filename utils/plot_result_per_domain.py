@@ -93,6 +93,88 @@ def compute_result_per_domain(fpath):
     # Save final domain-level scores to CSV
     domain_scores.to_csv(fpath.replace('.json', '_domain.csv'), index=False)
 
+
+def compute_result_per_metric(fpaths):
+    # Load domain order
+    df_tasks_per_domain = pd.read_csv(file_tasks_per_domain)
+    domains = df_tasks_per_domain['Domain'].unique().tolist()
+    num_domains = len(domains)
+
+    models = []
+    data_per_metric = {metric: [] for metric in metrics}
+
+    # Collect data from each file
+    for fpath in fpaths:
+        model_name = fpath.split('_')[1]  # Assuming format T-model_L-model_E-model_timestamp.json
+        models.append(model_name)
+
+        csv_path = f"result/{fpath}".replace('.json', '_domain.csv')
+        df = pd.read_csv(csv_path)
+
+        # Align domains order
+        df = df.set_index('Domain').reindex(domains).reset_index()
+
+        for metric in metrics:
+            data_per_metric[metric].append(df[metric].tolist())
+
+    # Radar plot setup
+    angles = np.linspace(0, 2 * np.pi, num_domains, endpoint=False).tolist()
+    angles += angles[:1]  # close the circle
+
+    markers = ['o', 's', 'X', 'D', 'P', '*', '^', 'v', '<', '>']
+
+    # Colormap per metric (different base colors)
+    base_colors = plt.cm.get_cmap('tab20b', len(metrics))
+
+    # Subplots grid
+    fig, axes = plt.subplots(2, 4, figsize=(20, 10), subplot_kw=dict(polar=True))
+    axes = axes.flatten()
+
+    for idx, metric in enumerate(metrics):
+        ax = axes[idx]
+
+        # Base color for this metric subplot
+        base_color = base_colors(idx)
+
+        # Prepare domain labels
+        ax.set_xticks(angles[:-1])
+        ax.set_xticklabels(domains, fontsize=8)
+
+        for i, model_name in enumerate(models):
+            values = data_per_metric[metric][i]
+            values += values[:1]  # close the loop
+
+            # Slightly vary brightness for each model line
+            alpha_fill = 0.15
+            alpha_line = 0.8 - i * 0.1  # lighter for later models
+
+            ax.plot(angles, values,
+                    label=model_name,
+                    marker=markers[i % len(markers)],
+                    color=base_color,
+                    linewidth=1.5,
+                    markersize=6,
+                    alpha=alpha_line)
+
+            ax.fill(angles, values,
+                    color=base_color,
+                    alpha=alpha_fill)
+
+        ax.set_ylim(2, 5.15)
+        ax.set_yticks([2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])
+        ax.set_yticklabels([2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], fontsize=7)
+
+        ax.set_title(f"({idx+1}) {metric}", fontsize=12)
+
+    # Single legend for all subplots
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', ncol=len(models), bbox_to_anchor=(0.5, 1.05), fontsize=10)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig('figure/metrics_across_domains_radar_filled.png', dpi=400)
+    plt.close()
+
+
 if __name__ == "__main__":
     file_tasks_per_domain = 'data/tasks_per_topic_domain.csv' 
     if len(sys.argv)==2:
@@ -114,5 +196,7 @@ if __name__ == "__main__":
             'T-phi4_L-phi4_E-phi4_11269383_corrected.json',
         ]
 
-        for i, fpath in enumerate(fpaths):
-            compute_result_per_domain(fpath=f"result/{fpath}")
+        # for i, fpath in enumerate(fpaths):
+        #     compute_result_per_domain(fpath=f"result/{fpath}")
+
+        compute_result_per_metric(fpaths)
