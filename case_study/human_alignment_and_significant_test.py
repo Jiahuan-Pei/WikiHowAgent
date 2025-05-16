@@ -5,6 +5,7 @@ import seaborn as sns
 import numpy as np
 import itertools
 from sklearn.metrics import cohen_kappa_score
+from scipy.stats import pearsonr, spearmanr
 
 try:
     from config import metrics
@@ -68,6 +69,22 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
             if not np.isnan(kendall_corr):
                 tau_values.append(kendall_corr)
                 print(f"{metric} - Kendall: {kendall_corr:.3f} (p={kendall_p:.3f})")
+    elif tau_axis == 'mean':
+        # Compute the mean score and then access the alignment 
+        # Kendall significance p-values robust for ties
+        human = human_df_filtered[metrics].astype(float).mean(axis=1)
+        model = model_df_filtered[metrics].astype(float).mean(axis=1)
+
+        # kappa = cohen_kappa_score(human, model)
+        pearson_corr, pearson_p = pearsonr(human, model)
+        spearman_corr, spearman_p = spearmanr(human, model)
+        kendalltau_corr, kendalltau_p = kendalltau(human, model)
+
+        # print(f"Kappa Scores: {kappa:.3f}")
+        print(f"Pearson correlation: {pearson_corr} (p={pearson_p:.4f})")
+        print(f"Spearman correlation: {spearman_corr} (p={spearman_p:.4f})")
+        print(f"Kendalltau correlation: {kendalltau_corr} (p={kendalltau_p:.4f})")
+        return
     return np.array(tau_values)   
 
 
@@ -190,6 +207,11 @@ def plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv,
     # plt.show()
 
 def human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis):
+    if tau_axis == 'mean':
+        for f in json_files:
+            print('*'*50, f)
+            measure_correlation(human_annotation_csv=human_annotation_csv, model_evaluation_csv=model_evaluation_csv, filter_filename=f, tau_axis=tau_axis)
+        return
     # Per model
     for f in json_files:
         print('*'*50, f)
@@ -202,9 +224,11 @@ def human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis):
 
 def analysis_human_annotator(human_annotation_csv, model_evaluation_csv):
     # 1. Calculate alignment over sample and visulize it
-    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='sample')
+    # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='sample')
     # 2. Calculate alignment over metric and visulize it
-    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='metric')
+    # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='metric')
+    # 3. Calculate alignment over mean metric
+    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='mean')
     # 3. Plot overall comparsion between models and human
     plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv, filenames=json_files)    
 
@@ -259,15 +283,40 @@ def compare_kappa_annotations_by_index(file1, file2, annotation_columns, output_
     # Slice annotation columns directly (aligned by index)
     kappa_results = {}
     for col in annotation_columns:
+        print('-'*50, f'{col}')
         y_true = df1[col]
         y_pred = df2[col]
         kappa = cohen_kappa_score(y_true, y_pred)
+        pearson_corr, pearson_p = pearsonr(y_true, y_pred)
+        spearman_corr, spearman_p = spearmanr(y_true, y_pred)
+        kendalltau_corr, kendalltau_p = kendalltau(y_true, y_pred)
         kappa_results[col] = kappa
+        print(f"Kappa Scores: {kappa:.3f}")
+        print(f"Pearson correlation: {pearson_corr} (p={pearson_p:.4f})")
+        print(f"Spearman correlation: {spearman_corr} (p={spearman_p:.4f})")
+        print(f"Kendalltau correlation: {kendalltau_corr} (p={kendalltau_p:.4f})")
 
     # Print results
-    print("Kappa Scores per Dimension:")
-    for dim, score in kappa_results.items():
-        print(f"{dim}: {score:.3f}")
+    # print("Kappa Scores per Dimension:")
+    # for dim, score in kappa_results.items():
+    #     print(f"{dim}: {score:.3f}")
+
+    mean_score_list_1 = df1[metrics].mean(axis=1)
+    mean_score_list_2 = df2[metrics].mean(axis=1)
+    # mean_kappa = cohen_kappa_score(mean_score_list_1, mean_score_list_2)
+    # Use Weighted Kappa for Ordinal Data
+    # Discretize (round to nearest integer)
+    discrete_list_1 = np.round(mean_score_list_1).astype(int)
+    discrete_list_2 = np.round(mean_score_list_2).astype(int)
+    mean_kappa = cohen_kappa_score(discrete_list_1, discrete_list_2, weights='quadratic')  # 'quadratic' or 'linear' 
+    pearson_corr, pearson_p = pearsonr(mean_score_list_1, mean_score_list_2)
+    spearman_corr, spearman_p = spearmanr(mean_score_list_1, mean_score_list_2)
+    kendalltau_corr, kendalltau_p = kendalltau(mean_score_list_1, mean_score_list_2)
+    print('='*50)
+    print(f"Overall Kappa Scores: {mean_kappa}")
+    print(f"Overall Pearson correlation: {pearson_corr} (p={pearson_p:.4f})")
+    print(f"Overall Spearman correlation: {spearman_corr} (p={spearman_p:.4f})")
+    print(f"Overall Kendalltau correlation: {kendalltau_corr} (p={kendalltau_p:.4f})")
 
     # Compute averages and replace in df1
     for col in annotation_columns:
@@ -297,7 +346,8 @@ if __name__ == "__main__":
     human_annotation_csv_merged = human_annotation_csv_1.replace('.csv', '_merged.csv')
     model_evaluation_csv='data/human_annotation/human_eval_conversation_mono_p25.csv'
 
-    compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
+    # Compare the agreement of the two annotators
+    # compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
     
     # Step 2: Human alignment analysis
-    # analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
+    analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
