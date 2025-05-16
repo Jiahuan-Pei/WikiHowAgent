@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 
 palette = sns.color_palette("pastel")  # Try "Set2", "pastel", "husl", etc.
-hatches = ['', '/////', 'xxxxx']  # For Pearson, Spearman, Kendalltau
+hatches = ['///','\\\\\\', '']  # For Pearson, Spearman, Kendalltau
 
 # Data preparation
 data = {
@@ -29,7 +29,7 @@ p_df = pd.DataFrame(p_values)
 p_df.set_index('Model', inplace=True)
 
 # Plot with annotations
-fig, ax = plt.subplots(figsize=(4, 3))
+fig, ax = plt.subplots(figsize=(4, 2.5))
 bars = df.plot(kind='barh', ax=ax, color=palette, width=0.75)
 
 # Apply hatch patterns to each correlation type
@@ -52,7 +52,7 @@ for i, model in enumerate(df.index):
         if marker:
             offset = 0.15 * (j - 1)  # Adjust spacing between correlation types
             ax.text(width + np.sign(width) * 0.01, i + offset, marker,
-                    va='center', ha='left' if width > 0 else 'right', fontsize=12, color='black')
+                    va='center', ha='left' if width > 0 else 'right', fontsize=8, color='black')
 
 
 plt.axvline(0, color='black', linewidth=0.8, linestyle='--')
