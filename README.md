@@ -1,14 +1,4 @@
-# WorldTaskEval
-## Motivation
-Large language models (LLMs), such as ChatGPT, are increasingly used to generate responses based on human instructions. 
-
-> Can LLMs be effective in helping humans complete concrete tasks in real-world teaching-learning scenarios?
-
-While several studies have evaluated LLMs' performance on specific tasks, the scope of these evaluations remains limited. In contrast, a vast number of practical tasks exist in the real world. For example, WikiHow contains hundreds of guidelines that teach people how to perform tasks, which cover  a wide variety of human-written tasks ranging from "how to bake a cake" to "how to build a jet." 
-
-The objective of this project is to assess LLMs' ability to assist with real-world task completion.
-
-This code implements a conversational AI system where a Teacher Agent guides a Learner Agent through a tutorial, simulating an interactive learning experience. Here's a high-level breakdown of the logic:
+# Conversational Education at Scale: A Multi-LLM Agent Workflow for Procedural Learning and Pedagogic Quality Assessment
 
 ## How to run
 ### Step 1: create a config file under folder [conf/](conf) 
