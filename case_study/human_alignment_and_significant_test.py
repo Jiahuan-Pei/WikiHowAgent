@@ -139,7 +139,7 @@ def caculate_alignment(tau_values, model_name=None, tau_axis=None):
     # plt.show()
     plt.savefig(f'figure/{title2}.png', dpi=500, bbox_inches='tight')
 
-def plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv, filenames=None):
+def plot_all_correlation_comparison_over_models(human_annotation_csv, model_evaluation_csv, filenames=None):
     # Load data
     human_df = pd.read_csv(human_annotation_csv).drop(columns=['comment'], errors='ignore').fillna(0)
     model_df = pd.read_csv(model_evaluation_csv).fillna(0)
@@ -206,6 +206,150 @@ def plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv,
     plt.savefig(save_path, dpi=500, bbox_inches='tight')
     # plt.show()
 
+
+def plot_metric_correlations_all(human_annotation_csv, model_evaluation_csv):
+    # Load data
+    human_df = pd.read_csv(human_annotation_csv).drop(columns=['comment'], errors='ignore').fillna(0)
+    model_df = pd.read_csv(model_evaluation_csv).fillna(0)
+
+    # Align data: keep only common filenames
+    common_filenames = sorted(set(human_df['filename']).intersection(set(model_df['filename'])))
+    human_df = human_df[human_df['filename'].isin(common_filenames)]
+    model_df = model_df[model_df['filename'].isin(common_filenames)]
+
+    # Drop non-metric columns
+    human_metrics = human_df.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore')
+    model_metrics = model_df.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore')
+
+    # Compute correlations
+    records = []
+    for metric in human_metrics.columns:
+        try:
+            pearson_corr, _ = pearsonr(human_metrics[metric], model_metrics[metric])
+        except Exception:
+            pearson_corr = 0
+        try:
+            spearman_corr, _ = spearmanr(human_metrics[metric], model_metrics[metric])
+        except Exception:
+            spearman_corr = 0
+        try:
+            kendall_corr, _ = kendalltau(human_metrics[metric], model_metrics[metric])
+        except Exception:
+            kendall_corr = 0
+
+        records.append({'Metric': metric, 'Correlation': pearson_corr, 'Type': 'Pearson'})
+        records.append({'Metric': metric, 'Correlation': spearman_corr, 'Type': 'Spearman'})
+        records.append({'Metric': metric, 'Correlation': kendall_corr, 'Type': 'Kendall Tau'})
+
+    corr_df = pd.DataFrame(records)
+
+    # Plot
+    plt.figure(figsize=(8, len(human_metrics.columns) * 0.5))
+    sns.barplot(data=corr_df, x='Correlation', y='Metric', hue='Type', palette='Set2')
+    plt.xlim(-1, 1)
+    plt.title('Model-Human Correlations per Metric')
+    plt.legend(loc='lower right', frameon=True)
+    plt.tight_layout()
+
+    # Save
+    save_path = human_annotation_csv.replace('csv', 'correlation_alltypes_avg.png').replace('data/human_annotation', 'figure')
+    plt.savefig(save_path, dpi=500, bbox_inches='tight')
+    # plt.show()
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import pearsonr, spearmanr, kendalltau
+
+def plot_metric_correlations_all_with_significance(human_annotation_csv, model_evaluation_csv):
+    hatches = ['xxxxxx', '/////', '']  # For Pearson, Spearman, Kendalltau
+    # Load data
+    human_df = pd.read_csv(human_annotation_csv).drop(columns=['comment'], errors='ignore').fillna(0)
+    model_df = pd.read_csv(model_evaluation_csv).fillna(0)
+
+    # Align data
+    common_filenames = sorted(set(human_df['filename']).intersection(set(model_df['filename'])))
+    human_df = human_df[human_df['filename'].isin(common_filenames)]
+    model_df = model_df[model_df['filename'].isin(common_filenames)]
+
+    # Drop non-metric columns
+    human_metrics = human_df.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore')
+    model_metrics = model_df.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore')
+
+    # Compute correlations with p-values
+    records = []
+    for metric in human_metrics.columns:
+        # Pearson
+        try:
+            pearson_corr, pearson_p = pearsonr(human_metrics[metric], model_metrics[metric])
+        except Exception:
+            pearson_corr, pearson_p = 0, 1.0
+        
+        # Spearman
+        try:
+            spearman_corr, spearman_p = spearmanr(human_metrics[metric], model_metrics[metric])
+        except Exception:
+            spearman_corr, spearman_p = 0, 1.0
+        
+        # Kendall Tau
+        try:
+            kendall_corr, kendall_p = kendalltau(human_metrics[metric], model_metrics[metric])
+        except Exception:
+            kendall_corr, kendall_p = 0, 1.0
+        
+        # Record values & significance markers
+        records.append({'Metric': metric, 'Correlation': pearson_corr, 'p': pearson_p, 'Type': 'Pearson'})
+        records.append({'Metric': metric, 'Correlation': spearman_corr, 'p': spearman_p, 'Type': 'Spearman'})
+        records.append({'Metric': metric, 'Correlation': kendall_corr, 'p': kendall_p, 'Type': 'Kendall'})
+
+    corr_df = pd.DataFrame(records)
+
+    # Add significance markers
+    def significance_marker(p):
+        if p < 0.01:
+            return '**'
+        elif p < 0.05:
+            return '*'
+        else:
+            return ''
+
+    corr_df['Significance'] = corr_df['p'].apply(significance_marker)
+
+    # Plot
+    # plt.figure(figsize=(4, len(human_metrics.columns) * 0.3))
+    
+    plt.figure(figsize=(4, 1.8))
+    bars = sns.barplot(data=corr_df, x='Correlation', y='Metric', hue='Type', palette='pastel')
+
+    # Annotate p-value significance on bars
+    for i, row in corr_df.iterrows():
+        plt.text(row['Correlation'] + 0.05 * (1 if row['Correlation'] >= 0 else -1) -0.025,  # offset a bit from the bar
+                 i // 3 + (0.25 * (['Pearson', 'Spearman', 'Kendall'].index(row['Type']) - 1)+0.15),  # adjust y pos
+                 row['Significance'], 
+                 color='black', fontsize=8, ha='center', va='center')
+
+    # Apply hatch patterns to each correlation type
+    for i, bar_container in enumerate(bars.containers):
+        for patch in bar_container.patches:
+            patch.set_hatch(hatches[i])
+
+    plt.xticks(fontsize=6)
+    plt.yticks(fontsize=6)
+    plt.xlim(-0.45, 0.45)
+    plt.axvline(0, color='black', linewidth=0.8, linestyle='--')
+    # plt.title('Model-Human Correlations per Metric (with significance)')
+    plt.ylabel('')
+    plt.xlabel('')
+    plt.legend(loc='upper left', bbox_to_anchor=(0, 1), fontsize=5)
+    plt.tight_layout()
+
+    # Save figure
+    save_path = human_annotation_csv.replace('csv', 'correlation_alltypes_sig.png').replace('data/human_annotation', 'figure')
+    plt.savefig(save_path, dpi=500, bbox_inches='tight')
+    # plt.show()
+
+
 def human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis):
     if tau_axis == 'mean':
         for f in json_files:
@@ -228,9 +372,9 @@ def analysis_human_annotator(human_annotation_csv, model_evaluation_csv):
     # 2. Calculate alignment over metric and visulize it
     # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='metric')
     # 3. Calculate alignment over mean metric
-    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='mean')
+    # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='mean')
     # 3. Plot overall comparsion between models and human
-    plot_all_comparison_by_filenames(human_annotation_csv, model_evaluation_csv, filenames=json_files)    
+    plot_all_correlation_comparison_over_models(human_annotation_csv, model_evaluation_csv, filenames=json_files)    
 
 def compare_kappa_annotations_by_index(file1, file2, annotation_columns, output_file):
     """
@@ -350,4 +494,5 @@ if __name__ == "__main__":
     # compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
     
     # Step 2: Human alignment analysis
-    analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
+    # analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
+    plot_metric_correlations_all_with_significance(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
