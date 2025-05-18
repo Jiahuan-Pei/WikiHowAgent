@@ -497,8 +497,8 @@ if __name__ == "__main__":
         'T-phi4_L-phi4_E-phi4_11269383_corrected.json',
     ]
     # Step 1: Compute kappa value between human annotators and merge them
-    human_annotation_csv_1='data/human_annotation/p25_Yifan.csv'
-    human_annotation_csv_2='data/human_annotation/p25_Yue.csv'
+    human_annotation_csv_1='data/human_annotation/p25_judge1.csv'
+    human_annotation_csv_2='data/human_annotation/p25_judge2.csv'
     human_annotation_csv_merged = human_annotation_csv_1.replace('.csv', '_merged.csv')
     model_evaluation_csv='data/human_annotation/human_eval_conversation_mono_p25.csv'
 
