@@ -153,7 +153,7 @@ def compute_result_per_metric(fpaths):
                     marker=markers[i % len(markers)],
                     color=base_color,
                     linewidth=1.5,
-                    markersize=6,
+                    markersize=10,
                     alpha=alpha_line)
 
             ax.fill(angles, values,
@@ -161,10 +161,11 @@ def compute_result_per_metric(fpaths):
                     alpha=alpha_fill)
 
         ax.set_ylim(2, 5.15)
-        ax.set_yticks([2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])
-        ax.set_yticklabels([2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], fontsize=7)
+        ax.set_yticks([2.0, 3.0, 4.0, 5.0])
+        ax.set_xticklabels([f"[{i+1}]" for i in range(17)], fontsize=12)
+        ax.set_yticklabels([2, 3, 4, 5], fontsize=14)
 
-        ax.set_title(f"({idx+1}) {metric}", fontsize=12)
+        ax.set_title(f"({idx+1}) {metric}", fontsize=16)
 
     # Single legend for all subplots
     handles, labels = axes[0].get_legend_handles_labels()

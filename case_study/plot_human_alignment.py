@@ -52,7 +52,7 @@ for i, model in enumerate(df.index):
         if marker:
             offset = 0.15 * (j - 1)  # Adjust spacing between correlation types
             ax.text(width + np.sign(width) * 0.01, i + offset, marker,
-                    va='center', ha='left' if width > 0 else 'right', fontsize=8, color='black')
+                    va='center', ha='left' if width > 0 else 'right', fontsize=12, color='black')
 
 
 plt.axvline(0, color='black', linewidth=0.8, linestyle='--')

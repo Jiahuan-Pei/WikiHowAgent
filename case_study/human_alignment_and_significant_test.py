@@ -34,6 +34,8 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
     sns.boxplot(data=human_df_filtered.drop(columns=['filename', 'conversation_id', 'title'], errors='ignore'), 
                 orient='h', palette='pastel', ax=axes[0])
     axes[0].set_title('Human Annotations')
+    axes[0].tick_params(axis='y', labelsize=14)
+    axes[0].tick_params(axis='x', labelsize=14)
     # axes[0].set_xlim(0.8, 5.2)
 
     # Subplot 2: Model evaluations
@@ -42,6 +44,7 @@ def measure_correlation(human_annotation_csv, model_evaluation_csv, filter_filen
     model_name = filter_filename.split('_')[0].split('-')[1] if filter_filename else 'all'
     axes[1].set_title(f'Model-{model_name} Evaluations')
     axes[1].set_yticklabels([]) # Remove the tick labels for the second subfigure
+    axes[1].tick_params(axis='x', labelsize=14)
     # axes[1].set_xlim(0.8, 5.2)
 
     plt.tight_layout()
@@ -140,6 +143,9 @@ def caculate_alignment(tau_values, model_name=None, tau_axis=None):
     plt.savefig(f'figure/{title2}.png', dpi=500, bbox_inches='tight')
 
 def plot_all_correlation_comparison_over_models(human_annotation_csv, model_evaluation_csv, filenames=None):
+    """
+    Figure 6: Comparison between human annotation and model evaluation scores.
+    """
     # Load data
     human_df = pd.read_csv(human_annotation_csv).drop(columns=['comment'], errors='ignore').fillna(0)
     model_df = pd.read_csv(model_evaluation_csv).fillna(0)
@@ -182,6 +188,8 @@ def plot_all_correlation_comparison_over_models(human_annotation_csv, model_eval
         ax.set_xticklabels([1, 2, 3, 4, 5])
         ax.set_xticks([1, 2, 3, 4, 5])
         ax.set_xlim(0.1, 6)
+        ax.tick_params(axis='x', labelsize=10)
+        ax.tick_params(axis='y', labelsize=10)
         ax.set_ylabel('')  # Remove the y-axis label ('Metric')
         ax.set_xlabel('')  # Remove the y-axis label ('Score')
         ax.set_title(f'{filename.split("_")[0].split("-")[1]}', fontsize=10)
@@ -263,6 +271,8 @@ import seaborn as sns
 from scipy.stats import pearsonr, spearmanr, kendalltau
 
 def plot_metric_correlations_all_with_significance(human_annotation_csv, model_evaluation_csv):
+    """ Figure 7: Human alignment correlation coefficients
+    """
     hatches = ['xxxxxx', '/////', '']  # For Pearson, Spearman, Kendalltau
     # Load data
     human_df = pd.read_csv(human_annotation_csv).drop(columns=['comment'], errors='ignore').fillna(0)
@@ -334,14 +344,14 @@ def plot_metric_correlations_all_with_significance(human_annotation_csv, model_e
         for patch in bar_container.patches:
             patch.set_hatch(hatches[i])
 
-    plt.xticks(fontsize=6)
-    plt.yticks(fontsize=6)
+    plt.xticks(fontsize=8)
+    plt.yticks(fontsize=8)
     plt.xlim(-0.45, 0.45)
     plt.axvline(0, color='black', linewidth=0.8, linestyle='--')
     # plt.title('Model-Human Correlations per Metric (with significance)')
     plt.ylabel('')
     plt.xlabel('')
-    plt.legend(loc='upper left', bbox_to_anchor=(0, 1), fontsize=5)
+    plt.legend(loc='upper left', bbox_to_anchor=(0, 1), fontsize=6)
     plt.tight_layout()
 
     # Save figure
@@ -351,6 +361,7 @@ def plot_metric_correlations_all_with_significance(human_annotation_csv, model_e
 
 
 def human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis):
+    # Mean score per model
     if tau_axis == 'mean':
         for f in json_files:
             print('*'*50, f)
@@ -364,16 +375,17 @@ def human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis):
         caculate_alignment(tau_values, model_name=model_name,tau_axis=tau_axis)
     # Overall
     tau_values = measure_correlation(human_annotation_csv=human_annotation_csv, model_evaluation_csv=model_evaluation_csv, filter_filename=None, tau_axis=tau_axis)
+    # Figure 6:Comparison between human annotation and model evaluation scores.
     caculate_alignment(tau_values, model_name='all',tau_axis=tau_axis)
 
 def analysis_human_annotator(human_annotation_csv, model_evaluation_csv):
     # 1. Calculate alignment over sample and visulize it
     # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='sample')
     # 2. Calculate alignment over metric and visulize it
-    # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='metric')
+    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='metric')
     # 3. Calculate alignment over mean metric
-    # human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='mean')
-    # 3. Plot overall comparsion between models and human
+    human_alignment(human_annotation_csv, model_evaluation_csv, tau_axis='mean')
+    # 4. Plot overall comparsion between models and human
     plot_all_correlation_comparison_over_models(human_annotation_csv, model_evaluation_csv, filenames=json_files)    
 
 def compare_kappa_annotations_by_index(file1, file2, annotation_columns, output_file):
@@ -494,5 +506,7 @@ if __name__ == "__main__":
     # compare_kappa_annotations_by_index(file1=human_annotation_csv_1, file2=human_annotation_csv_2, annotation_columns=metrics, output_file=human_annotation_csv_merged)
     
     # Step 2: Human alignment analysis
-    # analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
-    plot_metric_correlations_all_with_significance(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
+    # Figure 6:
+    analysis_human_annotator(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)
+    # Figure 7: Human alignment correlation coefficients
+    # plot_metric_correlations_all_with_significance(human_annotation_csv=human_annotation_csv_merged, model_evaluation_csv=model_evaluation_csv)

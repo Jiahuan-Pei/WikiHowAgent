@@ -46,7 +46,7 @@ def plot_llm_rubric(fpath):
         ax.plot(angles, values, label=model, marker=markers[i % len(markers)],
         color=colors(i),
         linewidth=2,
-        markersize=6)
+        markersize=10)
         # Fill area under the plot
         ax.fill(angles, values, color=colors(i), alpha=0.1)
 
@@ -56,13 +56,19 @@ def plot_llm_rubric(fpath):
     ax.set_yticks(scale)
     ax.set_yticklabels(scale)
 
+    ax.set_xticklabels([])
     # Optional: annotate topic names around the circle
-    # for i, label in enumerate(df.columns):
-    #     angle = angles[i]
-    #     ax.text(angle, 5.4, f"{label}", ha='center', va='center', fontsize=6)
+    for i, label in enumerate(df.columns):
+        angle = angles[i]
+        pad = 6.2
+        if i == 2 or i==6: # Reduce margin on top and bottom
+            pad = 5.6
+        elif i == 4:
+            pad = 6.4
+        ax.text(angle, pad, f"{label}", ha='center', va='center', fontsize=14)
 
     # Add legend
-    ax.legend(loc='upper left', bbox_to_anchor=(1.0, 1.08), fontsize=10)
+    ax.legend(loc='upper left', bbox_to_anchor=(1.05, 1.08), fontsize=12)
 
     # Save the plot
     plt.tight_layout()
