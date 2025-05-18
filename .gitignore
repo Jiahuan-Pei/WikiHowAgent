@@ -9,9 +9,10 @@
 .vscode/
 data/wikihow/*
 data/wikihow.zip
-data/dialogues.db
-data/human_annotation
 wikihow.zip
+data/dialogues.db
+# data/human_annotation/*
+# data/human_annotation.zip
 conf/openai-*
 result/*
 models/*
