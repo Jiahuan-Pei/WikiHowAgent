@@ -110,7 +110,7 @@ This diagram illutrates the workflow where Teacher-Learner Agents interact in Co
 - Average QAs per document: 1.66
 
 ### Task distribution over massive topics
-![alt text](figure/tasks_per_topic.png)
+![alt text](figure/sunburst_chart_high_res.png)
 
 ### Knowledge Graph Screenshot & Statistics
 - Total nodes (categories): 727
