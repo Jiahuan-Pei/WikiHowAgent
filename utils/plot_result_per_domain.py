@@ -95,6 +95,9 @@ def compute_result_per_domain(fpath):
 
 
 def compute_result_per_metric(fpaths):
+    """
+    Figure 5: Multiple rubric evaluation scores of all LLMs over various domains
+    """
     # Load domain order
     df_tasks_per_domain = pd.read_csv(file_tasks_per_domain)
     domains = df_tasks_per_domain['Domain'].unique().tolist()

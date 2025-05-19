@@ -150,6 +150,8 @@ def plot_radar_with_parent_bars(df):
     plt.show()
 
 def plot_sunburst_topics(df):
+    """Figure 2: Hierarchical distribution of topics across 17 domains with corresponding topic counts.
+    """
     import matplotlib.pyplot as plt
     import seaborn as sns
     import plotly.express as px
@@ -172,4 +174,5 @@ if __name__ == "__main__":
     df = pd.read_csv('data/tasks_per_topic_domain.csv')
     # plot_radar_with_topic_bars(df)
     # plot_radar_with_parent_bars(df)
+    # Figure 2: Hierarchical distribution of topics across 17 domains
     plot_sunburst_topics(df)

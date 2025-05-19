@@ -9,6 +9,9 @@ import numpy as np
 
 def plot_llm_rubric(fpath):
     """
+    Figure 3: Evaluation results of homogeneous learning using rubric-based metrics across different LLMs
+    Figure 4: Evaluation results of heterogeneous learning using rubric-based metrics across different LLMs.
+
     Data example:
                     Clarity  Engagement  Coherence  Depth  Relevance  Progress  Naturalness  Truthfulness
     LLMs                                                                                               
