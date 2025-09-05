@@ -109,7 +109,7 @@ Our evaluation protocol combines computational and rubric-based metrics with hum
 ## Dataset
 
 We released a dataset of 114,296 teacher-learner conversations grounded in 14,287 tutorials across 17 domains and 727 topics. 
-Download the [WikihowAgentDataset](https://huggingface.co/datasets/Jiahuan/WikihowAgentDataset).
+Download the [WikihowAgentDataset](https://huggingface.co/datasets/Jiahuan/WikihowAgentDataset/tree/main).
 
 ### Statistics
 |   | Total Number  | Avg Token  |
