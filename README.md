@@ -4,6 +4,10 @@
 We propose WikiHowAgent, a multi-agent workflow leveraging LLMs to simulate interactive teaching-learning conversations. 
 It integrates teacher and learner agents, an interaction manager, and an evaluator to facilitate procedural learning and assess pedagogic quality.  
 
+<div align="center">
+<img src="figure/chat_graph_simulation_workflow.png" alt="Workflow" width="400">
+</div>
+
 Please cite our paper if you use any resources provided in this repository.
 
 ```
@@ -123,7 +127,9 @@ Download the [WikihowAgentDataset](https://huggingface.co/datasets/Jiahuan/Wikih
 - Average QAs per document: 1.66
 
 ### Task distribution over massive topics
-![alt text](figure/sunburst_chart_high_res.png)
+<div align="center">
+<img src="figure/sunburst_chart_high_res.png" alt="Workflow" width="650">
+</div>
 
 ### Knowledge Graph Screenshot & Statistics
 - Total nodes (categories): 727
