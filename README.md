@@ -5,14 +5,15 @@ We propose WikiHowAgent, a multi-agent workflow leveraging LLMs to simulate inte
 It integrates teacher and learner agents, an interaction manager, and an evaluator to facilitate procedural learning and assess pedagogic quality.  
 
 Please cite our paper if you use any resources provided in this repository.
-> @inproceedings{pei2025conversational, \
-Title={Conversational Education at Scale: A Multi-LLM Agent Workflow for Procedural Learning and Pedagogic Quality Assessment}, \
-Author={Jiahuan Pei and Fanghua Ye and Wentao Deng and Koen Hindriks and Junxiao Wang}, \
-Booktitle={Findings of the 2025 Conference on Empirical Methods in Natural Language Processing (EMNLP'25)},\
-      Year={2025}
+
+```
+@inproceedings{pei2025conversational,
+    Title={Conversational Education at Scale: A Multi-LLM Agent Workflow for Procedural Learning and Pedagogic Quality Assessment},
+    Author={Jiahuan Pei and Fanghua Ye and Wentao Deng and Koen Hindriks and Junxiao Wang}, 
+    Booktitle={Findings of the 2025 Conference on Empirical Methods in Natural Language Processing (EMNLP'25)},
+    Year={2025}
 }
-
-
+```
 
 ## How to run: generate and evaluate your new conversations
 ### Step 1: create a config file under folder [conf/](conf) 
