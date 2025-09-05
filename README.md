@@ -1,6 +1,20 @@
 # Conversational Education at Scale: A Multi-LLM Agent Workflow for Procedural Learning and Pedagogic Quality Assessment
 
-## How to run
+## Introduction
+We propose WikiHowAgent, a multi-agent workflow leveraging LLMs to simulate interactive teaching-learning conversations. 
+It integrates teacher and learner agents, an interaction manager, and an evaluator to facilitate procedural learning and assess pedagogic quality.  
+
+Please cite our paper if you use any resources provided in this repository.
+> @inproceedings{pei2025conversational, \
+Title={Conversational Education at Scale: A Multi-LLM Agent Workflow for Procedural Learning and Pedagogic Quality Assessment}, \
+Author={Jiahuan Pei and Fanghua Ye and Wentao Deng and Koen Hindriks and Junxiao Wang}, \
+Booktitle={Findings of the 2025 Conference on Empirical Methods in Natural Language Processing (EMNLP'25)},\
+      Year={2025}
+}
+
+
+
+## How to run: generate and evaluate your new conversations
 ### Step 1: create a config file under folder [conf/](conf) 
 ### Step 2: run your python script with small data
 ```
@@ -78,6 +92,7 @@ This diagram illutrates the workflow where Teacher-Learner Agents interact in Co
 - Saves the generated dialogues and evaluations.
 
 #### 5. Conversation Evaluation
+Our evaluation protocol combines computational and rubric-based metrics with human judgment alignment.
 - Conversation-level metrics
     - `Question Ratio`: How many learner responses contain questions?
     - `Task Completion Ratio`: How many percentage of the conversations reach "FINISHED"?
@@ -88,11 +103,8 @@ This diagram illutrates the workflow where Teacher-Learner Agents interact in Co
 
 ## Dataset
 
-### Key concepts
-- Categories
-- Sub-categories
-- Topic
-- Question
+We released a dataset of 114,296 teacher-learner conversations grounded in 14,287 tutorials across 17 domains and 727 topics. 
+Download the [WikihowAgentDataset](https://huggingface.co/datasets/Jiahuan/WikihowAgentDataset).
 
 ### Statistics
 |   | Total Number  | Avg Token  |
